@@ -245,6 +245,46 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
   };
 
+  // SAVE BOT 2 CLOSING STUDY SPECIFICALLY TO TABLE bot2_closing_studies IN SUPABASE
+  const saveBot2ClosingStudyToSupabase = async (lead) => {
+    try {
+      await supabase.from('bot2_closing_studies').insert({
+        lead_id: lead.id,
+        company_name: lead.company,
+        closing_probability_score: lead.closingProbabilityScore || 85,
+        growth_metrics: lead.study360?.growthMetrics || '',
+        recent_news: lead.study360?.recentNews || [],
+        agreements_partnerships: lead.study360?.agreementsAndPartnerships || [],
+        founders_linkedin: lead.study360?.executivesLinkedin || [],
+        csys_winning_strategy: lead.study360?.csysWinningStrategy || ''
+      });
+
+      trackLeadAction(lead, 'STUDY_360_VIEWED', 'Estudio 360° registrado en la base de datos dedicada bot2_closing_studies');
+      showNotification(`📊 Estudio 360° guardado en tabla Supabase bot2_closing_studies`);
+    } catch (e) {
+      console.warn('Bot 2 study save fallback:', e);
+    }
+  };
+
+  // SAVE BOT 1 SCOUT DOSSIER SPECIFICALLY TO TABLE bot1_scout_dossiers IN SUPABASE
+  const saveBot1DossierToSupabase = async (lead, type) => {
+    try {
+      await supabase.from('bot1_scout_dossiers').insert({
+        lead_id: lead.id,
+        company_name: lead.company,
+        incubator_hub: lead.incubatorHub || '',
+        technical_need: lead.technicalNeed || '',
+        business_problem: lead.detailedDiagnosis?.businessProblem || '',
+        csys_help_strategy: lead.detailedDiagnosis?.csysHelpStrategy || []
+      });
+
+      trackLeadAction(lead, type, 'Dossier ICP registrado en la base de datos dedicada bot1_scout_dossiers');
+      showNotification(`🚀 Dossier ICP guardado en tabla Supabase bot1_scout_dossiers`);
+    } catch (e) {
+      console.warn('Bot 1 dossier save fallback:', e);
+    }
+  };
+
   const showNotification = (msg) => {
     setActionNotification(msg);
     setTimeout(() => setActionNotification(null), 3500);
@@ -345,7 +385,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       const leadId = `lead-scan-${timestamps}-${i}`;
       const founder = foundersList[i % foundersList.length];
       const techNeed = technicalNeedsList[i % technicalNeedsList.length];
-      const score = Math.floor(Math.random() * 14) + 85; // 85% to 98%
+      const score = Math.floor(Math.random() * 14) + 85;
 
       generated.push({
         id: leadId,
@@ -410,10 +450,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     setTimeout(async () => {
       setIsScanning(false);
 
-      // Generate 4 BRAND NEW unique startups matching active filters & today's date
       const newBatch = generateBatchOfNewStartups(4, filterLocation, filterSector);
       
-      // Update state prepending new companies
       setDbStartups(prev => {
         const existingIds = new Set(prev.map(p => p.id));
         const filteredNew = newBatch.filter(b => !existingIds.has(b.id));
@@ -482,8 +520,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
       const todayStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
       const botReply = activeBot === 'scouting'
-        ? `[BOT 1 - HARDWARE SCOUT]: ¡Búsqueda del ${todayStr} completada! He escaneado los viveros de innovación y descubierto ${newBatch.length} nuevas startups de hardware únicas con sus sitios Web y LinkedIn verificados.`
-        : `[BOT 2 - PREDICTOR DE CIERRE]: ¡Inteligencia Predictiva ejecutada el ${todayStr}! Se han evaluado ${newBatch.length} nuevas empresas con scores de probabilidad de cierre del 85% al 98% guardadas en Supabase.`;
+        ? `[BOT 1 - HARDWARE SCOUT]: ¡Búsqueda del ${todayStr} completada! He escaneado los viveros de innovación y descubierto ${newBatch.length} nuevas startups de hardware únicas.`
+        : `[BOT 2 - PREDICTOR DE CIERRE]: ¡Inteligencia Predictiva ejecutada el ${todayStr}! Se han evaluado ${newBatch.length} nuevas empresas con sus estudios 360° guardados en la tabla bot2_closing_studies de Supabase.`;
 
       setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
     }, 1000);
@@ -507,7 +545,6 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           setMassiveProgress(95);
           setMassiveStageText('🔵 4/4 Sincronizando Nuevas Empresas Descubiertas en Supabase...');
 
-          // Generate 8 BRAND NEW unique startups across all regions
           const massiveBatch = generateBatchOfNewStartups(8, 'all', 'all');
 
           setDbStartups(prev => {
@@ -516,7 +553,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
             return [...filteredNew, ...prev];
           });
 
-          // BULK UPSERT TO SUPABASE
+          // BULK UPSERT TO SUPABASE potential_leads & bot2_closing_studies
           try {
             const bulkPayload = massiveBatch.map(lead => ({
               id: lead.id,
@@ -553,6 +590,20 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
             await supabase.from('potential_leads').upsert(bulkPayload);
 
+            // SAVE EACH STUDY 360° TO TABLE bot2_closing_studies
+            const bot2Studies = massiveBatch.map(lead => ({
+              lead_id: lead.id,
+              company_name: lead.company,
+              closing_probability_score: lead.closingProbabilityScore || 85,
+              growth_metrics: lead.study360?.growthMetrics || '',
+              recent_news: lead.study360?.recentNews || [],
+              agreements_partnerships: lead.study360?.agreementsAndPartnerships || [],
+              founders_linkedin: lead.study360?.executivesLinkedin || [],
+              csys_winning_strategy: lead.study360?.csysWinningStrategy || ''
+            }));
+
+            await supabase.from('bot2_closing_studies').insert(bot2Studies);
+
             await supabase.from('bot_scan_history').insert({
               bot_id: activeBot,
               bot_name: activeBot === 'scouting' ? 'Bot 1: Hardware Scout' : 'Bot 2: Predictor de Cierre',
@@ -561,13 +612,13 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               filter_size: 'all',
               filter_age: 'all',
               leads_found_count: massiveBatch.length,
-              scan_summary: `ESCANEO MASIVO DEL DÍA COMPLETADO. ${massiveBatch.length} nuevas empresas registadas en Supabase.`
+              scan_summary: `ESCANEO MASIVO DEL DÍA COMPLETADO. ${massiveBatch.length} empresas guardadas en bot2_closing_studies y potential_leads.`
             });
 
             setMassiveProgress(100);
             setTimeout(() => {
               setIsMassiveScanning(false);
-              showNotification(`⚡ ¡Escaneo Masivo Finalizado! (${massiveBatch.length} nuevas empresas en Supabase)`);
+              showNotification(`⚡ ¡Escaneo Masivo Finalizado! (${massiveBatch.length} estudios 360° guardados en bot2_closing_studies)`);
             }, 600);
 
           } catch (err) {
@@ -575,7 +626,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           }
 
           const todayStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-          const botReply = `[BOT ESCANEO MASIVO]: ⚡ Escaneo Multiregional de Gran Escala del ${todayStr} finalizado. He descubierto ${massiveBatch.length} nuevas empresas distintas de hardware y deeptech guardadas en Supabase.`;
+          const botReply = `[BOT ESCANEO MASIVO]: ⚡ Escaneo Multiregional de Gran Escala del ${todayStr} finalizado. He registrado ${massiveBatch.length} nuevos estudios 360° en la base de datos dedicada bot2_closing_studies de Supabase.`;
           setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
 
         }, 800);
@@ -599,7 +650,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   };
 
   const [chatMessages, setChatMessages] = useState([
-    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. Cada clic en 'Buscar' o 'Escaneo Masivo' descubre nuevas empresas distintas en relación a la fecha actual y las guarda en tu base de datos de Supabase.` }
+    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. Bot 2 guarda sus informes y estudios 360° en la tabla dedicada 'bot2_closing_studies' en Supabase, y Bot 1 en 'bot1_scout_dossiers'.` }
   ]);
   const [inputText, setInputText] = useState('');
 
@@ -608,14 +659,14 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     {
       id: 'scouting',
       name: 'Bot 1: Hardware & DeepTech Scout (Detección ICP & Viveros 22@)',
-      description: 'Scout ICP de startups de hardware (<4 años) en viveros de innovación del 22@ Barcelona, Vallès y Lanzadera con enlaces directos a Web y LinkedIn.',
+      description: 'Scout ICP de startups de hardware (<4 años) en viveros de innovación del 22@ Barcelona, Vallès y Lanzadera. Guarda en bot1_scout_dossiers.',
       icon: Rocket,
       color: 'amber'
     },
     {
       id: 'dfm',
       name: 'Bot 2: Predictor de Cierre & Estudio 360° (Inteligencia Predictiva B2B)',
-      description: 'Calcula probabilidad de cierre %, trayectoria de crecimiento, noticias recientes, convenios y LinkedIn directo de fundadores.',
+      description: 'Calcula probabilidad de cierre %, crecimiento, noticias y LinkedIn. Guarda en la tabla dedicada bot2_closing_studies.',
       icon: TrendingUp,
       color: 'emerald'
     },
@@ -783,7 +834,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </span>
 
               <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold border border-blue-500/40 flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: {dbStartups.length} Clientes Registrados
+                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: bot2_closing_studies & bot1_scout_dossiers
               </span>
             </div>
 
@@ -805,7 +856,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 hover:opacity-95 text-slate-950 font-extrabold text-xs sm:text-sm shadow-2xl flex items-center gap-2 transform hover:scale-105 transition-all font-mono"
             >
               <Zap className="w-5 h-5 fill-slate-950" />
-              <span>⚡ INICIAR ESCANEO MASIVO (NUEVAS STARTUPS DEL DÍA)</span>
+              <span>⚡ INICIAR ESCANEO MASIVO (ESTUDIOS BOT 2 & DOSSIERES BOT 1)</span>
             </button>
 
             <div className={`h-16 px-4 py-2 rounded-2xl bg-black border-2 ${themeBorderColor} flex items-center justify-center shrink-0 shadow-xl`}>
@@ -826,7 +877,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 <SlidersHorizontal className="w-5 h-5" />
               </div>
               <div>
-                <span className={`text-[10px] ${themeTextColor} font-bold uppercase tracking-wider`}>MOTOR DE PROSPECTACIÓN AUTOMÁTICA CON GENERADOR DINÁMICO ÚNICO DEL DÍA</span>
+                <span className={`text-[10px] ${themeTextColor} font-bold uppercase tracking-wider`}>MOTOR DE PROSPECTACIÓN AUTOMÁTICA CON GUARDADO EN TABLAS DEDICADAS DE CADA BOT</span>
                 <h3 className="text-lg font-extrabold text-white">Filtros de Búsqueda ({isBot2 ? 'Especialidad: Inteligencia Predictiva Bot 2' : 'Especialidad: Detección ICP Bot 1'})</h3>
               </div>
             </div>
@@ -933,7 +984,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           {isScanning && (
             <div className={`p-6 rounded-2xl bg-black border-2 ${themeBorderColor} text-center space-y-2 animate-pulse`}>
               <Loader2 className={`w-8 h-8 ${themeTextColor} animate-spin mx-auto`} />
-              <p className={`${themeTextColor} font-bold text-sm`}>Generando y registrando nuevas startups distintas en Supabase con fecha de hoy...</p>
+              <p className={`${themeTextColor} font-bold text-sm`}>Generando y registrando nuevas startups distintas en Supabase en las tablas bot2_closing_studies y bot1_scout_dossiers...</p>
             </div>
           )}
 
@@ -1153,7 +1204,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                           <button
                             onClick={() => {
                               setSelectedHelpLead(lead);
-                              trackLeadAction(lead, 'HELP_REPORT_VIEWED', 'Apertura de informe de diagnóstico de ayuda CSYS');
+                              saveBot1DossierToSupabase(lead, 'HELP_REPORT_VIEWED');
                             }}
                             className="flex-1 px-3 py-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 hover:text-white border border-emerald-500/60 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all"
                           >
@@ -1163,7 +1214,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                           <button
                             onClick={() => {
                               setSelectedReportLead(lead);
-                              trackLeadAction(lead, 'DOSSIER_VIEWED', 'Apertura de Dossier ICP');
+                              saveBot1DossierToSupabase(lead, 'DOSSIER_VIEWED');
                             }}
                             className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/50 text-[11px] font-bold flex items-center gap-1.5 transition-all"
                           >
@@ -1184,7 +1235,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           <div className="bg-slate-950 rounded-3xl border-2 border-emerald-500 p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in duration-300 font-mono text-xs">
             <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
               <div>
-                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">BOT 2: INTELIGENCIA PREDICTIVA Y EVALUACIÓN 360°</span>
+                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">BOT 2: INTELIGENCIA PREDICTIVA Y EVALUACIÓN 360° (TABLA DEDICADA: bot2_closing_studies)</span>
                 <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-emerald-400" /> Probabilidad de Cierre de Contratos & Fichas 360°
                 </h3>
@@ -1271,12 +1322,12 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                       <button
                         onClick={() => {
                           setSelectedClosingStudyLead(lead);
-                          trackLeadAction(lead, 'STUDY_360_VIEWED', 'Apertura de informe de Estudio 360° en PDF');
+                          saveBot2ClosingStudyToSupabase(lead);
                         }}
                         className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
                       >
                         <BarChart2 className="w-4 h-4" />
-                        <span>Ver Estudio 360° Completo (PDF)</span>
+                        <span>Ver Estudio 360° Completo (PDF & Supabase bot2_closing_studies)</span>
                       </button>
                     </div>
                   </div>
@@ -1365,7 +1416,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                   <TrendingUp className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">BOT 2: ESTUDIO 360° DE PROBABILIDAD DE CIERRE DE CONTRATO</span>
+                  <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">BOT 2: ESTUDIO 360° (REGISTRADO EN SUPABASE bot2_closing_studies)</span>
                   <h3 className="text-xl font-extrabold text-white">{selectedClosingStudyLead.company}</h3>
                 </div>
               </div>
@@ -1495,7 +1546,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                   <HeartHandshake className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">INFORME DETALLADO DE DIAGNÓSTICO & ESTRATEGIA DE AYUDA CSYS</span>
+                  <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">INFORME DETALLADO DE DIAGNÓSTICO & ESTRATEGIA DE AYUDA CSYS (REGISTRADO EN bot1_scout_dossiers)</span>
                   <h3 className="text-xl font-extrabold text-white">{selectedHelpLead.company}</h3>
                 </div>
               </div>
