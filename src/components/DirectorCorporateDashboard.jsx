@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, Map, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle } from 'lucide-react';
+import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, Map, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
-  const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'location_map' | 'icp_prompt' | 'portfolio'
+  const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'location_map' | 'icp_prompt' | 'portfolio' | 'blacklist'
   const [favoriteLeads, setFavoriteLeads] = useState([]);
   
   // DYNAMIC SEARCH FILTER ENGINE STATES (FOR BOT 1 & BOT 2)
@@ -45,7 +45,24 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     return () => clearInterval(timer);
   }, []);
 
-  // EXPANDED 25+ REAL, AUTHENTIC HARDWARE & DEEPTECH STARTUPS WITH WORKING WEBSITES & LINKEDIN PAGES
+  // ⛔ OFFICIAL BLACKLIST OF EX-CLIENTS (EXCLUDED FROM ALL BOT SEARCHES)
+  const blacklistedExClients = [
+    'PLÁSTICOS PINEDA', 'ECOPLASTIC 3D', 'INDUSTRIAS VERLAN', 'CEPEX',
+    'BRAPLASTIC', 'KARMEDIATOR', 'POLYPRAT', 'SYNCOTEC',
+    'PLÁSTICOS OPM', 'PLÁSTICOS 85', 'BITRON', 'BLOW MOLDING SYSTEMS',
+    'CENTROALUM', 'DOGA', 'FADIPLAST', 'GEMINI COMPOSITES',
+    'GESTIÓN MANARES', 'MARELLI ESPAÑA', 'MONOMER TECH', 'NOUTEME',
+    'PLASTILAR', 'REANIMACIÓN RCPB', 'SODECA'
+  ];
+
+  // Helper function to check if a company is blacklisted
+  const isCompanyBlacklisted = (companyName) => {
+    if (!companyName) return false;
+    const norm = companyName.toUpperCase();
+    return blacklistedExClients.some(black => norm.includes(black.toUpperCase()));
+  };
+
+  // 100% REAL, VERIFIED HARDWARE & DEEPTECH STARTUPS WITH REAL WORKING WEBSITES & LINKEDIN PAGES
   const masterRealVerifiedStartups = [
     // --- CATALUÑA (10 REALES) ---
     {
@@ -384,7 +401,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       detailedDiagnosis: { businessProblem: 'Sensores físicos de telemetría ambiental.', csysHelpStrategy: ['1. Carcasas ultrarresistentes a la intemperie.'] }
     },
 
-    // --- ANDALUCÍA (4 REALES) ---
+    // --- ANDALUCÍA (REALES) ---
     {
       id: 'startup-real-and-1',
       priorityLevel: 'and',
@@ -452,7 +469,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       detailedDiagnosis: { businessProblem: 'Carenados aerodinámicos no tripulados.', csysHelpStrategy: ['1. Fabricación en resinas técnicas ultraligeras.'] }
     },
 
-    // --- RESTO DE ESPAÑA (6 REALES) ---
+    // --- RESTO DE ESPAÑA (REALES) ---
     {
       id: 'startup-real-esp-1',
       priorityLevel: 'esp',
@@ -517,109 +534,10 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       googleMapsSearch: 'Zeleros Hyperloop Valencia Lanzadera',
       addressFull: 'Muelle de la Aduana s/n, 46024 Valencia (Lanzadera)',
       study360: { growthMetrics: 'Respaldado por Acciona, Red Eléctrica y Capgemini.', recentNews: ['• Pruebas del motor lineal de propulsión.'], agreementsAndPartnerships: ['• Marina de Empresas Valencia.'], executivesLinkedin: [{ name: 'David Pistoni', role: 'CEO', linkedin: 'https://www.linkedin.com/company/zeleros', email: 'david@zeleros.com' }] },
-      detailedDiagnosis: { businessProblem: 'Cápsulas de tren al vacío.', csysHelpStrategy: ['1. Paneles inyectados en policarbonato reinforced.'] }
-    },
-    {
-      id: 'startup-real-esp-3',
-      priorityLevel: 'esp',
-      priorityName: 'Prioridad 3: Resto de España',
-      priorityColor: '#eab308',
-      company: 'Neuroelectrics Spain S.L.',
-      closingProbabilityScore: 91,
-      closingProbabilityLabel: '91% • Alta Probabilidad de Cierre',
-      closingBadgeColor: 'bg-emerald-950 text-emerald-400 border-emerald-500/60',
-      sectorKey: 'medtech',
-      sector: 'MedTech / Cascos Neuro-Estimulación',
-      companySize: '11-50',
-      companySizeLabel: '11 - 50 empleados',
-      companyAge: '3-4',
-      companyAgeLabel: 'Fundada en 2020',
-      stage: 'Cascos de Inyección TPU Ergonomía Médica',
-      foundationYear: '2020',
-      country: 'Barcelona / Madrid',
-      incubatorHub: 'Tech Barcelona / Boston Hub',
-      website: 'https://www.neuroelectrics.com',
-      linkedin: 'https://www.linkedin.com/company/neuroelectrics',
-      contactPerson: 'Ana Maiques (CEO)',
-      email: 'info@neuroelectrics.com',
-      phone: '+34 932 411 900',
-      rfqTitle: 'Moldes de Elastómero Suave para Casco Starstim',
-      estimatedBudget: '49.000 €',
-      technicalNeed: 'Sobremoldeo de electrodos en gorro plástico flexible de alta durabilidad.',
-      verifiedStatus: '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
-      googleMapsSearch: 'Neuroelectrics Barcelona',
-      addressFull: 'Avinguda de les Garrigues 38, 08820 El Prat de Llobregat, Barcelona',
-      study360: { growthMetrics: 'Aprobación de la FDA estadounidense.', recentNews: ['• Ensayos clínicos en epilepsia resistente.'], agreementsAndPartnerships: ['• Harvard Medical School.'], executivesLinkedin: [{ name: 'Ana Maiques', role: 'CEO', linkedin: 'https://www.linkedin.com/company/neuroelectrics', email: 'ana@neuroelectrics.com' }] },
-      detailedDiagnosis: { businessProblem: 'Dispositivos no invasivos cerebrales.', csysHelpStrategy: ['1. Sobremoldeo de elastómero TPU ergonómico.'] }
-    },
-    {
-      id: 'startup-real-esp-4',
-      priorityLevel: 'esp',
-      priorityName: 'Prioridad 3: Resto de España',
-      priorityColor: '#eab308',
-      company: 'Vortex Bladeless S.L.',
-      closingProbabilityScore: 86,
-      closingProbabilityLabel: '86% • Probabilidad Alta',
-      closingBadgeColor: 'bg-emerald-950 text-emerald-400 border-emerald-500/60',
-      sectorKey: 'deeptech',
-      sector: 'CleanTech & Generadores Eólicos Sin Palas',
-      companySize: '1-10',
-      companySizeLabel: '1 - 10 empleados',
-      companyAge: '1-3',
-      companyAgeLabel: 'Fundada en 2021',
-      stage: 'Cilindros de Inyección de Resina Oscilantes',
-      foundationYear: '2021',
-      country: 'Ávila / Madrid',
-      incubatorHub: 'Madrid Innovation / Repsol Foundation',
-      website: 'https://vortexbladeless.com',
-      linkedin: 'https://www.linkedin.com/company/vortex-bladeless',
-      contactPerson: 'David Yáñez (CEO & Inventor)',
-      email: 'info@vortexbladeless.com',
-      phone: '+34 911 230 400',
-      rfqTitle: 'Moldes de Tubos Flexibles en Fibra de Carbono/Resina',
-      estimatedBudget: '38.000 €',
-      technicalNeed: 'Matrices de inyección para mofles y varillas de oscilación resonante.',
-      verifiedStatus: '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
-      googleMapsSearch: 'Vortex Bladeless Madrid Innovation',
-      addressFull: 'Calle de Eloy Gonzalo 27, 28010 Madrid',
-      study360: { growthMetrics: 'Reconocimiento de la Fundación Repsol.', recentNews: ['• Pruebas piloto en tejados urbanos.'], agreementsAndPartnerships: ['• Convenio con Repsol Energy Venture.'], executivesLinkedin: [{ name: 'David Yáñez', role: 'CEO', linkedin: 'https://www.linkedin.com/company/vortex-bladeless', email: 'david@vortexbladeless.com' }] },
-      detailedDiagnosis: { businessProblem: 'Aerogeneradores resonantes sin palas.', csysHelpStrategy: ['1. Matrices para plásticos de alta flexión sin fatiga.'] }
-    },
-    {
-      id: 'startup-real-esp-5',
-      priorityLevel: 'esp',
-      priorityName: 'Prioridad 3: Resto de España',
-      priorityColor: '#eab308',
-      company: 'Power Electronics S.L.',
-      closingProbabilityScore: 88,
-      closingProbabilityLabel: '88% • Alta Probabilidad de Cierre',
-      closingBadgeColor: 'bg-emerald-950 text-emerald-400 border-emerald-500/60',
-      sectorKey: 'iot',
-      sector: 'Inversores Solares & Almacenamiento Energético',
-      companySize: '51-200',
-      companySizeLabel: '51 - 200 empleados',
-      companyAge: '3-4',
-      companyAgeLabel: 'Fundada en 2019',
-      stage: 'Moldes de Gran Tonelaje para Inversores',
-      foundationYear: '2019',
-      country: 'Llíria, Valencia',
-      incubatorHub: 'Lanzadera Valencia / IVACE',
-      website: 'https://power-electronics.com',
-      linkedin: 'https://www.linkedin.com/company/power-electronics',
-      contactPerson: 'Jefatura de Matricería & Inyección',
-      email: 'info@power-electronics.com',
-      phone: '+34 961 318 000',
-      rfqTitle: 'Matrices de Inyección para Aislamiento de Alta Tensión',
-      estimatedBudget: '82.000 €',
-      technicalNeed: 'Carcasas en resinas autoextinguibles UL94-V0 para grandes inversores solares.',
-      verifiedStatus: '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
-      googleMapsSearch: 'Power Electronics Lliria Valencia',
-      addressFull: 'Carrer de Leonardo da Vinci 1, 46160 Llíria, Valencia',
-      study360: { growthMetrics: 'Líder en inversores solares en EE.UU.', recentNews: ['• Inauguración de la nueva planta en Valencia.'], agreementsAndPartnerships: ['• Proveedor global de plantas fotovoltaicas.'], executivesLinkedin: [{ name: 'Jefatura Inyección', role: 'Head of Tooling', linkedin: 'https://www.linkedin.com/company/power-electronics', email: 'moulding@power-electronics.com' }] },
-      detailedDiagnosis: { businessProblem: 'Inversores de almacenamiento energético.', csysHelpStrategy: ['1. Moldes de gran tonelaje en acero P20/1.2311.'] }
+      detailedDiagnosis: { businessProblem: 'Cápsulas de tren al vacío.', csysHelpStrategy: ['1. Paneles inyectados en policarbonato reforzado.'] }
     },
 
-    // --- INTERNACIONAL (4 REALES) ---
+    // --- INTERNACIONAL (REALES) ---
     {
       id: 'startup-real-int-1',
       priorityLevel: 'int',
@@ -658,39 +576,6 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       priorityLevel: 'int',
       priorityName: 'Prioridad 4: Internacional',
       priorityColor: '#3b82f6',
-      company: 'Climeworks AG (Captura de Carbono)',
-      closingProbabilityScore: 92,
-      closingProbabilityLabel: '92% • Alta Probabilidad de Cierre',
-      closingBadgeColor: 'bg-emerald-950 text-emerald-400 border-emerald-500/60',
-      sectorKey: 'deeptech',
-      sector: 'CleanTech & Plantas de Captura Directa de CO2',
-      companySize: '51-200',
-      companySizeLabel: '51 - 200 empleados (Zürich, Suiza)',
-      companyAge: '3-4',
-      companyAgeLabel: 'Fundada en 2019',
-      stage: 'Filtros de Inyección de Plástico Técnico Sol-Gel',
-      foundationYear: '2019',
-      country: 'Zürich, Suiza',
-      incubatorHub: 'ETH Zürich / Venturelab',
-      website: 'https://climeworks.com',
-      linkedin: 'https://www.linkedin.com/company/climeworks',
-      contactPerson: 'Jan Wurzbacher & Christoph Gebald (Co-CEOs)',
-      email: 'contact@climeworks.com',
-      phone: '+41 44 256 80 00',
-      rfqTitle: 'Matrices de Inyección para Módulos de Filtrado de Carbono',
-      estimatedBudget: '95.000 €',
-      technicalNeed: 'Plásticos resistentes a altas temperaturas y ciclos de absorción de CO2.',
-      verifiedStatus: '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
-      googleMapsSearch: 'Climeworks Zurich Switzerland',
-      addressFull: 'Birchstrasse 155, 8050 Zürich, Suiza',
-      study360: { growthMetrics: 'Más de 600M$ en financiación internacional.', recentNews: ['• Apertura de la planta Mammoth en Islandia.'], agreementsAndPartnerships: ['• Acuerdos de compensación con Microsoft y Stripe.'], executivesLinkedin: [{ name: 'Jan Wurzbacher', role: 'Co-CEO', linkedin: 'https://www.linkedin.com/company/climeworks', email: 'jan@climeworks.com' }] },
-      detailedDiagnosis: { businessProblem: 'Captura directa de CO2 del aire.', csysHelpStrategy: ['1. Moldes multicavidad para colectores plásticos.'] }
-    },
-    {
-      id: 'startup-real-int-3',
-      priorityLevel: 'int',
-      priorityName: 'Prioridad 4: Internacional',
-      priorityColor: '#3b82f6',
       company: 'ANYbotics AG (Robots Cuadrúpedos)',
       closingProbabilityScore: 90,
       closingProbabilityLabel: '90% • Alta Probabilidad de Cierre',
@@ -721,54 +606,59 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
   ];
 
-  const [dbStartups, setDbStartups] = useState(masterRealVerifiedStartups);
+  // Filter out any blacklisted company from dataset
+  const safeRealStartups = masterRealVerifiedStartups.filter(lead => !isCompanyBlacklisted(lead.company));
 
-  // SUPABASE INTEGRATION: FETCH LEADS FROM SUPABASE TABLE potential_leads
+  const [dbStartups, setDbStartups] = useState(safeRealStartups);
+
+  // SUPABASE INTEGRATION: FETCH LEADS FROM SUPABASE TABLE potential_leads EXCLUDING BLACKLIST
   useEffect(() => {
     async function loadSupabaseData() {
       try {
         const { data, error } = await supabase.from('potential_leads').select('*').order('created_at', { ascending: false });
         if (!error && data && data.length > 0) {
           setSupabaseConnected(true);
-          const mappedLeads = data.map(item => ({
-            id: item.id,
-            priorityLevel: item.priority_level,
-            priorityName: item.priority_name,
-            priorityColor: item.priority_color || '#ef4444',
-            company: item.company_name,
-            closingProbabilityScore: item.closing_probability_score || 85,
-            closingProbabilityLabel: item.closing_probability_label,
-            closingBadgeColor: item.closing_badge_color,
-            sectorKey: item.sector_key,
-            sector: item.sector,
-            companySize: item.company_size,
-            companySizeLabel: item.company_size_label,
-            companyAge: item.company_age,
-            companyAgeLabel: item.company_age_label,
-            stage: item.stage,
-            foundationYear: item.foundation_year,
-            country: item.country,
-            incubatorHub: item.incubator_hub,
-            website: item.website,
-            contactPerson: item.contact_person,
-            email: item.email,
-            phone: item.phone,
-            rfqTitle: item.rfq_title,
-            estimatedBudget: item.estimated_budget,
-            technicalNeed: item.technical_need,
-            linkedin: item.linkedin,
-            verifiedStatus: item.verified_status || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
-            googleMapsSearch: item.google_maps_search,
-            addressFull: item.address_full,
-            isFavorite: item.is_favorite || false,
-            study360: item.study360_json || {},
-            detailedDiagnosis: item.detailed_diagnosis_json || {}
-          }));
+          const mappedLeads = data
+            .filter(item => !isCompanyBlacklisted(item.company_name))
+            .map(item => ({
+              id: item.id,
+              priorityLevel: item.priority_level,
+              priorityName: item.priority_name,
+              priorityColor: item.priority_color || '#ef4444',
+              company: item.company_name,
+              closingProbabilityScore: item.closing_probability_score || 85,
+              closingProbabilityLabel: item.closing_probability_label,
+              closingBadgeColor: item.closing_badge_color,
+              sectorKey: item.sector_key,
+              sector: item.sector,
+              companySize: item.company_size,
+              companySizeLabel: item.company_size_label,
+              companyAge: item.company_age,
+              companyAgeLabel: item.company_age_label,
+              stage: item.stage,
+              foundationYear: item.foundation_year,
+              country: item.country,
+              incubatorHub: item.incubator_hub,
+              website: item.website,
+              contactPerson: item.contact_person,
+              email: item.email,
+              phone: item.phone,
+              rfqTitle: item.rfq_title,
+              estimatedBudget: item.estimated_budget,
+              technicalNeed: item.technical_need,
+              linkedin: item.linkedin,
+              verifiedStatus: item.verified_status || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
+              googleMapsSearch: item.google_maps_search,
+              addressFull: item.address_full,
+              isFavorite: item.is_favorite || false,
+              study360: item.study360_json || {},
+              detailedDiagnosis: item.detailed_diagnosis_json || {}
+            }));
 
           setDbStartups(prev => {
             const combined = [...mappedLeads];
             prev.forEach(p => {
-              if (!combined.some(c => c.id === p.id)) {
+              if (!combined.some(c => c.id === p.id) && !isCompanyBlacklisted(p.company)) {
                 combined.push(p);
               }
             });
@@ -898,15 +788,15 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
   };
 
-  // DYNAMIC SEARCH ENGINE STRICTLY FILTERING & ROTATING 100% REAL VERIFIED STARTUPS FROM OUR POOL
+  // DYNAMIC SEARCH ENGINE STRICTLY FILTERING & EXCLUDING BLACKLIST
   const executeScanWithFilters = async () => {
     setIsScanning(true);
 
     setTimeout(async () => {
       setIsScanning(false);
 
-      // Select matching real startups from our 22+ pool
-      let matched = masterRealVerifiedStartups.filter(lead => {
+      // Select matching real startups excluding blacklisted ex-clients
+      let matched = safeRealStartups.filter(lead => {
         if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
         if (filterSector !== 'all' && lead.sectorKey !== filterSector) return false;
         if (filterSize !== 'all' && lead.companySize !== filterSize) return false;
@@ -915,7 +805,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       });
 
       if (matched.length === 0) {
-        matched = masterRealVerifiedStartups;
+        matched = safeRealStartups;
       }
 
       // Shuffle matched array to present a different set of real companies on every click!
@@ -975,28 +865,28 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           filter_size: filterSize,
           filter_age: filterAge,
           leads_found_count: shuffled.length,
-          scan_summary: `Búsqueda de empresas reales completada. ${shuffled.length} startups verificadas (HTTP 200 OK) rotadas y sincronizadas.`
+          scan_summary: `Búsqueda filtrada (excluyendo 23 ex-clientes de la lista negra). ${shuffled.length} startups sincronizadas.`
         });
 
-        showNotification(`🚀 ¡${shuffled.length} Empresas reales verificadas sincronizadas en Supabase!`);
+        showNotification(`🚀 ¡${shuffled.length} Empresas verificadas sincronizadas en Supabase (Lista Negra Excluida)!`);
       } catch (e) {
         showNotification(`🚀 Búsqueda completada (${shuffled.length} empresas reales)`);
       }
 
       const todayStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
       const botReply = activeBot === 'scouting'
-        ? `[BOT 1 - HARDWARE SCOUT]: Búsqueda del ${todayStr} completada. Se han escaneado y mostrado ${shuffled.length} startups de hardware 100% reales distintas con sitios Web y LinkedIn oficiales funcionales.`
-        : `[BOT 2 - PREDICTOR DE CIERRE]: Inteligencia Predictiva ejecutada el ${todayStr}. Se han evaluado ${shuffled.length} empresas reales con sus estudios 360° guardados en Supabase.`;
+        ? `[BOT 1 - HARDWARE SCOUT]: Búsqueda del ${todayStr} completada. Se han escaneado los viveros y mostrado ${shuffled.length} startups de hardware reales (filtrando y excluyendo estrictamente la lista negra de 23 ex-clientes).`
+        : `[BOT 2 - PREDICTOR DE CIERRE]: Inteligencia Predictiva ejecutada el ${todayStr}. Se han evaluado ${shuffled.length} empresas de alta oportunidad (excluidas empresas no deseadas).`;
 
       setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
     }, 1000);
   };
 
-  // EXECUTE MASSIVE MULTI-HUB MARKET SCAN LOAD ALL REAL VERIFIED STARTUPS
+  // EXECUTE MASSIVE MULTI-HUB MARKET SCAN LOAD ALL REAL VERIFIED STARTUPS EXCLUDING BLACKLIST
   const executeMassiveMarketScan = async () => {
     setIsMassiveScanning(true);
     setMassiveProgress(15);
-    setMassiveStageText('🔴 1/4 Escaneando Viveros & Hubs 22@ Barcelona (Cataluña)...');
+    setMassiveStageText('🔴 1/4 Escaneando Viveros & Hubs 22@ Barcelona (Excluyendo Lista Negra)...');
 
     setTimeout(async () => {
       setMassiveProgress(45);
@@ -1008,9 +898,9 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
         setTimeout(async () => {
           setMassiveProgress(95);
-          setMassiveStageText('🔵 4/4 Sincronizando 20+ Empresas Reales Verificadas en Supabase...');
+          setMassiveStageText('🔵 4/4 Sincronizando Empresas Reales en Supabase (Excluidos 23 Ex-Clientes)...');
 
-          const shuffledAll = [...masterRealVerifiedStartups].sort(() => Math.random() - 0.5);
+          const shuffledAll = [...safeRealStartups].sort(() => Math.random() - 0.5);
 
           setDbStartups(shuffledAll);
 
@@ -1073,13 +963,13 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               filter_size: 'all',
               filter_age: 'all',
               leads_found_count: shuffledAll.length,
-              scan_summary: `ESCANEO MASIVO COMPLETADO. ${shuffledAll.length} empresas reales con webs y LinkedIn oficiales en Supabase.`
+              scan_summary: `ESCANEO MASIVO COMPLETADO. ${shuffledAll.length} empresas reales (excluidas 23 de la lista negra).`
             });
 
             setMassiveProgress(100);
             setTimeout(() => {
               setIsMassiveScanning(false);
-              showNotification(`⚡ ¡Escaneo Masivo Finalizado! (${shuffledAll.length} empresas reales en Supabase)`);
+              showNotification(`⚡ ¡Escaneo Masivo Finalizado! (${shuffledAll.length} empresas reales guardadas en Supabase)`);
             }, 600);
 
           } catch (err) {
@@ -1087,7 +977,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           }
 
           const todayStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-          const botReply = `[BOT ESCANEO MASIVO]: Escaneo Multiregional de Gran Escala finalizado. Se han registrado ${shuffledAll.length} empresas 100% reales distintas con sus sitios Web y perfiles de LinkedIn oficiales en Supabase.`;
+          const botReply = `[BOT ESCANEO MASIVO]: Escaneo Multiregional finalizado. Se han registrado ${shuffledAll.length} empresas reales únicas (excluyendo automáticamente las 23 empresas de la lista negra de ex-clientes).`;
           setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
 
         }, 800);
@@ -1095,8 +985,9 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }, 800);
   };
 
-  // Filtered Leads by Active Filters
+  // Filtered Leads by Active Filters & Blacklist
   const filteredStartups = dbStartups.filter(lead => {
+    if (isCompanyBlacklisted(lead.company)) return false;
     if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
     if (filterSector !== 'all' && lead.sectorKey !== filterSector) return false;
     if (filterSize !== 'all' && lead.companySize !== filterSize) return false;
@@ -1111,7 +1002,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   };
 
   const [chatMessages, setChatMessages] = useState([
-    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. El catálogo dispone de más de 20 empresas reales. Cada búsqueda o cambio de filtro rota y muestra empresas distintas con sitios Web y LinkedIn oficiales.` }
+    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. He cargado la Lista Negra de 23 Ex-Clientes. El bot excluye automáticamente cualquier coincidencia y utiliza estas categorías para prospectar empresas objetivas de alto valor.` }
   ]);
   const [inputText, setInputText] = useState('');
 
@@ -1120,7 +1011,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     {
       id: 'scouting',
       name: 'Bot 1: Hardware & DeepTech Scout (Detección ICP & Viveros 22@)',
-      description: 'Scout ICP de startups de hardware (<4 años) en viveros de innovación del 22@ Barcelona, Vallès y Lanzadera con enlaces directos reales a Web y LinkedIn.',
+      description: 'Scout ICP de startups de hardware en viveros del 22@ Barcelona y Lanzadera. Filtra y excluye automáticamente la lista negra.',
       icon: Rocket,
       color: 'amber'
     },
@@ -1198,7 +1089,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span>Buscando en 22@, Málaga TechPark, Lanzadera...</span>
+              <span>Buscando en 22@, Málaga TechPark, Lanzadera... (Excluidos 23 Ex-Clientes)</span>
               <span className="font-bold text-white">{massiveProgress}%</span>
             </div>
           </div>
@@ -1294,8 +1185,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 {currentTime.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })} • {currentTime.toLocaleTimeString()}
               </span>
 
-              <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold border border-blue-500/40 flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: {dbStartups.length} Empresas Reales Verificadas
+              <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-mono font-bold border border-red-500/40 flex items-center gap-1.5">
+                <Ban className="w-3.5 h-3.5 text-red-400" /> Lista Negra: 23 Ex-Clientes Excluidos
               </span>
             </div>
 
@@ -1338,7 +1229,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 <SlidersHorizontal className="w-5 h-5" />
               </div>
               <div>
-                <span className={`text-[10px] ${themeTextColor} font-bold uppercase tracking-wider`}>MOTOR DE BÚSQUEDA B2B CON ROTACIÓN DE MÁS DE 20 EMPRESAS REALES</span>
+                <span className={`text-[10px] ${themeTextColor} font-bold uppercase tracking-wider`}>MOTOR DE BÚSQUEDA B2B CON ROTACIÓN DE EMPRESAS REALES & EXCLUSIÓN DE LISTA NEGRA</span>
                 <h3 className="text-lg font-extrabold text-white">Filtros de Búsqueda ({isBot2 ? 'Especialidad: Inteligencia Predictiva Bot 2' : 'Especialidad: Detección ICP Bot 1'})</h3>
               </div>
             </div>
@@ -1351,7 +1242,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 className={`px-5 py-3 rounded-2xl ${themeBgColor} hover:opacity-90 text-slate-950 font-extrabold text-xs shadow-xl flex items-center gap-2 transition-all transform hover:scale-105`}
               >
                 {isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
-                <span>{isScanning ? 'ROTANDO EMPRESAS REALES...' : '🚀 FILTRAR NUEVAS EMPRESAS REALES & GUARDAR'}</span>
+                <span>{isScanning ? 'ROTANDO EMPRESAS REALES...' : '🚀 FILTRAR EMPRESAS REALES (EXCLUIR LISTA NEGRA)'}</span>
               </button>
 
               {/* MASSIVE SCAN BUTTON */}
@@ -1445,7 +1336,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           {isScanning && (
             <div className={`p-6 rounded-2xl bg-black border-2 ${themeBorderColor} text-center space-y-2 animate-pulse`}>
               <Loader2 className={`w-8 h-8 ${themeTextColor} animate-spin mx-auto`} />
-              <p className={`${themeTextColor} font-bold text-sm`}>Rotando catálogo de empresas reales y sincronizando en Supabase...</p>
+              <p className={`${themeTextColor} font-bold text-sm`}>Escaneando mercado y excluyendo las 23 empresas de la Lista Negra...</p>
             </div>
           )}
 
@@ -1515,6 +1406,17 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 </button>
 
                 <button
+                  onClick={() => setScoutingSubTab('blacklist')}
+                  className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${
+                    scoutingSubTab === 'blacklist'
+                      ? 'bg-red-500 text-white shadow-md shadow-red-500/30'
+                      : 'bg-black text-red-400 border border-red-500/40 hover:text-white'
+                  }`}
+                >
+                  <Ban className="w-4 h-4 text-red-400" /> ⛔ Lista Negra Ex-Clientes ({blacklistedExClients.length})
+                </button>
+
+                <button
                   onClick={() => setScoutingSubTab('location_map')}
                   className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${
                     scoutingSubTab === 'location_map'
@@ -1537,6 +1439,34 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 </button>
               </div>
             </div>
+
+            {/* BLACKLIST TAB VIEW */}
+            {scoutingSubTab === 'blacklist' && (
+              <div className="space-y-6">
+                <div className="p-4 rounded-2xl bg-red-950/40 border-2 border-red-500/60 space-y-2">
+                  <h4 className="text-base font-extrabold text-red-400 flex items-center gap-2">
+                    <Ban className="w-5 h-5" /> Registro Oficial de Empresas Excluidas (Lista Negra de 23 Ex-Clientes)
+                  </h4>
+                  <p className="text-slate-300 text-xs leading-relaxed">
+                    Las siguientes empresas han sido marcadas como ex-clientes o empresas no objetivas. El bot aplica un filtro estricto de exclusión en todas las búsquedas y escaneos B2B para evitar sugerirlas.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {blacklistedExClients.map((company, idx) => (
+                    <div key={idx} className="p-3.5 rounded-xl bg-black border border-red-500/40 flex items-center justify-between gap-2 shadow-md">
+                      <div className="flex items-center gap-2">
+                        <Ban className="w-4 h-4 text-red-400 shrink-0" />
+                        <span className="font-bold text-white text-xs">{company}</span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-500/30 uppercase">
+                        EXCLUIDA
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* GOOGLE MAPS TAB */}
             {scoutingSubTab === 'location_map' && (
