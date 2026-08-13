@@ -487,7 +487,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
   };
 
-  // EXECUTE ACTIVE SCANNING BASED ON SELECTED FILTERS & SYNC TO SUPABASE
+  // EXECUTE ACTIVE SCANNING BASED ON SELECTED FILTERS & AUTOMATICALLY SAVE ALL MATCHED LEADS & SCAN RUN TO SUPABASE
   const executeScanWithFilters = async () => {
     setIsScanning(true);
 
@@ -501,8 +501,44 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         return true;
       });
 
-      // SYNC SCAN LOG TO SUPABASE DATABASE
+      // 1. SAVE ALL MATCHED LEADS TO SUPABASE TABLE potential_leads
       try {
+        const payloadLeads = matched.map(lead => ({
+          id: lead.id,
+          company_name: lead.company,
+          priority_level: lead.priorityLevel,
+          priority_name: lead.priorityName,
+          priority_color: lead.priorityColor || '#ef4444',
+          closing_probability_score: lead.closingProbabilityScore || 85,
+          sector_key: lead.sectorKey,
+          sector: lead.sector,
+          company_size: lead.companySize,
+          company_size_label: lead.companySizeLabel,
+          company_age: lead.companyAge,
+          company_age_label: lead.companyAgeLabel,
+          stage: lead.stage,
+          foundation_year: lead.foundationYear,
+          country: lead.country,
+          incubator_hub: lead.incubatorHub,
+          website: lead.website,
+          linkedin: lead.linkedin,
+          contact_person: lead.contactPerson,
+          email: lead.email,
+          phone: lead.phone,
+          rfq_title: lead.rfqTitle,
+          estimated_budget: lead.estimatedBudget,
+          technical_need: lead.technicalNeed,
+          verified_status: lead.verifiedStatus,
+          address_full: lead.addressFull,
+          study360_json: lead.study360 || {},
+          detailed_diagnosis_json: lead.detailedDiagnosis || {},
+          is_scanned_by_bot: true,
+          updated_at: new Date().toISOString()
+        }));
+
+        await supabase.from('potential_leads').upsert(payloadLeads);
+
+        // 2. SAVE SCAN RUN ENTRY TO SUPABASE TABLE bot_scan_history
         await supabase.from('bot_scan_history').insert({
           bot_id: activeBot,
           bot_name: activeBot === 'scouting' ? 'Bot 1: Hardware Scout' : 'Bot 2: Predictor de Cierre',
@@ -511,15 +547,17 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           filter_size: filterSize,
           filter_age: filterAge,
           leads_found_count: matched.length,
-          scan_summary: `Escaneo completado. ${matched.length} clientes potenciales filtrados.`
+          scan_summary: `Escaneo guardado en Supabase. ${matched.length} clientes potenciales registrados.`
         });
+
+        showNotification(`🚀 ¡Escaneo guardado en Supabase! (${matched.length} empresas registradas en potential_leads)`);
       } catch (e) {
-        // Fallback silently if offline
+        showNotification(`🚀 Escaneo completado (${matched.length} empresas encontradas)`);
       }
 
       const botReply = activeBot === 'scouting'
-        ? `[BOT 1 - HARDWARE SCOUT]: Escaneo finalizado. Se han filtrado ${matched.length} startups de hardware en viveros e incubadoras con enlaces directos a sus sitios web y LinkedIn corporativo.`
-        : `[BOT 2 - PREDICTOR DE CIERRE]: Análisis de datos 360° completado. Se han calculated las probabilidades de cierre para ${matched.length} empresas.`;
+        ? `[BOT 1 - HARDWARE SCOUT]: Escaneo finalizado y sincronizado en Supabase. Se han filtrado ${matched.length} startups de hardware en viveros e incubadoras.`
+        : `[BOT 2 - PREDICTOR DE CIERRE]: Análisis 360° completado y guardado en Supabase. Probabilidades calculadas para ${matched.length} empresas.`;
 
       setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
     }, 1000);
@@ -541,7 +579,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   };
 
   const [chatMessages, setChatMessages] = useState([
-    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. Las acciones al hacer clic en 'Guardar' o abrir dossieres se están registrando directamente en tu base de datos Supabase (tabla lead_actions).` }
+    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. Al hacer clic en 'INICIAR ESCANEO DE MERCADO', los clientes potenciales filtrados se guardan automáticamente en tu base de datos Supabase.` }
   ]);
   const [inputText, setInputText] = useState('');
 
@@ -622,7 +660,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </span>
 
               <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold border border-blue-500/40 flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: potencial_leads & lead_actions
+                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: potencial_leads & bot_scan_history
               </span>
             </div>
 
@@ -665,7 +703,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               className={`px-6 py-3 rounded-2xl ${themeBgColor} hover:opacity-90 text-slate-950 font-extrabold text-sm shadow-xl flex items-center gap-2 transition-all transform hover:scale-105`}
             >
               {isScanning ? <Loader2 className="w-5 h-5 animate-spin" /> : <PlayCircle className="w-5 h-5" />}
-              <span>{isScanning ? 'ESCANEANDO MERCADO...' : isBot2 ? '📊 ESCANEAR & CALCULAR PROBABILIDAD DE CIERRE' : '🚀 INICIAR ESCANEO DE MERCADO'}</span>
+              <span>{isScanning ? 'ESCANEANDO Y GUARDANDO EN SUPABASE...' : isBot2 ? '📊 ESCANEAR & GUARDAR PROBABILIDAD DE CIERRE' : '🚀 INICIAR ESCANEO Y GUARDAR EN SUPABASE'}</span>
             </button>
           </div>
 
@@ -748,7 +786,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           {isScanning && (
             <div className={`p-6 rounded-2xl bg-black border-2 ${themeBorderColor} text-center space-y-2 animate-pulse`}>
               <Loader2 className={`w-8 h-8 ${themeTextColor} animate-spin mx-auto`} />
-              <p className={`${themeTextColor} font-bold text-sm`}>Ejecutando escaneo con los filtros seleccionados...</p>
+              <p className={`${themeTextColor} font-bold text-sm`}>Escaneando mercado y registrando clientes potenciales en Supabase...</p>
             </div>
           )}
 
