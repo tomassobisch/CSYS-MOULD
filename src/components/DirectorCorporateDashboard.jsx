@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, Map, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, Map, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key } from 'lucide-react';
+import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
@@ -16,6 +16,11 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [isScanning, setIsScanning] = useState(false);
   const [supabaseConnected, setSupabaseConnected] = useState(false);
   const [actionNotification, setActionNotification] = useState(null);
+
+  // SUPABASE KEY MODAL STATE
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [inputAnonKey, setInputAnonKey] = useState('');
+  const [keySaveMessage, setKeySaveMessage] = useState('');
 
   // BOT 1 MODALS
   const [selectedReportLead, setSelectedReportLead] = useState(null); // Dossier ICP
@@ -430,17 +435,32 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     loadSupabaseData();
   }, []);
 
+  const handleSaveAnonKey = (e) => {
+    e.preventDefault();
+    if (!inputAnonKey.trim()) return;
+    saveSupabaseAnonKey(inputAnonKey.trim());
+    setKeySaveMessage('✅ Clave Supabase guardada. Recargando conexión...');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1200);
+  };
+
   // TRACK USER ACTION IN SUPABASE TABLE lead_actions
   const trackLeadAction = async (lead, actionType, detailText) => {
     try {
-      await supabase.from('lead_actions').insert({
+      const { error } = await supabase.from('lead_actions').insert({
         lead_id: lead.id,
         company_name: lead.company,
         action_type: actionType,
         action_detail: detailText,
         performed_by: 'Claudio Arriaga Silva / Abraham Lozano'
       });
-      showNotification(`💾 Sincronizado en Supabase (lead_actions): ${lead.company}`);
+
+      if (error && error.code === '401') {
+        setShowKeyModal(true);
+      } else {
+        showNotification(`💾 Sincronizado en Supabase (lead_actions): ${lead.company}`);
+      }
     } catch (err) {
       console.warn('Action logging fallback:', err);
     }
@@ -464,7 +484,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
     // SYNC TO SUPABASE TABLE potential_leads & lead_actions
     try {
-      await supabase.from('potential_leads').upsert({
+      const { error } = await supabase.from('potential_leads').upsert({
         id: lead.id,
         company_name: lead.company,
         priority_level: lead.priorityLevel,
@@ -476,6 +496,12 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         is_favorite: isFavNow,
         updated_at: new Date().toISOString()
       });
+
+      if (error) {
+        setShowKeyModal(true);
+        showNotification(`🔑 Inicia sesión con la clave anon de Supabase`);
+        return;
+      }
 
       await trackLeadAction(
         lead,
@@ -536,7 +562,13 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           updated_at: new Date().toISOString()
         }));
 
-        await supabase.from('potential_leads').upsert(payloadLeads);
+        const { error: upsertError } = await supabase.from('potential_leads').upsert(payloadLeads);
+        
+        if (upsertError) {
+          setShowKeyModal(true);
+          showNotification(`🔑 Supabase requiere ingresar la clave anon/public key`);
+          return;
+        }
 
         // 2. SAVE SCAN RUN ENTRY TO SUPABASE TABLE bot_scan_history
         await supabase.from('bot_scan_history').insert({
@@ -550,7 +582,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           scan_summary: `Escaneo guardado en Supabase. ${matched.length} clientes potenciales registrados.`
         });
 
-        showNotification(`🚀 ¡Escaneo guardado en Supabase! (${matched.length} empresas registradas en potential_leads)`);
+        showNotification(`🚀 ¡Escaneo guardado en Supabase! (${matched.length} empresas en potential_leads)`);
       } catch (e) {
         showNotification(`🚀 Escaneo completado (${matched.length} empresas encontradas)`);
       }
@@ -579,7 +611,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   };
 
   const [chatMessages, setChatMessages] = useState([
-    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. Al hacer clic en 'INICIAR ESCANEO DE MERCADO', los clientes potenciales filtrados se guardan automáticamente en tu base de datos Supabase.` }
+    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. Si los datos no aparecen en Supabase, haz clic en '🔑 Conectar Clave Supabase' para ingresar tu clave anon_public de Supabase en 1 clic.` }
   ]);
   const [inputText, setInputText] = useState('');
 
@@ -644,6 +676,80 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         </div>
       )}
 
+      {/* SUPABASE ANON KEY SETUP MODAL */}
+      {showKeyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
+          <div className="relative w-full max-w-xl bg-slate-950 border-2 border-emerald-500 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 font-mono text-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-emerald-500 text-slate-950 font-bold">
+                  <Key className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-extrabold text-white">Conectar Clave ANON de Supabase</h3>
+              </div>
+              <button onClick={() => setShowKeyModal(false)} className="p-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-slate-300">
+              <p className="leading-relaxed">
+                Para que Supabase acepte la escritura e inserción de clientes en <code className="text-emerald-400">potential_leads</code>, se requiere pegar la clave pública <code className="text-cyan-400">anon public key</code> de tu proyecto.
+              </p>
+              
+              <div className="p-3.5 rounded-2xl bg-black border border-slate-800 space-y-1">
+                <span className="text-[10px] text-amber-400 font-bold">📍 ¿Dónde encontrarla?</span>
+                <p className="text-[11px] text-slate-300">
+                  Abre tu panel de Supabase ➔ <strong>Project Settings</strong> ➔ <strong>API</strong> ➔ Copia la clave <strong>`anon / public`</strong>.
+                </p>
+                <a
+                  href="https://supabase.com/dashboard/project/fsrylqjerawznqsusbws/settings/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-cyan-400 underline font-bold pt-1 text-[11px]"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Abrir Configuración API de Supabase 🌐
+                </a>
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveAnonKey} className="space-y-4 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-emerald-400 font-bold">Pegar `anon public key` de Supabase:</label>
+                <textarea
+                  rows={3}
+                  value={inputAnonKey}
+                  onChange={(e) => setInputAnonKey(e.target.value)}
+                  placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  className="w-full p-3 rounded-xl bg-black border border-slate-800 text-white font-mono text-[11px] focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              {keySaveMessage && (
+                <p className="text-emerald-400 font-bold text-center">{keySaveMessage}</p>
+              )}
+
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowKeyModal(false)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-400 font-bold text-xs"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20"
+                >
+                  Guardar Clave & Conectar Supabase
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+
       {/* 1. EXECUTIVE BANNER HEADER WITH REAL-TIME CLOCK */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`bg-black rounded-3xl border-2 ${themeBorderColor} p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 transition-all duration-300`}>
@@ -659,9 +765,12 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 {currentTime.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })} • {currentTime.toLocaleTimeString()}
               </span>
 
-              <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold border border-blue-500/40 flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: potencial_leads & bot_scan_history
-              </span>
+              <button
+                onClick={() => setShowKeyModal(true)}
+                className="px-3 py-1 rounded-full bg-blue-500/20 text-cyan-300 hover:text-white text-xs font-mono font-bold border border-blue-500/40 flex items-center gap-1.5 transition-all"
+              >
+                <Key className="w-3.5 h-3.5 text-cyan-400" /> 🔑 Conectar Clave Supabase (anon)
+              </button>
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
