@@ -15,6 +15,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   
   const [isScanning, setIsScanning] = useState(false);
   const [supabaseConnected, setSupabaseConnected] = useState(false);
+  const [actionNotification, setActionNotification] = useState(null);
 
   // BOT 1 MODALS
   const [selectedReportLead, setSelectedReportLead] = useState(null); // Dossier ICP
@@ -416,6 +417,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
             verifiedStatus: item.verified_status || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
             googleMapsSearch: item.google_maps_search,
             addressFull: item.address_full,
+            isFavorite: item.is_favorite || false,
             study360: item.study360_json || {},
             detailedDiagnosis: item.detailed_diagnosis_json || {}
           }));
@@ -427,6 +429,63 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
     loadSupabaseData();
   }, []);
+
+  // TRACK USER ACTION IN SUPABASE TABLE lead_actions
+  const trackLeadAction = async (lead, actionType, detailText) => {
+    try {
+      await supabase.from('lead_actions').insert({
+        lead_id: lead.id,
+        company_name: lead.company,
+        action_type: actionType,
+        action_detail: detailText,
+        performed_by: 'Claudio Arriaga Silva / Abraham Lozano'
+      });
+      showNotification(`💾 Sincronizado en Supabase (lead_actions): ${lead.company}`);
+    } catch (err) {
+      console.warn('Action logging fallback:', err);
+    }
+  };
+
+  const showNotification = (msg) => {
+    setActionNotification(msg);
+    setTimeout(() => setActionNotification(null), 3500);
+  };
+
+  // TOGGLE FAVORITE WITH FULL SUPABASE SYNC (UPDATES potential_leads AND INSERTS IN lead_actions)
+  const toggleFavoriteLead = async (lead) => {
+    const isFavNow = !favoriteLeads.some(f => f.id === lead.id);
+    
+    // Update local state
+    if (isFavNow) {
+      setFavoriteLeads([...favoriteLeads, lead]);
+    } else {
+      setFavoriteLeads(favoriteLeads.filter(f => f.id !== lead.id));
+    }
+
+    // SYNC TO SUPABASE TABLE potential_leads & lead_actions
+    try {
+      await supabase.from('potential_leads').upsert({
+        id: lead.id,
+        company_name: lead.company,
+        priority_level: lead.priorityLevel,
+        priority_name: lead.priorityName,
+        sector_key: lead.sectorKey,
+        sector: lead.sector,
+        company_size: lead.companySize,
+        company_age: lead.companyAge,
+        is_favorite: isFavNow,
+        updated_at: new Date().toISOString()
+      });
+
+      await trackLeadAction(
+        lead,
+        isFavNow ? 'FAVORITE_ADDED' : 'FAVORITE_REMOVED',
+        isFavNow ? 'Empresa guardada en cartera de favoritos por Dirección.' : 'Empresa removida de cartera de favoritos.'
+      );
+    } catch (e) {
+      showNotification(`💾 Guardado localmente (${lead.company})`);
+    }
+  };
 
   // EXECUTE ACTIVE SCANNING BASED ON SELECTED FILTERS & SYNC TO SUPABASE
   const executeScanWithFilters = async () => {
@@ -460,7 +519,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
       const botReply = activeBot === 'scouting'
         ? `[BOT 1 - HARDWARE SCOUT]: Escaneo finalizado. Se han filtrado ${matched.length} startups de hardware en viveros e incubadoras con enlaces directos a sus sitios web y LinkedIn corporativo.`
-        : `[BOT 2 - PREDICTOR DE CIERRE]: Análisis de datos 360° completado. Se han calculado las probabilidades de cierre para ${matched.length} empresas.`;
+        : `[BOT 2 - PREDICTOR DE CIERRE]: Análisis de datos 360° completado. Se han calculated las probabilidades de cierre para ${matched.length} empresas.`;
 
       setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
     }, 1000);
@@ -481,17 +540,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     setScoutingSubTab('location_map');
   };
 
-  const toggleFavoriteLead = (lead) => {
-    const exists = favoriteLeads.some(f => f.id === lead.id);
-    if (exists) {
-      setFavoriteLeads(favoriteLeads.filter(f => f.id !== lead.id));
-    } else {
-      setFavoriteLeads([...favoriteLeads, lead]);
-    }
-  };
-
   const [chatMessages, setChatMessages] = useState([
-    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. La base de datos de Supabase (https://fsrylqjerawznqsusbws.supabase.co) está lista con el esquema de tablas SQL.` }
+    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. Las acciones al hacer clic en 'Guardar' o abrir dossieres se están registrando directamente en tu base de datos Supabase (tabla lead_actions).` }
   ]);
   const [inputText, setInputText] = useState('');
 
@@ -546,8 +596,16 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const themeBadgeBg = isBot2 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40';
 
   return (
-    <div className="min-h-screen bg-black text-slate-100 pt-24 pb-16 space-y-12">
+    <div className="min-h-screen bg-black text-slate-100 pt-24 pb-16 space-y-12 relative">
       
+      {/* REAL-TIME TOAST NOTIFICATION FOR SUPABASE ACTION LOGGING */}
+      {actionNotification && (
+        <div className="fixed top-28 right-6 z-50 px-5 py-3 rounded-2xl bg-emerald-500 text-slate-950 font-mono font-bold text-xs shadow-2xl border-2 border-white flex items-center gap-2 animate-bounce">
+          <Database className="w-4 h-4 text-slate-950" />
+          <span>{actionNotification}</span>
+        </div>
+      )}
+
       {/* 1. EXECUTIVE BANNER HEADER WITH REAL-TIME CLOCK */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`bg-black rounded-3xl border-2 ${themeBorderColor} p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 transition-all duration-300`}>
@@ -564,7 +622,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </span>
 
               <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold border border-blue-500/40 flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: fsrylqjerawznqsusbws
+                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: potencial_leads & lead_actions
               </span>
             </div>
 
@@ -842,7 +900,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                             }`}
                           >
                             <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-slate-950' : ''}`} />
-                            <span className="text-[10px]">{isFavorite ? 'Guardado' : 'Guardar'}</span>
+                            <span className="text-[10px]">{isFavorite ? 'Guardado en Supabase' : 'Guardar en Supabase'}</span>
                           </button>
                         </div>
 
@@ -908,14 +966,20 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                       <div className="pt-3 border-t border-slate-900 space-y-2">
                         <div className="flex items-center justify-between gap-2">
                           <button
-                            onClick={() => setSelectedHelpLead(lead)}
+                            onClick={() => {
+                              setSelectedHelpLead(lead);
+                              trackLeadAction(lead, 'HELP_REPORT_VIEWED', 'Apertura de informe de diagnóstico de ayuda CSYS');
+                            }}
                             className="flex-1 px-3 py-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 hover:text-white border border-emerald-500/60 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all"
                           >
                             <HeartHandshake className="w-3.5 h-3.5 text-emerald-400" /> Informe Detallado & Ayuda CSYS
                           </button>
 
                           <button
-                            onClick={() => setSelectedReportLead(lead)}
+                            onClick={() => {
+                              setSelectedReportLead(lead);
+                              trackLeadAction(lead, 'DOSSIER_VIEWED', 'Apertura de Dossier ICP');
+                            }}
                             className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/50 text-[11px] font-bold flex items-center gap-1.5 transition-all"
                           >
                             <FileText className="w-3.5 h-3.5 text-cyan-400" /> Dossier
@@ -967,7 +1031,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                           }`}
                         >
                           <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-slate-950' : ''}`} />
-                          <span className="text-[10px]">{isFavorite ? 'Guardado' : 'Guardar'}</span>
+                          <span className="text-[10px]">{isFavorite ? 'Guardado en Supabase' : 'Guardar en Supabase'}</span>
                         </button>
                       </div>
 
@@ -1020,7 +1084,10 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
                     <div className="pt-3 border-t border-slate-900 flex items-center justify-between gap-2">
                       <button
-                        onClick={() => setSelectedClosingStudyLead(lead)}
+                        onClick={() => {
+                          setSelectedClosingStudyLead(lead);
+                          trackLeadAction(lead, 'STUDY_360_VIEWED', 'Apertura de informe de Estudio 360° en PDF');
+                        }}
                         className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
                       >
                         <BarChart2 className="w-4 h-4" />
