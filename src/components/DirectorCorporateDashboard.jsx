@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, Map, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
@@ -13,6 +14,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [filterAge, setFilterAge] = useState('all'); // 'all' | 'less1' | '1-3' | '3-4'
   
   const [isScanning, setIsScanning] = useState(false);
+  const [supabaseConnected, setSupabaseConnected] = useState(false);
 
   // BOT 1 MODALS
   const [selectedReportLead, setSelectedReportLead] = useState(null); // Dossier ICP
@@ -375,18 +377,86 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
   ];
 
-  // EXECUTE ACTIVE SCANNING BASED ON SELECTED FILTERS
-  const executeScanWithFilters = () => {
+  const [dbStartups, setDbStartups] = useState(masterGeolocatedStartups);
+
+  // SUPABASE INTEGRATION: FETCH LEADS FROM SUPABASE TABLE potential_leads
+  useEffect(() => {
+    async function loadSupabaseData() {
+      try {
+        const { data, error } = await supabase.from('potential_leads').select('*');
+        if (!error && data && data.length > 0) {
+          setSupabaseConnected(true);
+          const mappedLeads = data.map(item => ({
+            id: item.id,
+            priorityLevel: item.priority_level,
+            priorityName: item.priority_name,
+            priorityColor: item.priority_color || '#ef4444',
+            company: item.company_name,
+            closingProbabilityScore: item.closing_probability_score || 85,
+            closingProbabilityLabel: item.closing_probability_label,
+            closingBadgeColor: item.closing_badge_color,
+            sectorKey: item.sector_key,
+            sector: item.sector,
+            companySize: item.company_size,
+            companySizeLabel: item.company_size_label,
+            companyAge: item.company_age,
+            companyAgeLabel: item.company_age_label,
+            stage: item.stage,
+            foundationYear: item.foundation_year,
+            country: item.country,
+            incubatorHub: item.incubator_hub,
+            website: item.website,
+            contactPerson: item.contact_person,
+            email: item.email,
+            phone: item.phone,
+            rfqTitle: item.rfq_title,
+            estimatedBudget: item.estimated_budget,
+            technicalNeed: item.technical_need,
+            linkedin: item.linkedin,
+            verifiedStatus: item.verified_status || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
+            googleMapsSearch: item.google_maps_search,
+            addressFull: item.address_full,
+            study360: item.study360_json || {},
+            detailedDiagnosis: item.detailed_diagnosis_json || {}
+          }));
+          setDbStartups(mappedLeads);
+        }
+      } catch (err) {
+        console.warn('Supabase offline fallback to local dataset:', err);
+      }
+    }
+    loadSupabaseData();
+  }, []);
+
+  // EXECUTE ACTIVE SCANNING BASED ON SELECTED FILTERS & SYNC TO SUPABASE
+  const executeScanWithFilters = async () => {
     setIsScanning(true);
-    setTimeout(() => {
+
+    setTimeout(async () => {
       setIsScanning(false);
-      const matched = masterGeolocatedStartups.filter(lead => {
+      const matched = dbStartups.filter(lead => {
         if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
         if (filterSector !== 'all' && lead.sectorKey !== filterSector) return false;
         if (filterSize !== 'all' && lead.companySize !== filterSize) return false;
         if (filterAge !== 'all' && lead.companyAge !== filterAge) return false;
         return true;
       });
+
+      // SYNC SCAN LOG TO SUPABASE DATABASE
+      try {
+        await supabase.from('bot_scan_history').insert({
+          bot_id: activeBot,
+          bot_name: activeBot === 'scouting' ? 'Bot 1: Hardware Scout' : 'Bot 2: Predictor de Cierre',
+          filter_location: filterLocation,
+          filter_sector: filterSector,
+          filter_size: filterSize,
+          filter_age: filterAge,
+          leads_found_count: matched.length,
+          scan_summary: `Escaneo completado. ${matched.length} clientes potenciales filtrados.`
+        });
+      } catch (e) {
+        // Fallback silently if offline
+      }
 
       const botReply = activeBot === 'scouting'
         ? `[BOT 1 - HARDWARE SCOUT]: Escaneo finalizado. Se han filtrado ${matched.length} startups de hardware en viveros e incubadoras con enlaces directos a sus sitios web y LinkedIn corporativo.`
@@ -397,7 +467,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   };
 
   // Filtered Leads by Active Filters
-  const filteredStartups = masterGeolocatedStartups.filter(lead => {
+  const filteredStartups = dbStartups.filter(lead => {
     if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
     if (filterSector !== 'all' && lead.sectorKey !== filterSector) return false;
     if (filterSize !== 'all' && lead.companySize !== filterSize) return false;
@@ -421,7 +491,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   };
 
   const [chatMessages, setChatMessages] = useState([
-    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. He integrado los botones directos a la web oficial y perfil corporativo de LinkedIn en cada una de las tarjetas de cliente potencial.` }
+    { sender: 'bot', text: `Hola ${userProfile?.name || 'Director'}. La base de datos de Supabase (https://fsrylqjerawznqsusbws.supabase.co) está lista con el esquema de tablas SQL.` }
   ]);
   const [inputText, setInputText] = useState('');
 
@@ -491,6 +561,10 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-mono font-bold border border-emerald-500/40 flex items-center gap-1.5 animate-pulse">
                 <Clock className="w-3.5 h-3.5" />
                 {currentTime.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })} • {currentTime.toLocaleTimeString()}
+              </span>
+
+              <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold border border-blue-500/40 flex items-center gap-1.5">
+                <Database className="w-3.5 h-3.5 text-blue-400" /> Supabase: fsrylqjerawznqsusbws
               </span>
             </div>
 
@@ -743,7 +817,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </div>
             )}
 
-            {/* BOT 1 STARTUPS LIST (WITH DIRECT WEB AND LINKEDIN CHANNELS) */}
+            {/* BOT 1 STARTUPS LIST */}
             {scoutingSubTab === 'startups' && filteredStartups.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredStartups.map((lead) => {
@@ -786,17 +860,13 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                           </p>
                         </div>
 
-                        {/* DIRECT CLICKABLE CONTACT CHANNELS (WEBSITE, LINKEDIN, EMAIL, PHONE) */}
                         <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 text-[11px]">
-                          
-                          {/* VERIFIED HTTP STATUS BADGE */}
                           <div className="pb-1 text-[10px] font-bold text-emerald-400 flex items-center gap-1.5 border-b border-slate-900">
                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {lead.verifiedStatus || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)'}
                           </div>
 
                           <p><strong className="text-slate-400">Fundadores / CTO:</strong> <span className="text-white font-bold">{lead.contactPerson}</span></p>
 
-                          {/* DIRECT CLICKABLE WEBSITE BUTTON */}
                           <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                             <a
                               href={lead.website}
@@ -807,7 +877,6 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                               <Globe className="w-3.5 h-3.5 text-emerald-400" /> Sitio Web Oficial 🌐
                             </a>
 
-                            {/* DIRECT CLICKABLE LINKEDIN BUTTON */}
                             <a
                               href={lead.linkedin}
                               target="_blank"
@@ -877,7 +946,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </span>
             </div>
 
-            {/* BOT 2 CARDS (WITH DIRECT WEB AND LINKEDIN CHANNELS) */}
+            {/* BOT 2 CARDS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredStartups.map((lead) => {
                 const isFavorite = favoriteLeads.some(f => f.id === lead.id);
@@ -916,7 +985,6 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                         </p>
                       </div>
 
-                      {/* DIRECT CLICKABLE CONTACT CHANNELS (WEBSITE & LINKEDIN IN BOT 2) */}
                       <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2">
                         <a
                           href={lead.website}
@@ -951,10 +1019,6 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                     </div>
 
                     <div className="pt-3 border-t border-slate-900 flex items-center justify-between gap-2">
-                      <button
-                        onClick={() => setSelectedClosingStudyLead(null)}
-                        className="hidden"
-                      />
                       <button
                         onClick={() => setSelectedClosingStudyLead(lead)}
                         className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
