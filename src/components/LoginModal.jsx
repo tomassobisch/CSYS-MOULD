@@ -3,8 +3,8 @@ import { Lock, Mail, User, Key, Shield, ArrowRight, Sparkles, CheckCircle2, Aler
 
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [loginType, setLoginType] = useState('client'); // 'client' | 'corporate'
-  const [email, setEmail] = useState('cliente@empresa.com');
-  const [password, setPassword] = useState('demo123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showClientNoticeModal, setShowClientNoticeModal] = useState(false);
@@ -14,13 +14,8 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const handleSwitchType = (type) => {
     setLoginType(type);
     setError('');
-    if (type === 'corporate') {
-      setEmail('claudio@csysmould.com');
-      setPassword('claudiocsys');
-    } else {
-      setEmail('cliente@empresa.com');
-      setPassword('demo123');
-    }
+    setEmail('');
+    setPassword('');
   };
 
   const handleLogin = (e) => {
@@ -53,7 +48,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             avatar: '/multimedia/team_photo.jpg'
           });
         } else {
-          setError('Contraseña incorrecta para Claudio. Verifique sus credenciales.');
+          setError('Contraseña incorrecta. Introduce la contraseña corporativa.');
           setLoading(false);
         }
       } else if (isAbrahamEmail) {
@@ -66,7 +61,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             avatar: '/multimedia/team_photo.jpg'
           });
         } else {
-          setError('Contraseña incorrecta para Abraham. Verifique sus credenciales.');
+          setError('Contraseña incorrecta. Introduce la contraseña corporativa.');
           setLoading(false);
         }
       } else if (cleanEmail.endsWith('@csysmould.com')) {
@@ -84,7 +79,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           setLoading(false);
         }
       } else {
-        setError('Utiliza claudio@csysmould.com (pass: claudiocsys) o abraham@csysmould.com (pass: abrahamcsys).');
+        setError('Utiliza tu correo corporativo directivo.');
         setLoading(false);
       }
     }, 400);
@@ -184,31 +179,29 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           </button>
         </div>
 
-        {/* Corporate Quick Credentials (Only shown in corporate mode) */}
+        {/* Corporate Quick Email Helper Card (Password remains completely blank and un-filled!) */}
         {loginType === 'corporate' && (
           <div className="p-3.5 rounded-2xl bg-slate-950 border border-amber-500/40 space-y-2 text-xs animate-in fade-in">
             <p className="text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <UserCheck className="w-3.5 h-3.5" /> Credenciales Directivas (Selecciona para autorrellenar):
+              <UserCheck className="w-3.5 h-3.5" /> Selecciona tu correo corporativo:
             </p>
             <div className="grid grid-cols-2 gap-2 font-mono">
               <button
                 type="button"
-                onClick={() => { setEmail('claudio@csysmould.com'); setPassword('claudiocsys'); setError(''); }}
+                onClick={() => { setEmail('claudio@csysmould.com'); setPassword(''); setError(''); }}
                 className="p-2.5 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left hover:bg-amber-950/40 transition-all space-y-0.5"
               >
                 <p className="font-bold text-[11px] text-white">Claudio Arriaga</p>
                 <p className="text-[10px] text-slate-400 truncate">claudio@csysmould.com</p>
-                <p className="text-[10px] text-amber-400 font-bold">pass: claudiocsys</p>
               </button>
 
               <button
                 type="button"
-                onClick={() => { setEmail('abraham@csysmould.com'); setPassword('abrahamcsys'); setError(''); }}
+                onClick={() => { setEmail('abraham@csysmould.com'); setPassword(''); setError(''); }}
                 className="p-2.5 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left hover:bg-amber-950/40 transition-all space-y-0.5"
               >
                 <p className="font-bold text-[11px] text-white">Abraham Lozano</p>
                 <p className="text-[10px] text-slate-400 truncate">abraham@csysmould.com</p>
-                <p className="text-[10px] text-amber-400 font-bold">pass: abrahamcsys</p>
               </button>
             </div>
           </div>
@@ -250,7 +243,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Escribe tu contraseña..."
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-500 focus:outline-none transition-all"
               />
             </div>
