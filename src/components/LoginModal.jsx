@@ -28,7 +28,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
       return;
     }
 
-    // REQUEST 2: ACCESO CORPORATIVO CREDENTIALS
+    // REQUEST 2: ACCESO CORPORATIVO CREDENTIALS (MANUAL SECURITY LOGIN)
     setLoading(true);
 
     setTimeout(() => {
@@ -48,7 +48,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             avatar: '/multimedia/team_photo.jpg'
           });
         } else {
-          setError('Contraseña incorrecta. Introduce la contraseña corporativa.');
+          setError('Credenciales corporativas inválidas.');
           setLoading(false);
         }
       } else if (isAbrahamEmail) {
@@ -61,7 +61,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             avatar: '/multimedia/team_photo.jpg'
           });
         } else {
-          setError('Contraseña incorrecta. Introduce la contraseña corporativa.');
+          setError('Credenciales corporativas inválidas.');
           setLoading(false);
         }
       } else if (cleanEmail.endsWith('@csysmould.com')) {
@@ -75,11 +75,11 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             avatar: '/multimedia/team_photo.jpg'
           });
         } else {
-          setError('Contraseña corporativa incorrecta.');
+          setError('Credenciales corporativas inválidas.');
           setLoading(false);
         }
       } else {
-        setError('Utiliza tu correo corporativo directivo.');
+        setError('Acceso denegado. Introduzca sus credenciales directivas.');
         setLoading(false);
       }
     }, 400);
@@ -147,7 +147,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               {loginType === 'corporate' ? 'Acceso Corporativo de Dirección' : 'Área Privada de Clientes'}
             </h3>
             <p className="text-xs text-slate-300 font-mono">
-              {loginType === 'corporate' ? 'Panel exclusivo para Claudio Arriaga Silva y Abraham Lozano' : 'Portal de Clientes & Servicios CSYS MOULD'}
+              {loginType === 'corporate' ? 'Acceso seguro restringido para la Dirección Corporativa' : 'Portal de Clientes & Servicios CSYS MOULD'}
             </p>
           </div>
         </div>
@@ -179,34 +179,6 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           </button>
         </div>
 
-        {/* Corporate Quick Email Helper Card (Password remains completely blank and un-filled!) */}
-        {loginType === 'corporate' && (
-          <div className="p-3.5 rounded-2xl bg-slate-950 border border-amber-500/40 space-y-2 text-xs animate-in fade-in">
-            <p className="text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <UserCheck className="w-3.5 h-3.5" /> Selecciona tu correo corporativo:
-            </p>
-            <div className="grid grid-cols-2 gap-2 font-mono">
-              <button
-                type="button"
-                onClick={() => { setEmail('claudio@csysmould.com'); setPassword(''); setError(''); }}
-                className="p-2.5 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left hover:bg-amber-950/40 transition-all space-y-0.5"
-              >
-                <p className="font-bold text-[11px] text-white">Claudio Arriaga</p>
-                <p className="text-[10px] text-slate-400 truncate">claudio@csysmould.com</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => { setEmail('abraham@csysmould.com'); setPassword(''); setError(''); }}
-                className="p-2.5 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left hover:bg-amber-950/40 transition-all space-y-0.5"
-              >
-                <p className="font-bold text-[11px] text-white">Abraham Lozano</p>
-                <p className="text-[10px] text-slate-400 truncate">abraham@csysmould.com</p>
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Error Alert */}
         {error && (
           <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/40 text-red-300 text-xs font-mono flex items-center gap-2">
@@ -228,7 +200,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={loginType === 'corporate' ? 'claudio@csysmould.com' : 'cliente@empresa.com'}
+                placeholder={loginType === 'corporate' ? 'usuario@csysmould.com' : 'cliente@empresa.com'}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-500 focus:outline-none transition-all"
               />
             </div>
@@ -243,7 +215,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Escribe tu contraseña..."
+                placeholder="••••••••"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-500 focus:outline-none transition-all"
               />
             </div>
@@ -255,7 +227,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             className="w-full py-3.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-sm shadow-xl shadow-amber-500/40 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
           >
             {loading ? (
-              <span>Verificando credenciales...</span>
+              <span>Autenticando credenciales...</span>
             ) : (
               <>
                 <Lock className="w-4 h-4 text-slate-950" />
