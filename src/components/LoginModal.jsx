@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Mail, User, Key, Shield, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Cpu, Bot, Building2, UserCheck } from 'lucide-react';
+import { Lock, Mail, User, Key, Shield, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Cpu, Bot, Building2, UserCheck, Wrench, X } from 'lucide-react';
 
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [loginType, setLoginType] = useState('client'); // 'client' | 'corporate'
@@ -7,6 +7,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [password, setPassword] = useState('demo123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showClientNoticeModal, setShowClientNoticeModal] = useState(false);
 
   if (!isOpen) return null;
 
@@ -15,7 +16,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     setError('');
     if (type === 'corporate') {
       setEmail('claudio@csysmould.com');
-      setPassword('csys2026');
+      setPassword('claudiocsys');
     } else {
       setEmail('cliente@empresa.com');
       setPassword('demo123');
@@ -25,49 +26,103 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const handleLogin = (e) => {
     e.preventDefault();
     setError('');
+
+    // REQUEST 1: CLIENT PORTAL "ENTRAR" -> POPUP "Estamos trabajando en ello, próximamente."
+    if (loginType === 'client') {
+      setShowClientNoticeModal(true);
+      return;
+    }
+
+    // REQUEST 2: ACCESO CORPORATIVO CREDENTIALS
     setLoading(true);
 
     setTimeout(() => {
       const cleanEmail = email.trim().toLowerCase();
+      const cleanPass = password.trim();
 
-      if (loginType === 'corporate') {
-        // CORPORATE EXECUTIVE ACCESS (Claudio Arriaga Silva & Abraham Lozano)
-        if (
-          cleanEmail === 'claudio@csysmould.com' ||
-          cleanEmail === 'claudio' ||
-          cleanEmail === 'abraham@csysmould.com' ||
-          cleanEmail === 'abraham' ||
-          cleanEmail.endsWith('@csysmould.com')
-        ) {
-          const isClaudio = cleanEmail.includes('claudio');
+      const isClaudioEmail = cleanEmail === 'claudio@csysmould.com' || cleanEmail === 'claudio';
+      const isAbrahamEmail = cleanEmail === 'abraham@csysmould.com' || cleanEmail === 'abraham';
+
+      if (isClaudioEmail) {
+        if (cleanPass === 'claudiocsys') {
           onLoginSuccess({
-            name: isClaudio ? 'Claudio Arriaga Silva' : 'Abraham Lozano',
-            email: cleanEmail.includes('@') ? cleanEmail : (isClaudio ? 'claudio@csysmould.com' : 'abraham@csysmould.com'),
+            name: 'Claudio Arriaga Silva',
+            email: 'claudio@csysmould.com',
             company: 'CSYS MOULD Dirección Corporativa',
             role: 'director',
             avatar: '/multimedia/team_photo.jpg'
           });
         } else {
-          setError('Utiliza claudio@csysmould.com o abraham@csysmould.com para el Acceso Corporativo.');
+          setError('Contraseña incorrecta para Claudio. Verifique sus credenciales.');
+          setLoading(false);
+        }
+      } else if (isAbrahamEmail) {
+        if (cleanPass === 'abrahamcsys') {
+          onLoginSuccess({
+            name: 'Abraham Lozano',
+            email: 'abraham@csysmould.com',
+            company: 'CSYS MOULD Dirección Corporativa',
+            role: 'director',
+            avatar: '/multimedia/team_photo.jpg'
+          });
+        } else {
+          setError('Contraseña incorrecta para Abraham. Verifique sus credenciales.');
+          setLoading(false);
+        }
+      } else if (cleanEmail.endsWith('@csysmould.com')) {
+        // Fallback for general csysmould corporate domain
+        if (cleanPass === 'claudiocsys' || cleanPass === 'abrahamcsys' || cleanPass === 'csys2026') {
+          onLoginSuccess({
+            name: 'Claudio Arriaga Silva',
+            email: cleanEmail,
+            company: 'CSYS MOULD Dirección Corporativa',
+            role: 'director',
+            avatar: '/multimedia/team_photo.jpg'
+          });
+        } else {
+          setError('Contraseña corporativa incorrecta.');
           setLoading(false);
         }
       } else {
-        // CLIENT PORTAL ACCESS
-        onLoginSuccess({
-          name: cleanEmail.includes('empresa') ? 'Cliente Corporativo' : cleanEmail.split('@')[0],
-          email: cleanEmail,
-          company: 'Proyecto Tecnológico',
-          role: 'client',
-          avatar: '/multimedia/logo_blanco.png'
-        });
+        setError('Utiliza claudio@csysmould.com (pass: claudiocsys) o abraham@csysmould.com (pass: abrahamcsys).');
+        setLoading(false);
       }
-    }, 500);
+    }, 400);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
       
-      {/* MODAL CARD */}
+      {/* POPUP EMERGENTE ÁREA CLIENTES "Estamos trabajando en ello, próximamente." */}
+      {showClientNoticeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md bg-slate-950 border-2 border-amber-500 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center font-mono">
+            <div className="w-16 h-16 rounded-3xl bg-amber-500/20 border-2 border-amber-500 text-amber-400 flex items-center justify-center mx-auto animate-bounce">
+              <Wrench className="w-8 h-8 text-amber-400" />
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-xl font-extrabold text-white">Área de Clientes</h3>
+              <p className="text-sm text-amber-400 font-bold leading-relaxed">
+                Estamos trabajando en ello, próximamente.
+              </p>
+              <p className="text-xs text-slate-400 pt-1">
+                El portal exclusivo para clientes está en fase de desarrollo final y estará disponible en breve.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowClientNoticeModal(false)}
+              className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-xl shadow-amber-500/30 transition-all"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* MAIN LOGIN MODAL CARD */}
       <div className="relative w-full max-w-lg bg-black border-2 border-amber-500/70 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-amber-950/80 space-y-6 overflow-hidden">
         
         {/* HUD Corner Accents */}
@@ -97,7 +152,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               {loginType === 'corporate' ? 'Acceso Corporativo de Dirección' : 'Área Privada de Clientes'}
             </h3>
             <p className="text-xs text-slate-300 font-mono">
-              {loginType === 'corporate' ? 'Panel exclusivo para Claudio Arriaga Silva y Abraham Lozano' : 'Newsletter, Foro MOULD, Simulador ROI & Herramientas'}
+              {loginType === 'corporate' ? 'Panel exclusivo para Claudio Arriaga Silva y Abraham Lozano' : 'Portal de Clientes & Servicios CSYS MOULD'}
             </p>
           </div>
         </div>
@@ -131,24 +186,29 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
         {/* Corporate Quick Credentials (Only shown in corporate mode) */}
         {loginType === 'corporate' && (
-          <div className="p-3 rounded-2xl bg-slate-950 border border-amber-500/40 space-y-2 text-xs animate-in fade-in">
+          <div className="p-3.5 rounded-2xl bg-slate-950 border border-amber-500/40 space-y-2 text-xs animate-in fade-in">
             <p className="text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <UserCheck className="w-3.5 h-3.5" /> Credenciales Directivas (Claudio & Abraham):
+              <UserCheck className="w-3.5 h-3.5" /> Credenciales Directivas (Selecciona para autorrellenar):
             </p>
             <div className="grid grid-cols-2 gap-2 font-mono">
               <button
                 type="button"
-                onClick={() => { setEmail('claudio@csysmould.com'); setPassword('csys2026'); }}
-                className="p-2 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left font-bold text-[11px] truncate hover:bg-slate-900"
+                onClick={() => { setEmail('claudio@csysmould.com'); setPassword('claudiocsys'); setError(''); }}
+                className="p-2.5 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left hover:bg-amber-950/40 transition-all space-y-0.5"
               >
-                claudio@csysmould.com
+                <p className="font-bold text-[11px] text-white">Claudio Arriaga</p>
+                <p className="text-[10px] text-slate-400 truncate">claudio@csysmould.com</p>
+                <p className="text-[10px] text-amber-400 font-bold">pass: claudiocsys</p>
               </button>
+
               <button
                 type="button"
-                onClick={() => { setEmail('abraham@csysmould.com'); setPassword('csys2026'); }}
-                className="p-2 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left font-bold text-[11px] truncate hover:bg-slate-900"
+                onClick={() => { setEmail('abraham@csysmould.com'); setPassword('abrahamcsys'); setError(''); }}
+                className="p-2.5 rounded-xl bg-black border border-amber-500/40 text-amber-300 text-left hover:bg-amber-950/40 transition-all space-y-0.5"
               >
-                abraham@csysmould.com
+                <p className="font-bold text-[11px] text-white">Abraham Lozano</p>
+                <p className="text-[10px] text-slate-400 truncate">abraham@csysmould.com</p>
+                <p className="text-[10px] text-amber-400 font-bold">pass: abrahamcsys</p>
               </button>
             </div>
           </div>
@@ -202,11 +262,11 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             className="w-full py-3.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-sm shadow-xl shadow-amber-500/40 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
           >
             {loading ? (
-              <span>Ingresando...</span>
+              <span>Verificando credenciales...</span>
             ) : (
               <>
                 <Lock className="w-4 h-4 text-slate-950" />
-                <span>{loginType === 'corporate' ? 'Ingresar al Centro de Bots' : 'Acceder al Área de Clientes'}</span>
+                <span>{loginType === 'corporate' ? 'Ingresar al Centro de Bots' : 'Entrar'}</span>
                 <ArrowRight className="w-4 h-4 text-slate-950" />
               </>
             )}
