@@ -36,26 +36,22 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           
-          {/* OFFICIAL DESIGNED PNG LOGO */}
+          {/* OFFICIAL DESIGNED PNG LOGO & BARCELONA SPAIN ONLY */}
           <div 
             onClick={() => scrollTo('hero')} 
-            className="flex items-center gap-4 cursor-pointer group"
+            className="flex items-center gap-3.5 cursor-pointer group"
           >
-            <div className="relative h-20 sm:h-24 px-4 py-2 rounded-2xl bg-black/95 border-2 border-amber-500/60 shadow-2xl animate-logo-glow group-hover:scale-105 transition-all duration-300 flex items-center justify-center">
+            <div className="relative h-16 sm:h-20 px-4 py-2 rounded-2xl bg-black/95 border-2 border-amber-500/60 shadow-2xl animate-logo-glow group-hover:scale-105 transition-all duration-300 flex items-center justify-center">
               <img
                 src="/multimedia/logo_blanco.png"
                 alt="CSYS MOULD Logo Oficial PNG"
-                className="h-full max-h-16 sm:max-h-20 object-contain animate-logo-glow"
+                className="h-full max-h-12 sm:max-h-16 object-contain animate-logo-glow"
               />
             </div>
 
             <div className="hidden sm:block">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl sm:text-3xl font-extrabold tracking-wider text-white text-tech">CSYS</span>
-                <span className="text-2xl sm:text-3xl font-bold text-amber-400 text-tech">MOULD</span>
-              </div>
-              <p className="text-xs tracking-widest uppercase text-slate-400 font-semibold font-mono">
-                Llinars del Vallès (Barcelona)
+              <p className="text-sm sm:text-base font-extrabold tracking-widest uppercase text-amber-400 font-mono text-tech drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                Barcelona Spain
               </p>
             </div>
           </div>
