@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM BAJADO MÁS AÚN */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM BAJADO UN POCO MÁS AÚN */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -119,7 +119,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Orange Glowing Light on Both and Abraham Lowered Even More */}
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Orange Glowing Light on Both and Abraham Lowered Even Further */}
                   <div className="relative z-10 h-full w-full flex items-end justify-center pt-0 pb-0">
                     
                     {/* Claudio PNG (Behind on the right, with glowing amber/orange light effect) */}
@@ -129,11 +129,11 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                       className="h-[96%] max-w-[52%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] -mr-8 sm:-mr-12 relative z-10 translate-y-4 sm:translate-y-6"
                     />
 
-                    {/* Abraham PNG (In front, lowered EVEN MORE down) */}
+                    {/* Abraham PNG (In front, lowered EVEN FURTHER down into bottom badge) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[104%] max-w-[58%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-10 sm:translate-y-14 scale-[1.01] group-hover:scale-[1.04] transition-transform duration-500"
+                      className="h-[104%] max-w-[58%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-14 sm:translate-y-20 scale-[1.0] group-hover:scale-[1.03] transition-transform duration-500"
                     />
 
                   </div>
