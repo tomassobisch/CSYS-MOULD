@@ -31,16 +31,16 @@ export default function ContactSection() {
     <section id="contact" className="py-20 bg-slate-950 relative border-t border-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
+        {/* Section Header - EXACT MODIFICATIONS FROM SCREENSHOT */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950/60 border border-amber-500/40 text-amber-400 text-xs font-mono font-semibold">
-            <UserCheck className="w-3.5 h-3.5" /> ATENCIÓN DIRECTA DE DIRECCIÓN
+            <UserCheck className="w-3.5 h-3.5" /> SOCIOS DE CSYSMOULD
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-            Contacta con Claudio o Abraham Lozano
-          </h2>
-          <p className="text-sm text-slate-300">
-            Envíanos tus requerimientos o archivo CAD 3D para una valoración técnica directa y confidencial desde nuestra planta de <strong className="text-white">Llinars del Vallès (Barcelona)</strong>.
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
+            Claudio Arriaga y Abraham Lozano
+          </h1>
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal pt-2">
+            Atención <strong className="text-white font-extrabold">directa y personalizada</strong> de los socios <strong className="text-white font-extrabold">Claudio Arriaga, responsable de Gestión de Clientes,</strong> y <strong className="text-white font-extrabold">Abraham Lozano, Director de Taller,</strong> presentes en cada fase del proyecto: <strong className="text-white font-extrabold">desde la primera idea hasta el producto definitivo en manos del cliente.</strong>
           </p>
         </div>
 
@@ -49,18 +49,18 @@ export default function ContactSection() {
           {/* Directors Contact Cards & Real Photos */}
           <div className="lg:col-span-5 space-y-6">
             
-            {/* Director 1: Claudio */}
+            {/* Director 1: Claudio Arriaga */}
             <div className="glass-panel-amber p-6 rounded-3xl border border-amber-500/30 flex items-center gap-5 bg-gradient-to-r from-amber-950/30 via-slate-900 to-slate-950 shadow-xl">
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-900 border-2 border-amber-500/50 shrink-0 shadow-lg">
                 <img
                   src={COMPANY_INFO.contacts.claudio.photo}
-                  alt={COMPANY_INFO.contacts.claudio.name}
+                  alt="Claudio Arriaga - Socio Gestión de Clientes"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="space-y-1 text-xs">
-                <span className="text-[10px] font-mono text-amber-400 font-bold uppercase">{COMPANY_INFO.contacts.claudio.role}</span>
-                <h3 className="text-base font-bold text-white">{COMPANY_INFO.contacts.claudio.name}</h3>
+                <span className="text-[10px] font-mono text-amber-400 font-bold uppercase">SOCIO / GESTIÓN DE CLIENTES</span>
+                <h3 className="text-base font-bold text-white">Claudio Arriaga</h3>
                 <p className="text-slate-300 font-mono">
                   Email: <a href={`mailto:${COMPANY_INFO.contacts.claudio.email}`} className="text-amber-400 hover:underline">{COMPANY_INFO.contacts.claudio.email}</a>
                 </p>
@@ -75,13 +75,13 @@ export default function ContactSection() {
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-900 border-2 border-amber-500/50 shrink-0 shadow-lg">
                 <img
                   src={COMPANY_INFO.contacts.abraham.photo}
-                  alt={COMPANY_INFO.contacts.abraham.name}
+                  alt="Abraham Lozano - Socio Director de Taller"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="space-y-1 text-xs">
-                <span className="text-[10px] font-mono text-amber-400 font-bold uppercase">{COMPANY_INFO.contacts.abraham.role}</span>
-                <h3 className="text-base font-bold text-white">{COMPANY_INFO.contacts.abraham.name}</h3>
+                <span className="text-[10px] font-mono text-amber-400 font-bold uppercase">SOCIO / DIRECTOR DE TALLER</span>
+                <h3 className="text-base font-bold text-white">Abraham Lozano</h3>
                 <p className="text-slate-300 font-mono">
                   Email: <a href={`mailto:${COMPANY_INFO.contacts.abraham.email}`} className="text-amber-400 hover:underline">{COMPANY_INFO.contacts.abraham.email}</a>
                 </p>
@@ -109,7 +109,7 @@ export default function ContactSection() {
             <div className="glass-panel-amber rounded-3xl border border-amber-500/40 p-6 sm:p-8 space-y-6 shadow-2xl bg-gradient-to-br from-amber-950/20 via-slate-900 to-slate-950">
               
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Mail className="w-5 h-5 text-amber-400" /> Solicitud de Presupuesto Directo a Dirección
+                <Mail className="w-5 h-5 text-amber-400" /> Solicitud de Presupuesto Directo a los Socios
               </h3>
 
               {submitted ? (
@@ -118,104 +118,108 @@ export default function ContactSection() {
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h4 className="text-xl font-bold text-white">¡Mensaje Recibido Correctamente!</h4>
-                  <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
-                    Muchas gracias por contactar con CSYS MOULD. Claudio o Abraham Lozano revisarán tus especificaciones técnicas y se pondrán en contacto contigo a la brevedad.
+                  <p className="text-sm text-slate-300">
+                    Claudio Arriaga o Abraham Lozano se pondrán en contacto contigo en un plazo máximo de 24 horas laborables.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
-                    className="px-5 py-2.5 rounded-xl bg-slate-800 text-xs font-mono font-bold text-slate-300 hover:text-white"
+                    className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
                   >
                     Enviar otro mensaje
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-                  
+                <form onSubmit={handleSubmit} className="space-y-4 text-xs font-mono">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-slate-400 font-mono block mb-1">Nombre Completo *</label>
+                      <label className="text-slate-300 block mb-1 font-bold">Tu Nombre Completo *</label>
                       <input
                         type="text"
                         required
-                        placeholder="Tu Nombre"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono focus:border-amber-400 focus:outline-none"
+                        placeholder="Ej: Carlos Gómez"
+                        className="w-full px-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-400 focus:outline-none"
                       />
                     </div>
-
                     <div>
-                      <label className="text-slate-400 font-mono block mb-1">Correo Electrónico *</label>
+                      <label className="text-slate-300 block mb-1 font-bold">Empresa *</label>
                       <input
-                        type="email"
+                        type="text"
                         required
-                        placeholder="correo@empresa.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono focus:border-amber-400 focus:outline-none"
+                        value={formData.company}
+                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        placeholder="Ej: MedTech Innovations"
+                        className="w-full px-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-400 focus:outline-none"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-slate-400 font-mono block mb-1">Teléfono Directo</label>
+                      <label className="text-slate-300 block mb-1 font-bold">Email de Contacto *</label>
                       <input
-                        type="tel"
-                        placeholder="+34 600 000 000"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono focus:border-amber-400 focus:outline-none"
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="carlos@empresa.com"
+                        className="w-full px-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-400 focus:outline-none"
                       />
                     </div>
-
                     <div>
-                      <label className="text-slate-400 font-mono block mb-1">Empresa / Organización</label>
+                      <label className="text-slate-300 block mb-1 font-bold">Teléfono de Contacto</label>
                       <input
-                        type="text"
-                        placeholder="Nombre de Empresa"
-                        value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono focus:border-amber-400 focus:outline-none"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="+34 600 000 000"
+                        className="w-full px-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-400 focus:outline-none"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-slate-400 font-mono block mb-1">Tipo de Molde / Proyecto</label>
+                    <label className="text-slate-300 block mb-1 font-bold">Tipo de Proyecto / Requerimiento</label>
                     <select
                       value={formData.moldType}
                       onChange={(e) => setFormData({ ...formData, moldType: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono focus:border-amber-400 focus:outline-none"
+                      className="w-full px-4 py-2.5 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-400 focus:outline-none"
                     >
-                      <option value="Micro-Inyección Tecnológica">Micro-Inyección Tecnológica (±0.002mm)</option>
-                      <option value="Desarrollo de Molde a Medida">Desarrollo Integral de Molde (CAD/CAM/Moldflow)</option>
-                      <option value="Molde Médica / Infantil">Molde Médica / Infantil</option>
-                      <option value="Molde Electrónica & Seguridad">Molde Electrónica & Seguridad</option>
-                      <option value="Sobremoldeo 2K Multimaterial">Sobremoldeo 2K Multimaterial</option>
+                      <option value="Micro-Inyección Tecnológica">Micro-Inyección Tecnológica (±0,02 mm)</option>
+                      <option value="Desarrollo Molde Médico / Sala Blanca">Desarrollo Molde Médico / Sala Blanca</option>
+                      <option value="Molde Electrónica / Autoextinguible">Molde Electrónica / Autoextinguible UL94-V0</option>
+                      <option value="Molde 2K / Doble Inyección">Molde 2K / Doble Inyección</option>
+                      <option value="Consultoría DFM / Análisis Moldflow">Consultoría DFM / Análisis Moldflow</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-slate-400 font-mono block mb-1">Detalles del Proyecto & Especificaciones *</label>
+                    <label className="text-slate-300 block mb-1 font-bold">Mensaje o Detalles del Proyecto</label>
                     <textarea
-                      rows="4"
+                      rows={4}
                       required
-                      placeholder="Describe las características de la pieza, polímero deseado, número de cavidades, cadencia estimada..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white font-mono focus:border-amber-400 focus:outline-none resize-none"
+                      placeholder="Describe la pieza plástica, material deseado, número de cavidades estimado..."
+                      className="w-full p-4 rounded-xl bg-black border border-slate-800 text-white focus:border-amber-400 focus:outline-none"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm shadow-xl shadow-amber-500/40 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
                   >
-                    {isSubmitting ? 'Enviando Mensaje...' : 'Enviar Solicitud a Claudio y Abraham Lozano'}
+                    {isSubmitting ? (
+                      <span>Enviando requerimiento...</span>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 text-slate-950" />
+                        <span>Enviar Solicitud a Claudio y Abraham Lozano</span>
+                      </>
+                    )}
                   </button>
-
                 </form>
               )}
 

@@ -690,7 +690,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         company_name: lead.company,
         action_type: actionType,
         action_detail: detailText,
-        performed_by: 'Claudio Arriaga Silva / Abraham Lozano'
+        performed_by: 'Claudio Arriaga / Abraham Lozano'
       });
 
       if (error && error.code === '401') {
