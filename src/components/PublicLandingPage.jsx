@@ -169,7 +169,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                 Centros de Fabricación Asociados en <span className="text-amber-400">Dongguan & Shenzhen</span>
               </h2>
               
-              {/* EXACT BOLD FORMATTING FROM USER SCREENSHOT */}
+              {/* EXACT BOLD FORMATTING FROM USER SCREENSHOT 1 */}
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
                 Para responder a <strong className="text-white font-extrabold">proyectos de gran volumen o con plazos exigentes,</strong> combinamos la fabricación en nuestro Taller de <strong className="text-white font-extrabold">500 m² en Llinars del Vallès (Barcelona)</strong> con la gran capacidad productiva de nuestros <strong className="text-white font-extrabold">centros asociados en Dongguan y Shenzhen (China).</strong>
               </p>
@@ -185,33 +185,42 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
             </div>
           </div>
 
+          {/* 3 FEATURE CARDS WITH EXACT TEXT AND BOLD FORMATTING FROM USER SCREENSHOT 2 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs pt-4 border-t border-slate-900">
+            
+            {/* CARD 1 */}
             <div className="p-5 rounded-2xl bg-black border border-slate-800 space-y-2">
               <h4 className="text-sm font-bold text-amber-400 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Control de Calidad en Barcelona
               </h4>
-              <p className="text-slate-300">
-                Todo molde o muestra procedente de nuestras plantas asociadas en Dongguan y Shenzhen es verificado metrológicamente en nuestra planta de Barcelona antes de su aprobación final.
+              <p className="text-slate-300 leading-relaxed">
+                Todo molde o muestra procedente de nuestros centros asociados en Dongguan & Shenzhen pasa un <strong className="text-white font-extrabold">control dimensional</strong> en nuestras instalaciones de Barcelona.
               </p>
             </div>
 
+            {/* CARD 2 */}
             <div className="p-5 rounded-2xl bg-black border border-slate-800 space-y-2">
               <h4 className="text-sm font-bold text-amber-400 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Optimización Directa de Costes
               </h4>
-              <p className="text-slate-300">
-                Permite a nuestros clientes obtener el máximo rendimiento económico en moldes multicavidad de gran envergadura manteniendo la garantía técnica de CSYS MOULD.
+              <p className="text-slate-300 leading-relaxed">
+                Permite a nuestros clientes reducir costes en moldes multicavidad de gran envergadura, manteniendo siempre la <strong className="text-white font-extrabold">garantía y el respaldo técnico de CSYS MOULD.</strong>
               </p>
             </div>
 
+            {/* CARD 3 */}
             <div className="p-5 rounded-2xl bg-black border border-slate-800 space-y-2">
-              <h4 className="text-sm font-bold text-amber-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Seguimiento en Tiempo Real
+              <h4 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Soporte & Mantenimiento Local
               </h4>
-              <p className="text-slate-300">
-                Reporte directo de avance semanal, vídeos de pruebas T1/T2 y envíos aéreos o marítimos gestionados integralmente.
+              <p className="text-slate-300 leading-relaxed">
+                <strong className="text-white font-extrabold">Garantía indefinida</strong> en todos nuestros moldes mientras <strong className="text-white font-extrabold">CSYS MOULD o nuestros asociados se encarguen de la producción</strong>, incluyendo soporte, mantenimiento y puesta a punto en nuestras instalaciones de <strong className="text-white font-extrabold">Barcelona.</strong>
+              </p>
+              <p className="text-slate-300 leading-relaxed pt-2">
+                Si la producción la realiza directamente el cliente o una empresa externa, nuestros moldes cuentan con una <strong className="text-white font-extrabold">garantía de 3 años.</strong>
               </p>
             </div>
+
           </div>
 
         </div>
