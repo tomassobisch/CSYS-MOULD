@@ -9,16 +9,16 @@ export default function RealPhotoGallery() {
     <section id="gallery" className="py-16 bg-slate-950 relative border-t border-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
-        {/* Section Header */}
+        {/* Section Header - EXACT TITLE AND SUBTITLE FROM SCREENSHOT */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950/70 border border-amber-500/40 text-amber-400 text-xs font-mono font-semibold">
             <Camera className="w-3.5 h-3.5" /> FOTOGRAFÍAS REALES DE NUESTRAS INSTALACIONES Y MOLDES
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-            Planta de Llinars del Vallès & Matricería en Vivo
+            Planta de Barcelona & Moldistas en Vivo
           </h2>
-          <p className="text-sm text-slate-300">
-            Conoce nuestras instalaciones propias de <strong className="text-white">500 m² en Barcelona</strong> (puente grúa de 10 Toneladas), puestos de ingeniería CAD y centro de mecanizado.
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+            Conoce nuestras instalaciones de <strong className="text-white font-extrabold">500 m²</strong> (puente grúa de 10 Toneladas) Oficina de Diseño e Ingeniería propia, maquinaria de última generación
           </p>
         </div>
 
@@ -59,10 +59,6 @@ export default function RealPhotoGallery() {
                 <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
                   {photo.desc}
                 </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-amber-400">
-                  <span>Barcelona / Llinars del Vallès</span>
-                  <span className="flex items-center gap-1">Fotografía Real <CheckCircle className="w-3 h-3 text-emerald-400" /></span>
-                </div>
               </div>
             </div>
           ))}
@@ -70,19 +66,19 @@ export default function RealPhotoGallery() {
 
       </div>
 
-      {/* Modal Lightbox for Real Photo */}
+      {/* Expanded Photo Modal */}
       {selectedPhoto && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200">
-          <div className="relative w-full max-w-4xl bg-slate-900 border border-amber-500/50 rounded-3xl overflow-hidden shadow-2xl p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
+          <div className="relative w-full max-w-4xl bg-slate-950 border-2 border-amber-500/70 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
             
             <button
               onClick={() => setSelectedPhoto(null)}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-slate-950/80 text-slate-400 hover:text-white border border-slate-800"
+              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800 text-xs font-mono z-10"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="relative h-[60vh] max-h-[500px] w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-800">
+            <div className="relative h-96 sm:h-[480px] rounded-2xl overflow-hidden bg-black border border-slate-800">
               <img
                 src={selectedPhoto.image}
                 alt={selectedPhoto.title}
@@ -90,18 +86,18 @@ export default function RealPhotoGallery() {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-              <div>
-                <span className="text-xs font-mono text-amber-400 font-bold uppercase">{selectedPhoto.category} • CSYS MOULD</span>
-                <h3 className="text-xl font-bold text-white">{selectedPhoto.title}</h3>
-                <p className="text-xs text-slate-300 mt-1">{selectedPhoto.desc}</p>
-              </div>
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono text-amber-400 font-bold uppercase">{selectedPhoto.category}</span>
+              <h3 className="text-xl font-bold text-white">{selectedPhoto.title}</h3>
+              <p className="text-xs text-slate-300">{selectedPhoto.desc}</p>
+            </div>
 
+            <div className="pt-2 flex justify-end">
               <button
                 onClick={() => setSelectedPhoto(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold shrink-0"
+                className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
               >
-                Cerrar Visor
+                Cerrar Imagen
               </button>
             </div>
 
