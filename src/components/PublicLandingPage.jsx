@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON ABAHAM.PNG Y CLAUDIO.PNG JUNTOS CON EL MISMO FORMATO */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM AGRANDADO Y POR DELANTE SUPERPUESTO SOBRE CLAUDIO */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-3 sm:p-4 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -102,7 +102,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                 {/* Laser Scan Line inside clean frame */}
                 <div className="scanline-laser" />
 
-                {/* HERO FRAMED IMAGE CONTAINER WITH ABAHAM.PNG & CLAUDIO.PNG */}
+                {/* HERO FRAMED IMAGE CONTAINER WITH OVERLAPPING FOUNDERS */}
                 <div className="relative h-80 sm:h-96 rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-center p-2">
                   
                   {/* Background Real Photo PNG */}
@@ -119,22 +119,27 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-40 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Side-by-Side */}
-                  <div className="relative z-10 h-full w-full flex items-end justify-center gap-2 pt-3 pb-4">
-                    <img
-                      src="/multimedia/Abaham.png"
-                      alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[96%] max-w-[48%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.75)] group-hover:scale-105 transition-transform duration-700"
-                    />
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Overlapping (Abraham Enlarged & In Front) */}
+                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-2 pb-2">
+                    
+                    {/* Claudio PNG (Behind on the right side) */}
                     <img
                       src="/multimedia/Claudio.PNG"
                       alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[96%] max-w-[48%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.75)] group-hover:scale-105 transition-transform duration-700"
+                      className="h-[88%] sm:h-[92%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.9)] -mr-6 sm:-mr-10 relative z-10 transform translate-x-2"
                     />
+
+                    {/* Abraham PNG (In front, enlarged, overlapping Claudio) */}
+                    <img
+                      src="/multimedia/Abaham.png"
+                      alt="Abraham Lozano - Socio CSYS MOULD"
+                      className="h-[102%] sm:h-[106%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 group-hover:scale-105 transition-transform duration-700"
+                    />
+
                   </div>
 
                   {/* ELEGANT PNG BRANDING BADGE UNDER PHOTO */}
-                  <div className="absolute bottom-3 left-3 right-3 z-20 flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/90 backdrop-blur-md border border-amber-500/40">
+                  <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/90 backdrop-blur-md border border-amber-500/40">
                     <div className="flex items-center gap-2">
                       <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-5 object-contain" />
                       <span className="text-[11px] font-mono text-white font-bold">Abraham Lozano & Claudio Arriaga</span>
