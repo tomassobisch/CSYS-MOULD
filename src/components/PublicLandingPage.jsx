@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM SUBIDO UN POCO POR DETRÁS Y CLAUDIO POR DELANTE */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON AMBOS SOCIOS A LA MISMA ALTURA EXACTA ALINEADOS CON LA LÍNEA DE ABAJO */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -119,21 +119,21 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Claudio in Front and Abraham Raised Slightly Behind */}
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits at the EXACT SAME HEIGHT Base along the bottom line */}
                   <div className="relative z-10 h-full w-full flex items-end justify-center pt-0 pb-0">
                     
-                    {/* Abraham PNG (Behind on the left, raised up slightly) */}
+                    {/* Abraham PNG (Left side, exact same height alignment) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[102%] max-w-[56%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-10 translate-y-4 sm:translate-y-6 -mr-8 sm:-mr-12"
+                      className="h-[96%] max-w-[52%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-10 translate-y-5 sm:translate-y-6 -mr-8 sm:-mr-12"
                     />
 
-                    {/* Claudio PNG (In front on the right, overlapping Abraham) */}
+                    {/* Claudio PNG (Right side, exact same height alignment in front) */}
                     <img
                       src="/multimedia/Claudio.PNG"
                       alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[96%] max-w-[54%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-3 sm:translate-y-5 scale-[1.02] group-hover:scale-[1.05] transition-transform duration-500"
+                      className="h-[96%] max-w-[52%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-5 sm:translate-y-6 scale-[1.0] group-hover:scale-[1.03] transition-transform duration-500"
                     />
 
                   </div>
