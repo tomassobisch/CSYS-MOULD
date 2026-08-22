@@ -185,40 +185,66 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
             </div>
           </div>
 
-          {/* 3 FEATURE CARDS WITH EXACT TEXT AND BOLD FORMATTING FROM USER SCREENSHOT 2 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs pt-4 border-t border-slate-900">
+          {/* 3 FEATURE CARDS WITH EQUALIZED HEIGHT & BALANCED VISUAL LAYOUT */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs pt-6 border-t border-slate-900 items-stretch">
             
             {/* CARD 1 */}
-            <div className="p-5 rounded-2xl bg-black border border-slate-800 space-y-2">
-              <h4 className="text-sm font-bold text-amber-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Control de Calidad en Barcelona
-              </h4>
-              <p className="text-slate-300 leading-relaxed">
-                Todo molde o muestra procedente de nuestros centros asociados en Dongguan & Shenzhen pasa un <strong className="text-white font-extrabold">control dimensional</strong> en nuestras instalaciones de Barcelona.
-              </p>
+            <div className="p-6 rounded-2xl bg-black border border-slate-800 flex flex-col justify-between h-full space-y-4 hover:border-amber-500/40 transition-all shadow-xl">
+              <div className="space-y-3">
+                <h4 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+                  <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" /> Control de Calidad en Barcelona
+                </h4>
+                <p className="text-slate-300 leading-relaxed">
+                  Todo molde o muestra procedente de nuestros centros asociados en Dongguan & Shenzhen pasa un <strong className="text-white font-extrabold">control dimensional</strong> en nuestras instalaciones de Barcelona.
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-slate-900/80">
+                <span className="px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 text-[11px] font-mono font-semibold border border-slate-800 flex items-center gap-1.5 w-fit">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Verificación Metrológica 100%
+                </span>
+              </div>
             </div>
 
             {/* CARD 2 */}
-            <div className="p-5 rounded-2xl bg-black border border-slate-800 space-y-2">
-              <h4 className="text-sm font-bold text-amber-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Optimización Directa de Costes
-              </h4>
-              <p className="text-slate-300 leading-relaxed">
-                Permite a nuestros clientes reducir costes en moldes multicavidad de gran envergadura, manteniendo siempre la <strong className="text-white font-extrabold">garantía y el respaldo técnico de CSYS MOULD.</strong>
-              </p>
+            <div className="p-6 rounded-2xl bg-black border border-slate-800 flex flex-col justify-between h-full space-y-4 hover:border-amber-500/40 transition-all shadow-xl">
+              <div className="space-y-3">
+                <h4 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+                  <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" /> Optimización Directa de Costes
+                </h4>
+                <p className="text-slate-300 leading-relaxed">
+                  Permite a nuestros clientes reducir costes en moldes multicavidad de gran envergadura, manteniendo siempre la <strong className="text-white font-extrabold">garantía y el respaldo técnico de CSYS MOULD.</strong>
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-slate-900/80">
+                <span className="px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 text-[11px] font-mono font-semibold border border-slate-800 flex items-center gap-1.5 w-fit">
+                  <Award className="w-3.5 h-3.5 text-amber-400" /> Eficiencia en Grandes Volúmenes
+                </span>
+              </div>
             </div>
 
             {/* CARD 3 */}
-            <div className="p-5 rounded-2xl bg-black border border-slate-800 space-y-2">
-              <h4 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Soporte & Mantenimiento Local
-              </h4>
-              <p className="text-slate-300 leading-relaxed">
-                <strong className="text-white font-extrabold">Garantía indefinida</strong> en todos nuestros moldes mientras <strong className="text-white font-extrabold">CSYS MOULD o nuestros asociados se encarguen de la producción</strong>, incluyendo soporte, mantenimiento y puesta a punto en nuestras instalaciones de <strong className="text-white font-extrabold">Barcelona.</strong>
-              </p>
-              <p className="text-slate-300 leading-relaxed pt-2">
-                Si la producción la realiza directamente el cliente o una empresa externa, nuestros moldes cuentan con una <strong className="text-white font-extrabold">garantía de 3 años.</strong>
-              </p>
+            <div className="p-6 rounded-2xl bg-black border border-slate-800 flex flex-col justify-between h-full space-y-4 hover:border-emerald-500/40 transition-all shadow-xl">
+              <div className="space-y-3">
+                <h4 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                  <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400 shrink-0" /> Soporte & Mantenimiento Local
+                </h4>
+                <div className="space-y-2 text-slate-300 leading-relaxed">
+                  <p>
+                    <strong className="text-white font-extrabold">Garantía indefinida</strong> en todos nuestros moldes mientras <strong className="text-white font-extrabold">CSYS MOULD o nuestros asociados se encarguen de la producción</strong>, incluyendo soporte, mantenimiento y puesta a punto en nuestras instalaciones de <strong className="text-white font-extrabold">Barcelona.</strong>
+                  </p>
+                  <p className="text-slate-300 border-t border-slate-900/80 pt-2">
+                    Si la producción la realiza directamente el cliente o una empresa externa, nuestros moldes cuentan con una <strong className="text-white font-extrabold">garantía de 3 años.</strong>
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-900/80">
+                <span className="px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 text-[11px] font-mono font-semibold border border-slate-800 flex items-center gap-1.5 w-fit">
+                  <Shield className="w-3.5 h-3.5 text-emerald-400" /> Cobertura & Puesta a Punto Local
+                </span>
+              </div>
             </div>
 
           </div>
