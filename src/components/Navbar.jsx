@@ -49,8 +49,8 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
               />
             </div>
 
-            <div className="hidden sm:block">
-              <p className="text-sm sm:text-base font-extrabold tracking-widest uppercase text-amber-400 font-mono text-tech drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+            <div>
+              <p className="text-[10px] sm:text-base font-extrabold tracking-wider sm:tracking-widest uppercase text-amber-400 font-mono text-tech drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
                 Barcelona (Spain)
               </p>
             </div>
