@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM BAJADO UN POCO MÁS AÚN */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM SUBIDO UN POCO POR DETRÁS Y CLAUDIO POR DELANTE */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -119,21 +119,21 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Orange Glowing Light on Both and Abraham Lowered Even Further */}
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Claudio in Front and Abraham Raised Slightly Behind */}
                   <div className="relative z-10 h-full w-full flex items-end justify-center pt-0 pb-0">
                     
-                    {/* Claudio PNG (Behind on the right, with glowing amber/orange light effect) */}
-                    <img
-                      src="/multimedia/Claudio.PNG"
-                      alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[96%] max-w-[52%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] -mr-8 sm:-mr-12 relative z-10 translate-y-4 sm:translate-y-6"
-                    />
-
-                    {/* Abraham PNG (In front, lowered EVEN FURTHER down into bottom badge) */}
+                    {/* Abraham PNG (Behind on the left, raised up slightly) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[104%] max-w-[58%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-14 sm:translate-y-20 scale-[1.0] group-hover:scale-[1.03] transition-transform duration-500"
+                      className="h-[102%] max-w-[56%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-10 translate-y-4 sm:translate-y-6 -mr-8 sm:-mr-12"
+                    />
+
+                    {/* Claudio PNG (In front on the right, overlapping Abraham) */}
+                    <img
+                      src="/multimedia/Claudio.PNG"
+                      alt="Claudio Arriaga - Socio CSYS MOULD"
+                      className="h-[96%] max-w-[54%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-3 sm:translate-y-5 scale-[1.02] group-hover:scale-[1.05] transition-transform duration-500"
                     />
 
                   </div>
@@ -142,7 +142,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                   <div className="absolute bottom-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2.5 rounded-b-2xl bg-gradient-to-t from-black via-black/95 to-black/80 border-t border-amber-500/40 shadow-2xl backdrop-blur-md">
                     <div className="flex items-center gap-2">
                       <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-4 sm:h-5 object-contain" />
-                      <span className="text-[10px] sm:text-[11px] font-mono text-white font-bold">Abraham Lozano & Claudio Arriaga</span>
+                      <span className="text-[10px] sm:text-[11px] font-mono text-white font-bold">Claudio Arriaga & Abraham Lozano</span>
                     </div>
                     <span className="text-[9px] sm:text-[10px] font-mono text-amber-400 font-extrabold">SOCIOS DE CSYSMOULD</span>
                   </div>
