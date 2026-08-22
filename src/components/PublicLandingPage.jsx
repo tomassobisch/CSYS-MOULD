@@ -168,8 +168,11 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
                 Centros de Fabricación Asociados en <span className="text-amber-400">Dongguan & Shenzhen</span>
               </h2>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                Para responder a proyectos de gran volumen o plazos acelerados, combinamos la **matricería de máxima precisión en nuestra nave de 500 m² en Llinars del Vallès (Barcelona)** con la enorme capacidad productiva de nuestros centros asociados en <strong className="text-white">Dongguan y Shenzhen</strong>.
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                Para responder a proyectos de gran volumen o con plazos exigentes, combinamos la fabricación en nuestro Taller de 500 m² en Llinars del Vallès (Barcelona) con la gran capacidad productiva de nuestros centros asociados en Dongguan y Shenzhen (China).
+              </p>
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal pt-1">
+                Esta estructura nos permite adaptar la capacidad de producción a las necesidades de cada proyecto, manteniendo siempre la coordinación y el control desde nuestro equipo en Barcelona.
               </p>
             </div>
 
