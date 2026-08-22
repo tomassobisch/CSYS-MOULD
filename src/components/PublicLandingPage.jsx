@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON CORTE INFERIOR OCULTO PERFECTAMENTE TRAS LA BARRA DE MARCA */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON AMBAS IMÁGENES EXTENDIDAS PROFUNDAMENTE TRAS LA BARRA DE MARCA SIN ESPACIOS */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -119,21 +119,21 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Sitting Exactly on the Bottom Edge */}
-                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-2 pb-0">
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Sitting Deeply Into the Bottom Edge Without Any Gap */}
+                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-0 pb-0">
                     
-                    {/* Claudio PNG (Behind on the right, base extending to bottom) */}
+                    {/* Claudio PNG (Behind on the right, base extending deep into bottom bar) */}
                     <img
                       src="/multimedia/Claudio.PNG"
                       alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[95%] max-w-[50%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.95)] -mr-8 sm:-mr-12 relative z-10 translate-y-2"
+                      className="h-[96%] max-w-[52%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.95)] -mr-8 sm:-mr-12 relative z-10 translate-y-4 sm:translate-y-6"
                     />
 
-                    {/* Abraham PNG (In front, base extending to bottom) */}
+                    {/* Abraham PNG (In front, base extending deep into bottom bar eliminating gap completely) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[102%] max-w-[56%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-2 group-hover:scale-[1.03] transition-transform duration-500"
+                      className="h-[105%] max-w-[58%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-5 sm:translate-y-7 scale-[1.04] group-hover:scale-[1.07] transition-transform duration-500"
                     />
 
                   </div>
