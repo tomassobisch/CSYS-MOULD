@@ -73,7 +73,7 @@ export default function Footer({ lang }) {
 
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
-          <p>© CSYS MOULD. Todos los derechos reservados. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: (+34) 934.607.266 | Email: info@csysmould.com</p>
+          <p>© 2026 CSYS MOULD. Todos los derechos reservados 2026. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: (+34) 934.607.266 | Email: info@csysmould.com</p>
           
           <div className="flex items-center gap-4">
             <span className="px-3 py-1 rounded-full bg-slate-950 border border-amber-500/40 text-amber-400 font-mono font-bold text-[11px] tracking-wide flex items-center gap-1.5 shadow-md shadow-amber-500/10">
