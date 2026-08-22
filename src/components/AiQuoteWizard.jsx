@@ -475,7 +475,7 @@ export default function AiQuoteWizard({ prefilledMold = null, onClose }) {
                   {quoteResult.totalEstimatedCost.toLocaleString()} € <span className="text-xs text-slate-400 font-sans">+ IVA</span>
                 </p>
                 <p className="text-xs text-slate-300">
-                  Garantía de fabricación bajo tolerancia <span className="text-amber-400 font-mono font-bold">±0.002mm</span> & 1,500,000 ciclos
+                  Garantía de fabricación bajo tolerancia <span className="text-amber-400 font-mono font-bold">±0,02 mm</span> & 1,500,000 ciclos
                 </p>
               </div>
 

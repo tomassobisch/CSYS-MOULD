@@ -2,7 +2,7 @@ export const COMPANY_INFO = {
   name: "CSYS MOULD",
   tagline: "Especializados en Micro-Inyección de Plásticos y Desarrollo de Moldes para Productos Tecnológicos de Alta Precisión",
   subMotto: "De la idea a la fabricación, brindamos soluciones técnicas a la conformación de plástico",
-  description: "Especialistas en micro-inyección de plásticos, diseño y desarrollo de moldes de tolerancias micrométricas (±0.002mm) para productos tecnológicos de alta precisión, médica, automoción y electrónica.",
+  description: "Especialistas en micro-inyección de plásticos, diseño y desarrollo de moldes de tolerancias micrométricas (±0,02mm) para productos tecnológicos de alta precisión, médica, automoción y electrónica.",
   foundedYear: 1965,
   heritage: "Comenzó con un sueño y mucho esfuerzo entre padre e hijo en un pequeño taller de Badalona en 1965. Hoy contamos con más de 60 años de trayectoria impecable.",
   spainPlant: {
@@ -50,11 +50,11 @@ export const REAL_PROJECTS = [
     material: "PA66+30% GF (Micro-Tolerancia)",
     cavities: 16,
     image: "/multimedia/project_lynxsensor_real.jpg",
-    description: "Desarrollo integral de molde y micro-inyección tecnológica con tolerancia estricta de ±0.002mm para conectores y sensores industriales.",
+    description: "Desarrollo integral de molde y micro-inyección tecnológica con tolerancia estricta de ±0,02mm para conectores y sensores industriales.",
     features: [
       "Diseño CAD 3D & Simulación de Llenado Moldflow previo",
       "Micro-inyección de plásticos con peso por pieza desde 0.05 gramos",
-      "Tolerancia dimensional micrométrica ±0.002 mm garantizada",
+      "Tolerancia dimensional micrométrica ±0,02 mm garantizada",
       "Control 100% por óptica ZEISS y metrología CMM"
     ]
   },
@@ -85,7 +85,7 @@ export const REAL_PROJECTS = [
       "Sobremoldeo de insertos de latón de alta precisión",
       "Acero H13 con tratamiento térmico 54 HRC",
       "Texturizado mate Mold-Tech MT-11020",
-      "Tolerancia dimensional estricta ±0.003mm"
+      "Tolerancia dimensional estricta ±0,02 mm"
     ]
   },
   {
@@ -140,7 +140,7 @@ export const REAL_FACTORY_PHOTOS = [
     title: "Metrología CMM ZEISS & Óptica",
     category: "Control Calidad",
     image: "/multimedia/mold_inspection_zeiss.jpg",
-    desc: "Verificación tridimensional de cotas micrométricas (±0.002 mm) antes de pruebas T1."
+    desc: "Verificación tridimensional de cotas micrométricas (±0,02 mm) antes de pruebas T1."
   },
   {
     id: "gallery-4",
@@ -175,7 +175,7 @@ export const MOLD_CATALOG = [
     cavities: p.cavities,
     cycleTime: "7.5 seg",
     lifespan: "1,500,000+ ciclos",
-    tolerance: "±0.002 mm",
+    tolerance: "±0,02 mm",
     hotRunner: "Yudo / Mold-Masters",
     image: p.image,
     description: p.description,
@@ -216,6 +216,6 @@ export const PLASTIC_MATERIALS = [
 export const AI_KNOWLEDGE_BASE = [
   {
     topic: "Desarrollo de Moldes y Micro-Inyección",
-    answer: "En **CSYS MOULD** nos encargamos del **desarrollo integral de moldes** y la **micro-inyección de plásticos para productos tecnológicos de alta precisión**, abarcando desde la idea inicial, simulación CAD 3D Moldflow, fabricación de matriz en Llinars del Vallès (500m²) hasta la producción final con tolerancias de **±0.002 mm**."
+    answer: "En **CSYS MOULD** nos encargamos del **desarrollo integral de moldes** y la **micro-inyección de plásticos para productos tecnológicos de alta precisión**, abarcando desde la idea inicial, simulación CAD 3D Moldflow, fabricación de matriz en Llinars del Vallès (500m²) hasta la producción final con tolerancias de **±0,02 mm**."
   }
 ];

@@ -118,7 +118,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       companySizeLabel: '11 - 50 empleados',
       companyAge: '3-4',
       companyAgeLabel: 'Fundada en 2020',
-      stage: 'Moldes Micro-Inyección (±0.002 mm)',
+      stage: 'Moldes Micro-Inyección (±0,02 mm)',
       foundationYear: '2020',
       country: 'Parc de Recerca UAB / Barcelona',
       incubatorHub: 'Tech Barcelona / ACCIÓ / EIC',
@@ -134,7 +134,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       googleMapsSearch: 'Parc de Recerca UAB Cerdanyola del Valles',
       addressFull: 'Parc de Recerca UAB, 08193 Cerdanyola del Vallès, Barcelona',
       study360: { growthMetrics: 'Ronda Serie A de 17M$ financiada por EIC.', recentNews: ['• Ensayos clínicos del chip de grafeno.'], agreementsAndPartnerships: ['• Convenio con ICN2.'], executivesLinkedin: [{ name: 'Carolina Aguilar', role: 'CEO', linkedin: 'https://www.linkedin.com/company/inbrain-neuroelectronics', email: 'carolina@inbrain-neuroelectronics.com' }] },
-      detailedDiagnosis: { businessProblem: 'Implantes cerebrales de grafeno.', csysHelpStrategy: ['1. Ajuste centesimal ±0.002 mm.'] }
+      detailedDiagnosis: { businessProblem: 'Implantes cerebrales de grafeno.', csysHelpStrategy: ['1. Ajuste centesimal ±0,02 mm.'] }
     },
     {
       id: 'startup-real-cat-3',
