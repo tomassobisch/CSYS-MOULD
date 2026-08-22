@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON AMBOS SOCIOS A LA MISMA ALTURA EXACTA ALINEADOS CON LA LÍNEA DE ABAJO */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM AGRANDADO PARA LLEGAR A LA LÍNEA NEGRA DE ABAJO */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -119,17 +119,17 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits at the EXACT SAME HEIGHT Base along the bottom line */}
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Abraham Enlarged to Reach the Bottom Black Line */}
                   <div className="relative z-10 h-full w-full flex items-end justify-center pt-0 pb-0">
                     
-                    {/* Abraham PNG (Left side, exact same height alignment) */}
+                    {/* Abraham PNG (Left side, enlarged so he reaches the bottom black line) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[96%] max-w-[52%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-10 translate-y-5 sm:translate-y-6 -mr-8 sm:-mr-12"
+                      className="h-[101%] sm:h-[103%] max-w-[55%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-10 translate-y-7 sm:translate-y-9 -mr-8 sm:-mr-12"
                     />
 
-                    {/* Claudio PNG (Right side, exact same height alignment in front) */}
+                    {/* Claudio PNG (Right side, exact same baseline alignment in front) */}
                     <img
                       src="/multimedia/Claudio.PNG"
                       alt="Claudio Arriaga - Socio CSYS MOULD"
