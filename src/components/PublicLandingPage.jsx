@@ -31,15 +31,20 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                 <span className="text-amber-400 font-extrabold uppercase hidden sm:inline">| Alta Precisión</span>
               </div>
 
-              {/* Headline */}
+              {/* Headline - EXACT FROM SCREENSHOT */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-                Desarrollo de Moldes y Micro-Inyección para <span className="text-gradient-amber">Productos Tecnológicos de Alta Precisión</span>
+                Expertos en Diseño y Fabricación de <span className="text-gradient-amber">Productos Plásticos</span>
               </h1>
 
-              {/* Subheadline */}
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal drop-shadow-md">
-                En CSYS MOULD estamos especializados en el <strong className="text-amber-400">diseño, desarrollo de moldes de inyección</strong> y micro-inyección de plásticos con tolerancias micrométricas (<strong className="text-amber-400 font-mono">±0,02 mm</strong>) para componentes tecnológicos de alta exigencia, automoción y electrónica.
-              </p>
+              {/* Subheadline - EXACT FROM SCREENSHOT */}
+              <div className="space-y-2 pt-1">
+                <p className="text-lg sm:text-xl font-bold text-slate-100">
+                  60 años creando para las mejores marcas
+                </p>
+                <p className="text-sm sm:text-base text-slate-300 font-mono font-medium">
+                  Moldistas hasta 5 TN · Especialistas en Microinyección BABYPLAST
+                </p>
+              </div>
 
               {/* IMMEDIATE HERO CALL TO ACTION BUTTON */}
               <div className="space-y-3 pt-2">
