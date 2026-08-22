@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: RESTORED ORIGINAL HERO RECUADRO WITH MOLD SUBJECT PNG & LOGO WATERMARK */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON LA FOTO PNG DE ABRAHAM Y LA FOTO PNG DE CLAUDIO AL LADO */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-3 sm:p-4 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -102,34 +102,44 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                 {/* Laser Scan Line inside clean frame */}
                 <div className="scanline-laser" />
 
-                {/* MOLD PNG IMAGE WITH OFFICIAL LOGO WATERMARK UNDERNEATH */}
+                {/* HERO FRAMED IMAGE CONTAINER WITH BOTH FOUNDERS SIDE BY SIDE */}
                 <div className="relative h-80 sm:h-96 rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-center p-2">
                   
                   {/* Background Real Photo PNG */}
                   <img
                     src="/multimedia/dsc02858_real.png"
-                    alt="Molde Real CSYS MOULD"
-                    className="absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90"
+                    alt="Planta Real CSYS MOULD"
+                    className="absolute inset-0 w-full h-full object-cover opacity-25 filter brightness-90"
                   />
 
-                  {/* LOGO WATERMARK BEHIND MOLD IMAGE */}
+                  {/* LOGO WATERMARK BEHIND */}
                   <img
                     src="/multimedia/logo_blanco.png"
                     alt="Marca de agua CSYS MOULD"
                     className="absolute inset-0 m-auto max-h-40 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Foreground Large Mold Subject PNG Cutout */}
-                  <img
-                    src="/multimedia/mold_subject.png"
-                    alt="Sujeto de Molde PNG CSYS MOULD"
-                    className="relative z-10 max-h-full max-w-full object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] group-hover:scale-105 transition-transform duration-700"
-                  />
+                  {/* Both Abraham & Claudio Cutout Portraits Side-by-Side with Glowing Drop Shadows */}
+                  <div className="relative z-10 h-full w-full flex items-end justify-center gap-2 pt-3 pb-6">
+                    <img
+                      src="/multimedia/director_abraham.jpg"
+                      alt="Abraham Lozano - Socio CSYS MOULD"
+                      className="h-[96%] max-w-[48%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.75)] group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <img
+                      src="/multimedia/director_claudio.jpg"
+                      alt="Claudio Arriaga - Socio CSYS MOULD"
+                      className="h-[96%] max-w-[48%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.75)] group-hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
 
                   {/* ELEGANT PNG BRANDING BADGE UNDER PHOTO */}
                   <div className="absolute bottom-3 left-3 right-3 z-20 flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/90 backdrop-blur-md border border-amber-500/40">
-                    <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-5 object-contain" />
-                    <span className="text-[10px] font-mono text-amber-400 font-bold">GARANTÍA DE MATRIZ CSYS</span>
+                    <div className="flex items-center gap-2">
+                      <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-5 object-contain" />
+                      <span className="text-[11px] font-mono text-white font-bold">Abraham Lozano & Claudio Arriaga</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-amber-400 font-bold">SOCIOS DE CSYSMOULD</span>
                   </div>
                 </div>
 
