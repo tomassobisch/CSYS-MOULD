@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON CON BARRA FLOTANTE REDONDEADA Y BRAZOS ALINEADOS PERFECTAMENTE */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON CORTE INFERIOR OCULTO PERFECTAMENTE TRAS LA BARRA DE MARCA */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -103,7 +103,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                 <div className="scanline-laser" />
 
                 {/* HERO FRAMED IMAGE CONTAINER */}
-                <div className="relative h-96 sm:h-[440px] rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-end p-0">
+                <div className="relative h-96 sm:h-[430px] rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-end p-0">
                   
                   {/* Background Real Photo PNG */}
                   <img
@@ -119,32 +119,32 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Abraham's Arms resting exactly on top of floating bar */}
-                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-2 pb-11 sm:pb-12 px-2">
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Sitting Deeply Into the Bottom Edge Without Any Gap */}
+                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-0 pb-0">
                     
-                    {/* Claudio PNG (Behind on the right, resting on top of floating bar) */}
+                    {/* Claudio PNG (Behind on the right, base extending deep into bottom bar) */}
                     <img
                       src="/multimedia/Claudio.PNG"
                       alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[92%] sm:h-[95%] max-w-[50%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.95)] -mr-8 sm:-mr-12 relative z-10 translate-y-1"
+                      className="h-[96%] max-w-[52%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.95)] -mr-8 sm:-mr-12 relative z-10 translate-y-4 sm:translate-y-6"
                     />
 
-                    {/* Abraham PNG (In front, enlarged, arms aligned flush with floating bar) */}
+                    {/* Abraham PNG (In front, base extending deep into bottom bar eliminating gap completely) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[100%] sm:h-[104%] max-w-[56%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-1 scale-[1.02] group-hover:scale-[1.05] transition-transform duration-500"
+                      className="h-[105%] max-w-[58%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-5 sm:translate-y-7 scale-[1.04] group-hover:scale-[1.07] transition-transform duration-500"
                     />
 
                   </div>
 
-                  {/* RECUADRO FLOTANTE CON ESQUINAS REDONDEADAS Y BORDES AMBAR */}
-                  <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-black/95 border border-amber-500/50 shadow-2xl backdrop-blur-md">
+                  {/* ELEGANT PNG BRANDING BADGE OVERLAPPING & COVERING THE BOTTOM CORNER CUT SEAMLESSLY */}
+                  <div className="absolute bottom-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2.5 rounded-b-2xl bg-gradient-to-t from-black via-black/95 to-black/80 border-t border-amber-500/40 shadow-2xl backdrop-blur-md">
                     <div className="flex items-center gap-2">
-                      <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-4.5 sm:h-5 object-contain" />
+                      <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-4 sm:h-5 object-contain" />
                       <span className="text-[10px] sm:text-[11px] font-mono text-white font-bold">Abraham Lozano & Claudio Arriaga</span>
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-mono text-amber-400 font-extrabold uppercase">SOCIOS DE CSYSMOULD</span>
+                    <span className="text-[9px] sm:text-[10px] font-mono text-amber-400 font-extrabold">SOCIOS DE CSYSMOULD</span>
                   </div>
                 </div>
 
@@ -255,7 +255,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     <strong className="text-white font-extrabold">Garantía indefinida</strong> en todos nuestros moldes mientras <strong className="text-white font-extrabold">CSYS MOULD o nuestros asociados se encarguen de la producción</strong>, incluyendo soporte, mantenimiento y puesta a punto en nuestras instalaciones de <strong className="text-white font-extrabold">Barcelona.</strong>
                   </p>
                   <p className="text-slate-300 border-t border-slate-900/80 pt-2">
-                    Si la producción la realiza directamente el cliente o una empresa externa, me moldes cuentan con una <strong className="text-white font-extrabold">garantía de 3 años.</strong>
+                    Si la producción la realiza directamente el cliente o una empresa externa, nuestros moldes cuentan con una <strong className="text-white font-extrabold">garantía de 3 años.</strong>
                   </p>
                 </div>
               </div>
