@@ -89,9 +89,9 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON IMÁGENES PERFECTAMENTE AJUSTADAS SIN CORTAR POR EL MARCO */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON IMÁGENES MAXIMIZADAS OCUPANDO TODO EL ESPACIO POSIBLE SIN CORTAR */}
             <div className="lg:col-span-5 relative">
-              <div className="bg-black p-3 sm:p-4 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
+              <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
                 {/* HUD Corner Brackets */}
                 <div className="hud-corner-tl" />
@@ -102,8 +102,8 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                 {/* Laser Scan Line inside clean frame */}
                 <div className="scanline-laser" />
 
-                {/* HERO FRAMED IMAGE CONTAINER WITH OVERLAPPING FOUNDERS FIT INSIDE FRAME */}
-                <div className="relative h-80 sm:h-96 rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-center p-3">
+                {/* HERO FRAMED IMAGE CONTAINER MAXIMIZED */}
+                <div className="relative h-96 sm:h-[430px] rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-center p-1 sm:p-2">
                   
                   {/* Background Real Photo PNG */}
                   <img
@@ -116,35 +116,35 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                   <img
                     src="/multimedia/logo_blanco.png"
                     alt="Marca de agua CSYS MOULD"
-                    className="absolute inset-0 m-auto max-h-36 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
+                    className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Overlapping Fit Comfortably Inside Frame Without Clipping */}
-                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-4 pb-8 px-2">
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Overlapping Maximized to Fill Full Space */}
+                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-2 pb-6">
                     
-                    {/* Claudio PNG (Behind on the right, scaled to fit inside frame) */}
+                    {/* Claudio PNG (Behind on the right, maximized) */}
                     <img
                       src="/multimedia/Claudio.PNG"
                       alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[80%] sm:h-[84%] max-w-[45%] object-contain filter drop-shadow-[0_0_15px_rgba(0,0,0,0.9)] -mr-6 sm:-mr-8 relative z-10"
+                      className="h-[91%] sm:h-[93%] max-w-[50%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.95)] -mr-8 sm:-mr-12 relative z-10"
                     />
 
-                    {/* Abraham PNG (In front, enlarged relative to Claudio, fits inside frame without top clipping) */}
+                    {/* Abraham PNG (In front, enlarged to maximum limit, overlapping Claudio) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[92%] sm:h-[95%] max-w-[50%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 group-hover:scale-105 transition-transform duration-500"
+                      className="h-[98%] sm:h-[99%] max-w-[55%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 group-hover:scale-[1.03] transition-transform duration-500"
                     />
 
                   </div>
 
                   {/* ELEGANT PNG BRANDING BADGE UNDER PHOTO */}
-                  <div className="absolute bottom-2 left-2 right-2 z-30 flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/90 backdrop-blur-md border border-amber-500/40">
+                  <div className="absolute bottom-2 left-2 right-2 z-30 flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-black/90 backdrop-blur-md border border-amber-500/40 shadow-2xl">
                     <div className="flex items-center gap-2">
                       <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-4 sm:h-5 object-contain" />
                       <span className="text-[10px] sm:text-[11px] font-mono text-white font-bold">Abraham Lozano & Claudio Arriaga</span>
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-mono text-amber-400 font-bold">SOCIOS DE CSYSMOULD</span>
+                    <span className="text-[9px] sm:text-[10px] font-mono text-amber-400 font-extrabold">SOCIOS DE CSYSMOULD</span>
                   </div>
                 </div>
 
