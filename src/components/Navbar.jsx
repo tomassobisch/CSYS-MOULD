@@ -36,7 +36,7 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           
-          {/* OFFICIAL DESIGNED PNG LOGO & BARCELONA SPAIN ONLY */}
+          {/* OFFICIAL DESIGNED PNG LOGO & BARCELONA (SPAIN) ONLY */}
           <div 
             onClick={() => scrollTo('hero')} 
             className="flex items-center gap-3.5 cursor-pointer group"
@@ -51,7 +51,7 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
 
             <div className="hidden sm:block">
               <p className="text-sm sm:text-base font-extrabold tracking-widest uppercase text-amber-400 font-mono text-tech drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
-                Barcelona Spain
+                Barcelona (Spain)
               </p>
             </div>
           </div>
