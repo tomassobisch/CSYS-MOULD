@@ -20,7 +20,9 @@ export default function VideoBackground() {
   // Ensure video plays smoothly whenever index changes
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.play().catch((err) => console.log('Auto-play prevented or suppressed:', err));
+      videoRef.current.play().catch((err) => {
+        console.log('Auto-play suppressed or waiting for user interaction:', err);
+      });
     }
   }, [currentVideoIndex]);
 
@@ -151,18 +153,20 @@ export default function VideoBackground() {
       <video
         ref={videoRef}
         key={BACKGROUND_VIDEOS[currentVideoIndex]}
-        src={BACKGROUND_VIDEOS[currentVideoIndex]}
         autoPlay
         muted
         playsInline
+        preload="auto"
         onEnded={handleVideoEnded}
-        className="absolute inset-0 w-full h-full object-cover filter brightness-[0.65] contrast-[1.1] transition-opacity duration-1000"
-      />
+        className="absolute inset-0 w-full h-full object-cover filter brightness-[0.7] contrast-[1.1] transition-opacity duration-1000"
+      >
+        <source src={BACKGROUND_VIDEOS[currentVideoIndex]} type="video/mp4" />
+      </video>
 
       {/* 2. BRUMA OSCURA (DARK MIST & ATMOSPHERIC FOG OVERLAY) */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/80" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/10 via-black/70 to-black" />
+      <div className="absolute inset-0 bg-black/65 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/75" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/10 via-black/60 to-black" />
 
       {/* 3. HIGH-TECH LASER & METROLOGY CANVAS OVERLAY */}
       <canvas
