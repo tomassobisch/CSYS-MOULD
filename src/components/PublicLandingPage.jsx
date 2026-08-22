@@ -89,7 +89,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
             </div>
 
-            {/* RIGHT COLUMN: HERO RECUADRO CON IMÁGENES MAXIMIZADAS OCUPANDO TODO EL ESPACIO POSIBLE SIN CORTAR */}
+            {/* RIGHT COLUMN: HERO RECUADRO CON CORTE INFERIOR OCULTO PERFECTAMENTE TRAS LA BARRA DE MARCA */}
             <div className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
@@ -102,8 +102,8 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                 {/* Laser Scan Line inside clean frame */}
                 <div className="scanline-laser" />
 
-                {/* HERO FRAMED IMAGE CONTAINER MAXIMIZED */}
-                <div className="relative h-96 sm:h-[430px] rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-center p-1 sm:p-2">
+                {/* HERO FRAMED IMAGE CONTAINER */}
+                <div className="relative h-96 sm:h-[430px] rounded-2xl overflow-hidden bg-black flex flex-col items-center justify-end p-0">
                   
                   {/* Background Real Photo PNG */}
                   <img
@@ -119,27 +119,27 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Overlapping Maximized to Fill Full Space */}
-                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-2 pb-6">
+                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits Sitting Exactly on the Bottom Edge */}
+                  <div className="relative z-10 h-full w-full flex items-end justify-center pt-2 pb-0">
                     
-                    {/* Claudio PNG (Behind on the right, maximized) */}
+                    {/* Claudio PNG (Behind on the right, base extending to bottom) */}
                     <img
                       src="/multimedia/Claudio.PNG"
                       alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[91%] sm:h-[93%] max-w-[50%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.95)] -mr-8 sm:-mr-12 relative z-10"
+                      className="h-[95%] max-w-[50%] object-contain filter drop-shadow-[0_0_20px_rgba(0,0,0,0.95)] -mr-8 sm:-mr-12 relative z-10 translate-y-2"
                     />
 
-                    {/* Abraham PNG (In front, enlarged to maximum limit, overlapping Claudio) */}
+                    {/* Abraham PNG (In front, base extending to bottom) */}
                     <img
                       src="/multimedia/Abaham.png"
                       alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[98%] sm:h-[99%] max-w-[55%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 group-hover:scale-[1.03] transition-transform duration-500"
+                      className="h-[102%] max-w-[56%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-2 group-hover:scale-[1.03] transition-transform duration-500"
                     />
 
                   </div>
 
-                  {/* ELEGANT PNG BRANDING BADGE UNDER PHOTO */}
-                  <div className="absolute bottom-2 left-2 right-2 z-30 flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-black/90 backdrop-blur-md border border-amber-500/40 shadow-2xl">
+                  {/* ELEGANT PNG BRANDING BADGE OVERLAPPING & COVERING THE BOTTOM CORNER CUT SEAMLESSLY */}
+                  <div className="absolute bottom-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2.5 rounded-b-2xl bg-gradient-to-t from-black via-black/95 to-black/80 border-t border-amber-500/40 shadow-2xl backdrop-blur-md">
                     <div className="flex items-center gap-2">
                       <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Logo Badge" className="h-4 sm:h-5 object-contain" />
                       <span className="text-[10px] sm:text-[11px] font-mono text-white font-bold">Abraham Lozano & Claudio Arriaga</span>
