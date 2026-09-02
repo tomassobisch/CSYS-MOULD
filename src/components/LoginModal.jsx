@@ -7,7 +7,6 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showClientNoticeModal, setShowClientNoticeModal] = useState(false);
 
   if (!isOpen) return null;
 
@@ -21,17 +20,24 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const handleLogin = (e) => {
     e.preventDefault();
     setError('');
-
-    // REQUEST 1: CLIENT PORTAL "ENTRAR" -> POPUP "Estamos trabajando en ello, próximamente."
-    if (loginType === 'client') {
-      setShowClientNoticeModal(true);
-      return;
-    }
-
-    // REQUEST 2: ACCESO CORPORATIVO CREDENTIALS (MANUAL SECURITY LOGIN)
     setLoading(true);
 
     setTimeout(() => {
+      // 1. CLIENT ACCESS (DIRECT ACCESS - UNLOCKED FOR CLIENT PORTAL)
+      if (loginType === 'client') {
+        const clientName = email ? email.split('@')[0] : 'Cliente CSYS';
+        onLoginSuccess({
+          name: clientName.charAt(0).toUpperCase() + clientName.slice(1),
+          email: email || 'cliente@empresa.com',
+          company: 'Cliente CSYS MOULD',
+          role: 'client',
+          avatar: '/multimedia/logo_blanco.png'
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 2. ACCESO CORPORATIVO CREDENTIALS (MANUAL SECURITY LOGIN FOR DIRECTORS)
       const cleanEmail = email.trim().toLowerCase();
       const cleanPass = password.trim();
 
@@ -82,41 +88,12 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         setError('Acceso denegado. Introduzca sus credenciales directivas.');
         setLoading(false);
       }
-    }, 400);
+    }, 300);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
       
-      {/* POPUP EMERGENTE ÁREA CLIENTES "Estamos trabajando en ello, próximamente." */}
-      {showClientNoticeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md bg-slate-950 border-2 border-amber-500 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center font-mono">
-            <div className="w-16 h-16 rounded-3xl bg-amber-500/20 border-2 border-amber-500 text-amber-400 flex items-center justify-center mx-auto animate-bounce">
-              <Wrench className="w-8 h-8 text-amber-400" />
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-xl font-extrabold text-white">Área de Clientes</h3>
-              <p className="text-sm text-amber-400 font-bold leading-relaxed">
-                Estamos trabajando en ello, próximamente.
-              </p>
-              <p className="text-xs text-slate-400 pt-1">
-                El portal exclusivo para clientes está en fase de desarrollo final y estará disponible en breve.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowClientNoticeModal(false)}
-              className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-xl shadow-amber-500/30 transition-all"
-            >
-              Entendido
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* MAIN LOGIN MODAL CARD */}
       <div className="relative w-full max-w-lg bg-black border-2 border-amber-500/70 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-amber-950/80 space-y-6 overflow-hidden">
         
@@ -231,7 +208,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             ) : (
               <>
                 <Lock className="w-4 h-4 text-slate-950" />
-                <span>{loginType === 'corporate' ? 'Ingresar al Centro de Bots' : 'Entrar'}</span>
+                <span>{loginType === 'corporate' ? 'Ingresar al Centro de Bots' : 'Entrar al Portal de Clientes'}</span>
                 <ArrowRight className="w-4 h-4 text-slate-950" />
               </>
             )}
