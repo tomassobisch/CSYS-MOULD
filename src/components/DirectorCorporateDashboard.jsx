@@ -1936,8 +1936,14 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
       {/* MODAL BOT 2: ESTUDIO 360° COMPLETO EN PDF CON MARCA DE AGUA */}
       {selectedClosingStudyLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl max-h-[90vh] bg-black border-2 border-emerald-500 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 overflow-y-auto font-mono text-xs">
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200 overflow-y-auto"
+          onClick={() => setSelectedClosingStudyLead(null)}
+        >
+          <div 
+            className="relative w-full max-w-3xl my-auto bg-black border-2 border-emerald-500 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 font-mono text-xs"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-5 dark:opacity-10 scale-125 z-0">
               <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Watermark" className="w-[500px] object-contain opacity-20 filter grayscale" />
             </div>
@@ -2068,8 +2074,14 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
       {/* MODAL BOT 1: AYUDA CSYS */}
       {selectedHelpLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl max-h-[90vh] bg-black border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 overflow-y-auto font-mono text-xs">
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200 overflow-y-auto"
+          onClick={() => setSelectedHelpLead(null)}
+        >
+          <div 
+            className="relative w-full max-w-3xl my-auto bg-black border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 font-mono text-xs"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-5 dark:opacity-10 scale-125 z-0">
               <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Watermark" className="w-[500px] object-contain opacity-20 filter grayscale" />
             </div>
@@ -2130,8 +2142,14 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
       {/* MODAL BOT 1: DOSSIER */}
       {selectedReportLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl max-h-[90vh] bg-black border-2 border-amber-500/70 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 overflow-y-auto font-mono text-xs">
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200 overflow-y-auto"
+          onClick={() => setSelectedReportLead(null)}
+        >
+          <div 
+            className="relative w-full max-w-3xl my-auto bg-black border-2 border-amber-500/70 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 font-mono text-xs"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-5 dark:opacity-10 scale-125 z-0">
               <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Watermark" className="w-[500px] object-contain opacity-20 filter grayscale" />
             </div>
@@ -2242,8 +2260,14 @@ function ProposalModal({ lead, onClose, onNotification }) {
   const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="relative w-full max-w-5xl max-h-[92vh] bg-black border-2 border-cyan-500 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 overflow-y-auto font-mono text-xs text-slate-100">
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/95 backdrop-blur-xl animate-in fade-in duration-200 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div 
+        className="relative w-full max-w-5xl my-auto bg-black border-2 border-cyan-500 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 font-mono text-xs text-slate-100"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* WATERMARK BACKGROUND LOGO */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-5 dark:opacity-10 scale-125 z-0">
@@ -2400,7 +2424,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
                   }}
                   className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-[10px] border border-slate-800 flex items-center gap-1"
                 >
-                  <RefreshCw className="w-3 h-3 text-cyan-400" /> Restablecer Original
+                  <RefreshCw className="w-3.5 h-3.5 text-cyan-400" /> Restablecer Original
                 </button>
               </div>
             </div>
@@ -2462,9 +2486,17 @@ function ProposalModal({ lead, onClose, onNotification }) {
                 </a>
 
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(currentBody);
-                    onNotification?.('📋 Correo redactado copiado al portapapeles');
+                  onClick={async () => {
+                    try {
+                      if (navigator?.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(currentBody);
+                        onNotification?.('📋 Correo redactado copiado al portapapeles');
+                      } else {
+                        onNotification?.('📋 Texto listo en pantalla (Copia manual)');
+                      }
+                    } catch (e) {
+                      onNotification?.('📋 Texto listo en pantalla (Copia manual)');
+                    }
                   }}
                   className="px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs border border-cyan-500/40 flex items-center gap-2 transition-all"
                 >
