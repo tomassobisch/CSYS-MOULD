@@ -12,8 +12,25 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
   const [lang, setLang] = useState('ES');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
+
+  // PERSISTENT SESSION MANAGEMENT VIA LOCALSTORAGE
+  const [userProfile, setUserProfile] = useState(() => {
+    try {
+      const saved = localStorage.getItem('csys_user_session');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try {
+      const saved = localStorage.getItem('csys_user_session');
+      return !!saved;
+    } catch (e) {
+      return false;
+    }
+  });
 
   const scrollToContact = () => {
     const contactEl = document.getElementById('contact');
@@ -26,12 +43,22 @@ export default function App() {
     setUserProfile(profileData);
     setIsAuthenticated(true);
     setIsLoginModalOpen(false);
+    try {
+      localStorage.setItem('csys_user_session', JSON.stringify(profileData));
+    } catch (e) {
+      console.warn('Session persistence fallback:', e);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUserProfile(null);
+    try {
+      localStorage.removeItem('csys_user_session');
+    } catch (e) {
+      console.warn('Session clear fallback:', e);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
