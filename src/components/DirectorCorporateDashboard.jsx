@@ -31,6 +31,9 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
   // BOT 2 MODALS
   const [selectedClosingStudyLead, setSelectedClosingStudyLead] = useState(null); // Estudio 360° de Probabilidad & Crecimiento
+
+  // BOT 3 MODALS
+  const [selectedProposalLead, setSelectedProposalLead] = useState(null); // Propuesta Formal B2B & Correo Redactado
   
   // Google Maps Active Search Location Query State
   const [activeMapQuery, setActiveMapQuery] = useState('Distrito 22@ Barcelona, Spain');
@@ -743,6 +746,17 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
   };
 
+  // SAVE BOT 3 PROPOSAL TO SUPABASE
+  const saveBot3ProposalToSupabase = async (lead) => {
+    try {
+      await trackLeadAction(lead, 'PROPOSAL_GENERATED', `Propuesta Formal B2B redactada y preparada para contacto comercial directo con ${lead.contactPerson} (${lead.email})`);
+      showNotification(`📧 Propuesta Formal guardada en Supabase (lead_actions): ${lead.company}`);
+    } catch (e) {
+      console.warn('Bot 3 proposal save fallback:', e);
+    }
+  };
+
+
   const showNotification = (msg) => {
     setActionNotification(msg);
     setTimeout(() => setActionNotification(null), 3500);
@@ -874,9 +888,14 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       }
 
       const todayStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-      const botReply = activeBot === 'scouting'
-        ? `[BOT 1 - HARDWARE SCOUT]: Búsqueda del ${todayStr} completada. Se han escaneado ${shuffled.length} startups de hardware 100% reales con sus correos electrónicos oficiales corporativos (@empresa.com).`
-        : `[BOT 2 - PREDICTOR DE CIERRE]: Inteligencia Predictiva ejecutada el ${todayStr}. Se han evaluado ${shuffled.length} empresas reales con correos corporativos oficiales de contacto.`;
+      let botReply = `[BOT 1 - HARDWARE SCOUT]: Búsqueda del ${todayStr} completada. Se han escaneado ${shuffled.length} startups de hardware 100% reales con sus correos electrónicos oficiales corporativos (@empresa.com).`;
+      if (activeBot === 'dfm') {
+        botReply = `[BOT 2 - PREDICTOR DE CIERRE]: Inteligencia Predictiva ejecutada el ${todayStr}. Se han evaluado ${shuffled.length} empresas reales con correos corporativos oficiales de contacto.`;
+      } else if (activeBot === 'commercial') {
+        botReply = `[BOT 3 - PROPUESTAS FORMALES B2B]: Generador de Propuestas activado el ${todayStr}. Se han preparado ${shuffled.length} propuestas formales con soluciones de inyección, desglose de presupuestos y redacción de email comercial para contacto directo.`;
+      } else if (activeBot === 'china') {
+        botReply = `[BOT 4 - LOGÍSTICA & HUBS CHINA]: Monitoreo de producción en matricería Dongguan & Shenzhen actualizado el ${todayStr}.`;
+      }
 
       setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
     }, 1000);
@@ -1024,8 +1043,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     },
     {
       id: 'commercial',
-      name: 'Bot 3: Bot Comercial & Cotizaciones Instantáneas (Cotizador & Presupuestos DFM)',
-      description: 'Generación automatizada de presupuestos técnicos según acero, cavidades y tonelaje de prensa.',
+      name: 'Bot 3: Generador de Propuestas Formales B2B & Soluciones Técnicas',
+      description: 'Arma propuestas industriales completas y redacta correos formales personalizados para contactar directamente a cada empresa.',
       icon: FileText,
       color: 'cyan'
     },
@@ -1051,10 +1070,11 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
   // BOT DYNAMIC COLOR CLASSES
   const isBot2 = activeBot === 'dfm';
-  const themeBorderColor = isBot2 ? 'border-emerald-500' : 'border-amber-500';
-  const themeTextColor = isBot2 ? 'text-emerald-400' : 'text-amber-400';
-  const themeBgColor = isBot2 ? 'bg-emerald-500' : 'bg-amber-500';
-  const themeBadgeBg = isBot2 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+  const isBot3 = activeBot === 'commercial';
+  const themeBorderColor = isBot2 ? 'border-emerald-500' : isBot3 ? 'border-cyan-500' : 'border-amber-500';
+  const themeTextColor = isBot2 ? 'text-emerald-400' : isBot3 ? 'text-cyan-400' : 'text-amber-400';
+  const themeBgColor = isBot2 ? 'bg-emerald-500' : isBot3 ? 'bg-cyan-500' : 'bg-amber-500';
+  const themeBadgeBg = isBot2 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : isBot3 ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40';
 
   return (
     <div className="min-h-screen bg-black text-slate-100 pt-24 pb-16 space-y-12 relative">
@@ -1357,7 +1377,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           {botsList.map((bot) => {
             const Icon = bot.icon;
             const isSelected = activeBot === bot.id;
-            const botBgColor = bot.id === 'dfm' ? 'bg-emerald-500' : 'bg-amber-500';
+            const botBgColor = bot.id === 'dfm' ? 'bg-emerald-500' : bot.id === 'commercial' ? 'bg-cyan-500' : 'bg-amber-500';
             return (
               <button
                 key={bot.id}
@@ -1366,6 +1386,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                   isSelected
                     ? bot.id === 'dfm'
                       ? 'bg-emerald-950/70 border-2 border-emerald-500 shadow-xl shadow-emerald-500/20'
+                      : bot.id === 'commercial'
+                      ? 'bg-cyan-950/70 border-2 border-cyan-500 shadow-xl shadow-cyan-500/20'
                       : 'bg-amber-950/60 border-2 border-amber-500 shadow-xl shadow-amber-500/20'
                     : 'bg-slate-950 border-slate-800 hover:border-slate-700'
                 }`}
@@ -1380,7 +1402,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                   <p className="text-slate-400 leading-relaxed text-[11px]">{bot.description}</p>
                 </div>
 
-                <div className={`pt-2 flex items-center justify-between text-[10px] font-mono border-t border-slate-800 ${isSelected ? (bot.id === 'dfm' ? 'text-emerald-400' : 'text-amber-400') : 'text-slate-400'}`}>
+                <div className={`pt-2 flex items-center justify-between text-[10px] font-mono border-t border-slate-800 ${isSelected ? (bot.id === 'dfm' ? 'text-emerald-400' : bot.id === 'commercial' ? 'text-cyan-400' : 'text-amber-400') : 'text-slate-400'}`}>
                   <span>{isSelected ? '✓ Seleccionado' : 'Hacer clic para activar'}</span>
                   <span>En línea</span>
                 </div>
@@ -1728,6 +1750,106 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           </div>
         )}
 
+        {/* BOT 3 MODE: GENERADOR DE PROPUESTAS FORMALES B2B */}
+        {activeBot === 'commercial' && (
+          <div className="bg-slate-950 rounded-3xl border-2 border-cyan-500 p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in duration-300 font-mono text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div>
+                <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
+                  BOT 3: GENERADOR DE PROPUESTAS FORMALES & SOLUCIONES TÉCNICAS B2B
+                </span>
+                <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-cyan-400" /> Propuestas Industriales & Redacción de Correo Comercial
+                </h3>
+              </div>
+
+              <span className="px-3 py-1 rounded-full bg-cyan-950 text-cyan-400 font-bold border border-cyan-500/40 text-[11px]">
+                {filteredStartups.length} Empresas Listas para Propuesta
+              </span>
+            </div>
+
+            {/* BOT 3 CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredStartups.map((lead) => {
+                const isFavorite = favoriteLeads.some(f => f.id === lead.id);
+                const mailtoUrl = `mailto:${encodeURIComponent(lead.email)}?subject=${encodeURIComponent(`[Propuesta Formal CSYS MOULD] Solución de Inyección y Matricería para ${lead.company}`)}&body=${encodeURIComponent(
+                  `Estimado/a ${lead.contactPerson},\n\nNos dirigimos a usted desde CSYS MOULD S.L. (Planta de Matricería e Inyección de Plásticos en Llinars del Vallès, Barcelona).\n\nHemos analizado su requerimiento técnico para ${lead.company}: "${lead.technicalNeed}".\n\nLe enviamos adjunta nuestra propuesta técnico-económica formal personalizada para la fabricación de moldes de inyección con tolerancia centesimal (±0,01 mm) y acero Stavax ESR a 54 HRC.\n\nPresupuesto Estimado: ${lead.estimatedBudget || '45.000 €'} (Ingeniería DFM 3D incluida).\nPlazo de Entrega T1: 35-40 días laborables.\n\n¿Dispone de unos minutos esta semana para agendar una breve videollamada o coordinar una visita a nuestra planta en Barcelona?\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\nwww.csysmould.com | info@csysmould.com`
+                )}`;
+
+                return (
+                  <div key={lead.id} className="bg-black p-6 rounded-2xl border-2 border-cyan-500/50 space-y-4 hover:border-cyan-400 transition-all flex flex-col justify-between shadow-xl">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-cyan-950 text-cyan-300 border border-cyan-500/60 flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-cyan-400" /> Solución Lista: {lead.company}
+                        </span>
+
+                        <button
+                          onClick={() => toggleFavoriteLead(lead)}
+                          className={`p-1.5 rounded-lg border font-bold flex items-center gap-1 transition-all ${
+                            isFavorite
+                              ? 'bg-cyan-500 text-slate-950 border-cyan-400'
+                              : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-cyan-400'
+                          }`}
+                        >
+                          <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-slate-950' : ''}`} />
+                          <span className="text-[10px]">{isFavorite ? 'Guardado' : 'Guardar'}</span>
+                        </button>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-lg font-bold text-white flex items-center gap-2">
+                            <Rocket className="w-4 h-4 text-cyan-400" /> {lead.company}
+                          </h4>
+                          <span className="text-cyan-400 font-extrabold text-xs bg-cyan-950/60 px-2.5 py-1 rounded-md border border-cyan-500/40">
+                            {lead.estimatedBudget || 'Presupuesto Asignado'}
+                          </span>
+                        </div>
+                        <p className="text-slate-400 text-[11px] flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3 h-3 text-cyan-400" /> {lead.addressFull || lead.country}
+                        </p>
+                      </div>
+
+                      <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 text-[11px]">
+                        <p className="flex items-center gap-1 text-white font-bold">
+                          <UserCheck className="w-3.5 h-3.5 text-amber-400" /> Contacto Oficial: <span className="text-amber-300">{lead.contactPerson}</span>
+                        </p>
+                        <p className="flex items-center gap-1 text-cyan-400 font-bold">
+                          <Mail className="w-3.5 h-3.5 text-cyan-400" /> Correo Corporativo: <a href={`mailto:${lead.email}`} className="text-white font-extrabold underline">{lead.email}</a>
+                        </p>
+                        <p className="text-slate-300 text-[11px] pt-1">
+                          <strong className="text-cyan-400">Necesidad del Cliente:</strong> {lead.technicalNeed}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedProposalLead(lead);
+                          saveBot3ProposalToSupabase(lead);
+                        }}
+                        className="w-full sm:w-auto flex-1 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all"
+                      >
+                        <FileText className="w-4 h-4" />
+                        <span>📄 Armar Propuesta Formal & Redactar Correo</span>
+                      </button>
+
+                      <a
+                        href={mailtoUrl}
+                        className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/50 font-bold text-xs flex items-center gap-1.5 transition-all"
+                      >
+                        <Send className="w-3.5 h-3.5 text-cyan-400" /> Enviar Mail
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* INTERACTIVE BOT CHAT CONSOLE */}
         <div className={`bg-slate-950 rounded-3xl border-2 ${themeBorderColor} p-6 sm:p-8 space-y-6 shadow-2xl transition-all duration-300`}>
           <div className="flex items-center justify-between pb-4 border-b border-slate-800">
@@ -2041,6 +2163,219 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               <button
                 onClick={() => setSelectedReportLead(null)}
                 className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL BOT 3: PROPUESTA FORMAL COMPLETA B2B & REDACCIÓN DE CORREO */}
+      {selectedProposalLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
+          <div className="relative w-full max-w-4xl max-h-[90vh] bg-black border-2 border-cyan-500 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 overflow-y-auto font-mono text-xs">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-5 dark:opacity-10 scale-125 z-0">
+              <img src="/multimedia/logo_blanco.png" alt="CSYS MOULD Watermark" className="w-[500px] object-contain opacity-20 filter grayscale" />
+            </div>
+
+            {/* MODAL HEADER */}
+            <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-cyan-500 text-slate-950">
+                  <FileText className="w-7 h-7" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">
+                    BOT 3: PROPUESTA TÉCNICO-COMERCIAL FORMAL B2B (CSYS MOULD S.L.)
+                  </span>
+                  <h3 className="text-2xl font-extrabold text-white">{selectedProposalLead.company}</h3>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => window.print()}
+                  className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 font-extrabold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-500/20"
+                >
+                  <Printer className="w-4 h-4" /> Imprimir / PDF Propuesta
+                </button>
+                <button
+                  onClick={() => setSelectedProposalLead(null)}
+                  className="p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800 text-xs"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* PROPOSAL METADATA BAR */}
+            <div className="relative z-10 p-4 rounded-2xl bg-cyan-950/60 border border-cyan-500/60 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-[11px] text-slate-300">
+              <div>
+                <span className="text-slate-400 text-[10px] block uppercase font-bold">CÓDIGO PROPUESTA</span>
+                <span className="text-cyan-300 font-extrabold">PROP-2026-{selectedProposalLead.id.toUpperCase().slice(-6)}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 text-[10px] block uppercase font-bold">FECHA EMISIÓN</span>
+                <span className="text-white font-bold">{new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 text-[10px] block uppercase font-bold">DIRIGIDO A</span>
+                <span className="text-amber-300 font-bold">{selectedProposalLead.contactPerson}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 text-[10px] block uppercase font-bold">CORREO DESTINATARIO</span>
+                <span className="text-cyan-400 font-extrabold underline truncate block">{selectedProposalLead.email}</span>
+              </div>
+            </div>
+
+            {/* SECCIÓN 1: SOLUCIÓN TÉCNICA RECOMENDADA */}
+            <div className="relative z-10 space-y-6 text-slate-200 leading-relaxed">
+              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                <h4 className="text-cyan-400 font-extrabold text-sm flex items-center gap-2">
+                  <Wrench className="w-4 h-4" /> 1. Propuesta de Solución Técnica de Matricería e Inyección CSYS
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+                  <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                    <span className="text-slate-400 font-bold block">• Especificación de Acero:</span>
+                    <p className="text-white font-bold">Acero Inoxidable Stavax ESR (54 HRC) / 1.2344 Nitrurado</p>
+                    <p className="text-slate-400 text-[10px]">Resistencia extrema al desgaste y pulido espejo para acabado de alta calidad.</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                    <span className="text-slate-400 font-bold block">• Tolerancia & Precisión Centesimal:</span>
+                    <p className="text-emerald-400 font-bold">±0,01 mm (Mecanizado CNC 5 Ejes & EDM)</p>
+                    <p className="text-slate-400 text-[10px]">Verificación dimensional con informe CMM 3D en cada muestra T1.</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                    <span className="text-slate-400 font-bold block">• Simulación & Diseño DFM:</span>
+                    <p className="text-cyan-300 font-bold">Estudio Moldflow previo e Informe DFM (Gratuito)</p>
+                    <p className="text-slate-400 text-[10px]">Optimización de rechupes, líneas de soldadura y tiempo de ciclo.</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                    <span className="text-slate-400 font-bold block">• Garantía de Producción:</span>
+                    <p className="text-amber-300 font-bold">1.000.000 de inyecciones respaldadas</p>
+                    <p className="text-slate-400 text-[10px]">Mantenimiento preventivo garantizado en Planta Barcelona (500m²).</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECCIÓN 2: DESGLOSE ECONÓMICO & PLAZOS */}
+              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                <h4 className="text-emerald-400 font-extrabold text-sm flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4" /> 2. Valoración Económica y Tiempos de Ejecución
+                </h4>
+
+                <div className="space-y-2">
+                  <div className="p-3 rounded-xl bg-black border border-slate-900 flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-white block">1. Ingeniería DFM 3D & Optimización de Pieza</span>
+                      <span className="text-[10px] text-slate-400">Análisis técnico de inyectabilidad y simulación Moldflow</span>
+                    </div>
+                    <span className="text-emerald-400 font-extrabold">INCLUIDO (0 €)</span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-black border border-slate-900 flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-white block">2. Fabricación de Matriz de Inyección de Alta Precisión</span>
+                      <span className="text-[10px] text-slate-400">Construcción en acero Stavax ESR, portamoldes Hasco y cámara caliente</span>
+                    </div>
+                    <span className="text-cyan-400 font-extrabold text-sm">{selectedProposalLead.estimatedBudget || '48.000 €'}</span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-black border border-slate-900 flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-white block">3. Inyección Muestras T1 + Protocolo Metrológico CMM 3D</span>
+                      <span className="text-[10px] text-slate-400">Inyección de 50 muestras en resina oficial y medición centesimal</span>
+                    </div>
+                    <span className="text-emerald-400 font-extrabold">INCLUIDO</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-center justify-between text-[11px] text-slate-300 font-bold border-t border-slate-900">
+                  <span>Plazo de entrega T1: 35 a 45 días laborables</span>
+                  <span className="text-amber-400">Planta Llinars del Vallès (Barcelona)</span>
+                </div>
+              </div>
+
+              {/* SECCIÓN 3: CORREO COMERCIAL OFICIAL REDACTADO (LISTO PARA ENVIAR) */}
+              <div className="p-5 rounded-2xl bg-cyan-950/40 border-2 border-cyan-500/70 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-cyan-300 font-extrabold text-sm flex items-center gap-2">
+                    <Mail className="w-4 h-4" /> 3. Redacción de Correo Comercial Oficial (Listo para Enviar)
+                  </h4>
+                  <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2.5 py-1 rounded-md border border-cyan-500/40 font-bold">
+                    Personalizado para {selectedProposalLead.contactPerson}
+                  </span>
+                </div>
+
+                <div className="p-4 rounded-xl bg-black border border-slate-800 space-y-3 font-mono text-xs text-slate-200 select-all">
+                  <div className="pb-2 border-b border-slate-800">
+                    <span className="text-slate-400 font-bold">Para:</span> <span className="text-cyan-400 font-bold">{selectedProposalLead.email}</span><br />
+                    <span className="text-slate-400 font-bold">Asunto:</span> <span className="text-white font-bold">[Propuesta Formal CSYS MOULD] Solución de Inyección y Matricería para {selectedProposalLead.company}</span>
+                  </div>
+
+                  <div className="whitespace-pre-line text-slate-300 leading-relaxed text-[11px]">
+                    {`Estimado/a ${selectedProposalLead.contactPerson},
+
+Es un placer saludarle desde CSYS MOULD S.L. (Planta de Matricería e Inyección de Plásticos en Llinars del Vallès, Barcelona).
+
+Tras analizar el requerimiento técnico de ${selectedProposalLead.company} ("${selectedProposalLead.technicalNeed}"), le presentamos nuestra propuesta formal técnico-económica personalizada:
+
+RESUMEN DE LA PROPUESTA TÉCNICA CSYS:
+• Matriz de Inyección de Alta Precisión en Acero Stavax ESR (54 HRC) / 1.2344 Nitrurado.
+• Tolerancias Centesimales garantizadas de ±0,01 mm con informe metrológico CMM 3D.
+• Estudio de Simulación DFM & Moldflow incluido sin coste previo.
+• Presupuesto Estimado: ${selectedProposalLead.estimatedBudget || '45.000 €'} (Ingeniería DFM 3D incluida).
+• Plazo de Entrega T1 (Primeras Muestras): 35 - 40 días laborables.
+• Garantía de Producción: 1.000.000 de ciclos respaldados desde nuestra planta en Barcelona.
+
+Quedamos a su entera disposición para agendar una breve videollamada de 10 minutos esta semana o recibirle en nuestra planta industrial en Llinars del Vallès.
+
+Atentamente,
+
+Claudio Arriaga Silva / Abraham Lozano
+Dirección Corporativa CSYS MOULD S.L.
+📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)
+✉️ claudio@csysmould.com | abraham@csysmould.com | info@csysmould.com
+🌐 https://csys-mould.vercel.app`}
+                  </div>
+                </div>
+
+                {/* ACCIONES DEL CORREO */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                  <a
+                    href={`mailto:${encodeURIComponent(selectedProposalLead.email)}?subject=${encodeURIComponent(`[Propuesta Formal CSYS MOULD] Solución de Inyección y Matricería para ${selectedProposalLead.company}`)}&body=${encodeURIComponent(
+                      `Estimado/a ${selectedProposalLead.contactPerson},\n\nEs un placer saludarle desde CSYS MOULD S.L. (Planta de Matricería e Inyección de Plásticos en Llinars del Vallès, Barcelona).\n\nTras analizar el requerimiento técnico de ${selectedProposalLead.company} ("${selectedProposalLead.technicalNeed}"), le presentamos nuestra propuesta formal técnico-económica personalizada:\n\nRESUMEN DE LA PROPUESTA TÉCNICA CSYS:\n• Matriz de Inyección de Alta Precisión en Acero Stavax ESR (54 HRC) / 1.2344 Nitrurado.\n• Tolerancias Centesimales garantizadas de ±0,01 mm con informe metrológico CMM 3D.\n• Estudio de Simulación DFM & Moldflow incluido sin coste previo.\n• Presupuesto Estimado: ${selectedProposalLead.estimatedBudget || '45.000 €'} (Ingeniería DFM 3D incluida).\n• Plazo de Entrega T1 (Primeras Muestras): 35 - 40 días laborables.\n• Garantía de Producción: 1.000.000 de ciclos respaldados desde nuestra planta en Barcelona.\n\nQuedamos a su entera disposición para agendar una breve videollamada de 10 minutos esta semana o recibirle en nuestra planta industrial en Llinars del Vallès.\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com | info@csysmould.com\n🌐 https://csys-mould.vercel.app`
+                    )}`}
+                    className="px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition-all"
+                  >
+                    <Send className="w-4 h-4" /> Enviar Ahora vía Mail Client (mailto)
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      const emailBody = `Estimado/a ${selectedProposalLead.contactPerson},\n\nEs un placer saludarle desde CSYS MOULD S.L. (Planta de Matricería e Inyección de Plásticos en Llinars del Vallès, Barcelona).\n\nTras analizar el requerimiento técnico de ${selectedProposalLead.company} ("${selectedProposalLead.technicalNeed}"), le presentamos nuestra propuesta formal técnico-económica personalizada:\n\nRESUMEN DE LA PROPUESTA TÉCNICA CSYS:\n• Matriz de Inyección de Alta Precisión en Acero Stavax ESR (54 HRC) / 1.2344 Nitrurado.\n• Tolerancias Centesimales garantizadas de ±0,01 mm con informe metrológico CMM 3D.\n• Estudio de Simulación DFM & Moldflow incluido sin coste previo.\n• Presupuesto Estimado: ${selectedProposalLead.estimatedBudget || '45.000 €'} (Ingeniería DFM 3D incluida).\n• Plazo de Entrega T1 (Primeras Muestras): 35 - 40 días laborables.\n• Garantía de Producción: 1.000.000 de ciclos respaldados desde nuestra planta en Barcelona.\n\nQuedamos a su entera disposición para agendar una breve videollamada de 10 minutos esta semana o recibirle en nuestra planta industrial en Llinars del Vallès.\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.`;
+                      navigator.clipboard.writeText(emailBody);
+                      showNotification(`📋 Correo redactado copiado al portapapeles`);
+                    }}
+                    className="px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs border border-cyan-500/40 flex items-center gap-2 transition-all"
+                  >
+                    <CheckSquare className="w-4 h-4 text-cyan-400" /> Copiar Correo Redactado
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* MODAL FOOTER */}
+            <div className="relative z-10 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+              <span className="text-[11px] text-slate-400">CSYS MOULD • Planta Llinars del Vallès (Barcelona - 500m²)</span>
+              <button
+                onClick={() => setSelectedProposalLead(null)}
+                className="px-6 py-2.5 rounded-xl bg-slate-800 text-white font-bold text-xs"
               >
                 Cerrar
               </button>
