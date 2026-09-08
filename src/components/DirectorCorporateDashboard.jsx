@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, Map, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban, Edit3 } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 
@@ -1935,7 +1936,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       </section>
 
       {/* MODAL BOT 2: ESTUDIO 360° COMPLETO EN PDF CON MARCA DE AGUA */}
-      {selectedClosingStudyLead && (
+      {selectedClosingStudyLead && createPortal(
         <div 
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setSelectedClosingStudyLead(null)}
@@ -2069,11 +2070,12 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* MODAL BOT 1: AYUDA CSYS */}
-      {selectedHelpLead && (
+      {selectedHelpLead && createPortal(
         <div 
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setSelectedHelpLead(null)}
@@ -2137,11 +2139,12 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* MODAL BOT 1: DOSSIER */}
-      {selectedReportLead && (
+      {selectedReportLead && createPortal(
         <div 
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setSelectedReportLead(null)}
@@ -2205,16 +2208,19 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* MODAL BOT 3: PROPUESTA FORMAL REVISABLE Y EDITABLE B2B */}
-      {selectedProposalLead && (
+      {selectedProposalLead && createPortal(
         <ProposalModal
+          key={selectedProposalLead?.id || 'proposal-modal'}
           lead={selectedProposalLead}
           onClose={() => setSelectedProposalLead(null)}
           onNotification={showNotification}
-        />
+        />,
+        document.body
       )}
 
     </div>
@@ -2259,7 +2265,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
   const outlookUrl = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(email)}&subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
   const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
 
-  return (
+  return createPortal(
     <div 
       className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/95 backdrop-blur-xl animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
@@ -2518,6 +2524,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
