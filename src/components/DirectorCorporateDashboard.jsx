@@ -58,8 +58,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     return () => clearInterval(timer);
   }, []);
 
-  // ⛔ OFFICIAL BLACKLIST OF EX-CLIENTS (EXCLUDED FROM ALL BOT SEARCHES)
-  const blacklistedExClients = [
+  // ⛔ OFFICIAL BLACKLIST OF EX-CLIENTS (PERSISTED STATE + LOCALSTORAGE)
+  const defaultBlacklistedExClients = [
     'PLÁSTICOS PINEDA', 'ECOPLASTIC 3D', 'INDUSTRIAS VERLAN', 'CEPEX',
     'BRAPLASTIC', 'KARMEDIATOR', 'POLYPRAT', 'SYNCOTEC',
     'PLÁSTICOS OPM', 'PLÁSTICOS 85', 'BITRON', 'BLOW MOLDING SYSTEMS',
@@ -67,6 +67,23 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     'GESTIÓN MANARES', 'MARELLI ESPAÑA', 'MONOMER TECH', 'NOUTEME',
     'PLASTILAR', 'REANIMACIÓN RCPB', 'SODECA'
   ];
+
+  const [blacklistedExClients, setBlacklistedExClients] = useState(() => {
+    try {
+      const saved = localStorage.getItem('csys_blacklist');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return Array.from(new Set([...defaultBlacklistedExClients, ...parsed]));
+        }
+      }
+      return defaultBlacklistedExClients;
+    } catch (e) {
+      return defaultBlacklistedExClients;
+    }
+  });
+
+  const [newBlacklistCompany, setNewBlacklistCompany] = useState('');
 
   // Helper function to check if a company is blacklisted
   const isCompanyBlacklisted = (companyName) => {
@@ -871,6 +888,78 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }
   };
 
+  // ADD COMPANY TO BLACKLIST MANUALLY
+  const handleAddBlacklistCompany = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const cleanName = newBlacklistCompany.trim().toUpperCase();
+    if (!cleanName) return;
+
+    if (blacklistedExClients.some(c => c.toUpperCase() === cleanName)) {
+      showNotification(`⚠️ "${cleanName}" ya está en la Lista Negra`);
+      return;
+    }
+
+    const updated = [cleanName, ...blacklistedExClients];
+    setBlacklistedExClients(updated);
+    setNewBlacklistCompany('');
+    try {
+      localStorage.setItem('csys_blacklist', JSON.stringify(updated));
+    } catch (err) {}
+
+    // Auto-remove from favoriteLeads if present
+    setFavoriteLeads(prev => {
+      const current = Array.isArray(prev) ? prev : [];
+      const filtered = current.filter(lead => !lead.company?.toUpperCase().includes(cleanName));
+      try {
+        localStorage.setItem('csys_favorite_leads', JSON.stringify(filtered));
+      } catch (err) {}
+      return filtered;
+    });
+
+    showNotification(`⛔ "${cleanName}" añadida a la Lista Negra`);
+    trackLeadAction({ company: cleanName, id: `blacklist-${Date.now()}` }, 'BLACKLIST_MANUAL_ADDED', `Empresa ${cleanName} añadida manualmente a la Lista Negra.`);
+  };
+
+  // REMOVE COMPANY FROM BLACKLIST
+  const handleRemoveBlacklistCompany = (companyToRemove) => {
+    const updated = blacklistedExClients.filter(c => c !== companyToRemove);
+    setBlacklistedExClients(updated);
+    try {
+      localStorage.setItem('csys_blacklist', JSON.stringify(updated));
+    } catch (err) {}
+    showNotification(`✅ "${companyToRemove}" retirada de la Lista Negra`);
+    trackLeadAction({ company: companyToRemove, id: `blacklist-rm-${Date.now()}` }, 'BLACKLIST_MANUAL_REMOVED', `Empresa ${companyToRemove} retirada de la Lista Negra.`);
+  };
+
+  // QUICK BLACKLIST ACTION DIRECTLY FROM CARD
+  const handleBlacklistLead = (lead) => {
+    if (!lead || !lead.company) return;
+    const cleanName = lead.company.trim().toUpperCase();
+    if (blacklistedExClients.some(c => c.toUpperCase() === cleanName)) {
+      showNotification(`⚠️ "${cleanName}" ya está en la Lista Negra`);
+      return;
+    }
+
+    const updated = [cleanName, ...blacklistedExClients];
+    setBlacklistedExClients(updated);
+    try {
+      localStorage.setItem('csys_blacklist', JSON.stringify(updated));
+    } catch (err) {}
+
+    // Auto-remove from favoriteLeads if present
+    setFavoriteLeads(prev => {
+      const current = Array.isArray(prev) ? prev : [];
+      const filtered = current.filter(f => f.id !== lead.id);
+      try {
+        localStorage.setItem('csys_favorite_leads', JSON.stringify(filtered));
+      } catch (err) {}
+      return filtered;
+    });
+
+    showNotification(`⛔ "${lead.company}" enviada a Lista Negra`);
+    trackLeadAction(lead, 'BLACKLIST_MANUAL_ADDED', `Empresa ${lead.company} enviada a Lista Negra desde ficha.`);
+  };
+
   // DYNAMIC SEARCH ENGINE STRICTLY FILTERING & EXCLUDING BLACKLIST
   const executeScanWithFilters = async () => {
     setIsScanning(true);
@@ -1535,24 +1624,62 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
             {scoutingSubTab === 'blacklist' && (
               <div className="space-y-6">
                 <div className="p-4 rounded-2xl bg-red-950/40 border-2 border-red-500/60 space-y-2">
-                  <h4 className="text-base font-extrabold text-red-400 flex items-center gap-2">
-                    <Ban className="w-5 h-5" /> Registro Oficial de Empresas Excluidas (Lista Negra de 23 Ex-Clientes)
-                  </h4>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-base font-extrabold text-red-400 flex items-center gap-2">
+                      <Ban className="w-5 h-5" /> Registro Oficial de Empresas Excluidas ({blacklistedExClients.length} Empresas en Lista Negra)
+                    </h4>
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-red-950 text-red-300 border border-red-500/40 uppercase">
+                      Filtro Activo en Bots
+                    </span>
+                  </div>
                   <p className="text-slate-300 text-xs leading-relaxed">
-                    Las siguientes empresas han sido marcadas como ex-clientes o empresas no objetivas. El bot aplica un filtro estricto de exclusión en todas las búsquedas y escaneos B2B para evitar sugerirlas.
+                    Las siguientes empresas han sido marcadas como ex-clientes o empresas no objetivas. Los bots aplican un filtro estricto de exclusión en todas las búsquedas, escaneos B2B y listas para evitar sugerirlas. Puedes agregar nuevas empresas de forma manual escribiendo su nombre abajo.
                   </p>
                 </div>
 
+                {/* MANUAL ADDITION INPUT BAR */}
+                <form
+                  onSubmit={handleAddBlacklistCompany}
+                  className="p-4 rounded-2xl bg-black border border-red-500/50 flex flex-col sm:flex-row items-center gap-3 shadow-xl"
+                >
+                  <div className="relative flex-1 w-full">
+                    <input
+                      type="text"
+                      placeholder="Nombre o razón social de la empresa a excluir (ej. PLÁSTICOS EJEMPLO S.L.)..."
+                      value={newBlacklistCompany}
+                      onChange={(e) => setNewBlacklistCompany(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={!newBlacklistCompany.trim()}
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-950/50 transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    <PlusCircle className="w-4 h-4" /> Agregar a Lista Negra
+                  </button>
+                </form>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {blacklistedExClients.map((company, idx) => (
-                    <div key={idx} className="p-3.5 rounded-xl bg-black border border-red-500/40 flex items-center justify-between gap-2 shadow-md">
-                      <div className="flex items-center gap-2">
+                    <div key={idx} className="p-3.5 rounded-xl bg-black border border-red-500/40 flex items-center justify-between gap-2 shadow-md hover:border-red-500 transition-all group">
+                      <div className="flex items-center gap-2 overflow-hidden">
                         <Ban className="w-4 h-4 text-red-400 shrink-0" />
-                        <span className="font-bold text-white text-xs">{company}</span>
+                        <span className="font-bold text-white text-xs truncate" title={company}>{company}</span>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-500/30 uppercase">
-                        EXCLUIDA
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-500/30 uppercase">
+                          EXCLUIDA
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveBlacklistCompany(company)}
+                          className="p-1 rounded-md text-slate-500 hover:text-red-400 hover:bg-red-950/80 transition-colors cursor-pointer"
+                          title={`Retirar ${company} de la Lista Negra`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1609,17 +1736,29 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                             {lead.priorityName}
                           </span>
 
-                          <button
-                            onClick={() => toggleFavoriteLead(lead)}
-                            className={`p-1.5 rounded-lg border font-bold flex items-center gap-1 transition-all ${
-                              isFavorite
-                                ? 'bg-amber-500 text-slate-950 border-amber-400'
-                                : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-amber-400'
-                            }`}
-                          >
-                            <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-slate-950' : ''}`} />
-                            <span className="text-[10px]">{isFavorite ? 'Guardado en Supabase' : 'Guardar en Supabase'}</span>
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => toggleFavoriteLead(lead)}
+                              className={`p-1.5 rounded-lg border font-bold flex items-center gap-1 transition-all ${
+                                isFavorite
+                                  ? 'bg-amber-500 text-slate-950 border-amber-400'
+                                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-amber-400'
+                              }`}
+                            >
+                              <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-slate-950' : ''}`} />
+                              <span className="text-[10px]">{isFavorite ? 'Guardado en Supabase' : 'Guardar en Supabase'}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleBlacklistLead(lead)}
+                              className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:bg-red-950 hover:text-red-400 hover:border-red-500/60 font-bold flex items-center gap-1 transition-all cursor-pointer"
+                              title="Excluir y enviar a Lista Negra"
+                            >
+                              <Ban className="w-3.5 h-3.5 text-red-400" />
+                              <span className="text-[10px] hidden sm:inline">Excluir</span>
+                            </button>
+                          </div>
                         </div>
 
                         <div>
@@ -1770,14 +1909,26 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                                 {lead.priorityName || 'Startup Prioritaria'}
                               </span>
 
-                              <button
-                                onClick={() => toggleFavoriteLead(lead)}
-                                className="p-1.5 rounded-lg border font-bold flex items-center gap-1 transition-all bg-amber-500 text-slate-950 border-amber-400 hover:bg-red-500 hover:text-white hover:border-red-400 cursor-pointer group"
-                                title="Quitar de Mi Cartera"
-                              >
-                                <Star className="w-3.5 h-3.5 fill-slate-950 group-hover:fill-white" />
-                                <span className="text-[10px] font-bold">En Cartera (Quitar)</span>
-                              </button>
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  onClick={() => toggleFavoriteLead(lead)}
+                                  className="p-1.5 rounded-lg border font-bold flex items-center gap-1 transition-all bg-amber-500 text-slate-950 border-amber-400 hover:bg-red-500 hover:text-white hover:border-red-400 cursor-pointer group"
+                                  title="Quitar de Mi Cartera"
+                                >
+                                  <Star className="w-3.5 h-3.5 fill-slate-950 group-hover:fill-white" />
+                                  <span className="text-[10px] font-bold">En Cartera (Quitar)</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleBlacklistLead(lead)}
+                                  className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:bg-red-950 hover:text-red-400 hover:border-red-500/60 font-bold flex items-center gap-1 transition-all cursor-pointer"
+                                  title="Excluir y enviar a Lista Negra"
+                                >
+                                  <Ban className="w-3.5 h-3.5 text-red-400" />
+                                  <span className="text-[10px] hidden sm:inline">Excluir</span>
+                                </button>
+                              </div>
                             </div>
 
                             <div>
