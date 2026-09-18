@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, Map, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban, Edit3, Wrench } from 'lucide-react';
+import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban, Edit3, Wrench } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
@@ -9,7 +9,9 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [favoriteLeads, setFavoriteLeads] = useState(() => {
     try {
       const saved = localStorage.getItem('csys_favorite_leads');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       return [];
     }
@@ -670,17 +672,20 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           const dbFavorites = mappedLeads.filter(item => item.isFavorite);
           if (dbFavorites.length > 0) {
             setFavoriteLeads(prev => {
-              const favMap = new Map();
-              prev.forEach(f => favMap.set(f.id, f));
-              dbFavorites.forEach(f => {
-                const existing = favMap.get(f.id) || {};
-                favMap.set(f.id, { ...f, ...existing, isFavorite: true });
+              const currentList = Array.isArray(prev) ? prev : [];
+              const combined = [...currentList];
+              dbFavorites.forEach(dbFav => {
+                const idx = combined.findIndex(c => c.id === dbFav.id);
+                if (idx >= 0) {
+                  combined[idx] = { ...combined[idx], ...dbFav, isFavorite: true };
+                } else {
+                  combined.push({ ...dbFav, isFavorite: true });
+                }
               });
-              const merged = Array.from(favMap.values());
               try {
-                localStorage.setItem('csys_favorite_leads', JSON.stringify(merged));
+                localStorage.setItem('csys_favorite_leads', JSON.stringify(combined));
               } catch (e) {}
-              return merged;
+              return combined;
             });
           }
 
@@ -2456,14 +2461,13 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       )}
 
       {/* MODAL BOT 3: PROPUESTA FORMAL REVISABLE Y EDITABLE B2B */}
-      {selectedProposalLead && createPortal(
+      {selectedProposalLead && (
         <ProposalModal
           key={selectedProposalLead?.id || 'proposal-modal'}
           lead={selectedProposalLead}
           onClose={() => setSelectedProposalLead(null)}
           onNotification={showNotification}
-        />,
-        document.body
+        />
       )}
 
     </div>
@@ -2474,8 +2478,6 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
  * COMPONENTE STANDALONE: PROPOSAL MODAL CON VISTA PREVIA Y EDICIÓN EN TIEMPO REAL
  * ============================================================================== */
 function ProposalModal({ lead, onClose, onNotification }) {
-  if (!lead) return null;
-
   const [company, setCompany] = useState(lead?.company || 'Empresa Objetivo');
   const [contactPerson, setContactPerson] = useState(lead?.contactPerson || 'Contacto Corporativo');
   const [email, setEmail] = useState(lead?.email || 'info@empresa.com');
@@ -2488,6 +2490,8 @@ function ProposalModal({ lead, onClose, onNotification }) {
 
   const [customEmailBody, setCustomEmailBody] = useState('');
   const [isManuallyEdited, setIsManuallyEdited] = useState(false);
+
+  if (!lead) return null;
 
   const proposalCode = String(lead?.id || '000000').toUpperCase().slice(-6);
   const emailSubject = `[Propuesta Formal CSYS MOULD] Solución de Inyección y Matricería para ${company}`;
