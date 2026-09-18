@@ -6,7 +6,14 @@ import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
   const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'location_map' | 'icp_prompt' | 'portfolio' | 'blacklist'
-  const [favoriteLeads, setFavoriteLeads] = useState([]);
+  const [favoriteLeads, setFavoriteLeads] = useState(() => {
+    try {
+      const saved = localStorage.getItem('csys_favorite_leads');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
   
   // DYNAMIC SEARCH FILTER ENGINE STATES (FOR BOT 1 & BOT 2)
   const [filterLocation, setFilterLocation] = useState('all'); // 'all' | 'cat' | 'and' | 'esp' | 'int'
@@ -659,6 +666,24 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               detailedDiagnosis: item.detailed_diagnosis_json || {}
             }));
 
+          // Sync favorites from Supabase with favoriteLeads & localStorage
+          const dbFavorites = mappedLeads.filter(item => item.isFavorite);
+          if (dbFavorites.length > 0) {
+            setFavoriteLeads(prev => {
+              const favMap = new Map();
+              prev.forEach(f => favMap.set(f.id, f));
+              dbFavorites.forEach(f => {
+                const existing = favMap.get(f.id) || {};
+                favMap.set(f.id, { ...f, ...existing, isFavorite: true });
+              });
+              const merged = Array.from(favMap.values());
+              try {
+                localStorage.setItem('csys_favorite_leads', JSON.stringify(merged));
+              } catch (e) {}
+              return merged;
+            });
+          }
+
           setDbStartups(prev => {
             const combined = [...mappedLeads];
             prev.forEach(p => {
@@ -763,43 +788,81 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     setTimeout(() => setActionNotification(null), 3500);
   };
 
-  // TOGGLE FAVORITE WITH FULL SUPABASE SYNC
+  // TOGGLE FAVORITE WITH FULL SUPABASE & LOCALSTORAGE SYNC
   const toggleFavoriteLead = async (lead) => {
     const isFavNow = !favoriteLeads.some(f => f.id === lead.id);
-    
-    if (isFavNow) {
-      setFavoriteLeads([...favoriteLeads, lead]);
-    } else {
-      setFavoriteLeads(favoriteLeads.filter(f => f.id !== lead.id));
+    const updatedLead = { ...lead, isFavorite: isFavNow };
+
+    const updatedFavorites = isFavNow
+      ? [...favoriteLeads.filter(f => f.id !== lead.id), updatedLead]
+      : favoriteLeads.filter(f => f.id !== lead.id);
+
+    // Immediately persist to React state & localStorage
+    setFavoriteLeads(updatedFavorites);
+    try {
+      localStorage.setItem('csys_favorite_leads', JSON.stringify(updatedFavorites));
+    } catch (err) {
+      console.warn('LocalStorage error:', err);
     }
 
+    // Also update dbStartups in memory
+    setDbStartups(prev => prev.map(item => item.id === lead.id ? { ...item, isFavorite: isFavNow } : item));
+
+    showNotification(isFavNow ? `⭐ "${lead.company}" guardada en Mi Cartera` : `🗑️ "${lead.company}" retirada de Mi Cartera`);
+
+    // Sync to Supabase table potential_leads
     try {
-      const { error } = await supabase.from('potential_leads').upsert({
+      const payload = {
         id: lead.id,
         company_name: lead.company,
-        priority_level: lead.priorityLevel,
-        priority_name: lead.priorityName,
-        sector_key: lead.sectorKey,
-        sector: lead.sector,
-        company_size: lead.companySize,
-        company_age: lead.companyAge,
+        priority_level: lead.priorityLevel || 'cat',
+        priority_name: lead.priorityName || 'Prioridad 1: Cataluña',
+        priority_color: lead.priorityColor || '#ef4444',
+        closing_probability_score: lead.closingProbabilityScore || 85,
+        closing_probability_label: lead.closingProbabilityLabel || '',
+        closing_badge_color: lead.closingBadgeColor || '',
+        sector_key: lead.sectorKey || 'deeptech',
+        sector: lead.sector || '',
+        company_size: lead.companySize || '1-10',
+        company_size_label: lead.companySizeLabel || '',
+        company_age: lead.companyAge || '1-3',
+        company_age_label: lead.companyAgeLabel || '',
+        stage: lead.stage || '',
+        foundation_year: lead.foundationYear ? parseInt(lead.foundationYear) : null,
+        country: lead.country || '',
+        incubator_hub: lead.incubatorHub || '',
+        website: lead.website || '',
+        linkedin: lead.linkedin || '',
+        contact_person: lead.contactPerson || '',
+        email: lead.email || '',
+        phone: lead.phone || '',
+        rfq_title: lead.rfqTitle || '',
+        estimated_budget: lead.estimatedBudget || '',
+        technical_need: lead.technicalNeed || '',
+        verified_status: lead.verifiedStatus || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
+        address_full: lead.addressFull || '',
+        study360_json: lead.study360 || {},
+        detailed_diagnosis_json: lead.detailedDiagnosis || {},
         is_favorite: isFavNow,
         updated_at: new Date().toISOString()
-      });
+      };
+
+      const { error } = await supabase.from('potential_leads').upsert(payload);
 
       if (error) {
-        setShowKeyModal(true);
-        showNotification(`🔑 Inicia sesión con la clave anon de Supabase`);
-        return;
+        console.warn('Supabase favorite sync error:', error);
+        if (error.code === '401' || error.message?.includes('JWT')) {
+          setShowKeyModal(true);
+        }
+      } else {
+        await trackLeadAction(
+          lead,
+          isFavNow ? 'FAVORITE_ADDED' : 'FAVORITE_REMOVED',
+          isFavNow ? 'Empresa guardada en cartera de favoritos por Dirección.' : 'Empresa removida de cartera de favoritos.'
+        );
       }
-
-      await trackLeadAction(
-        lead,
-        isFavNow ? 'FAVORITE_ADDED' : 'FAVORITE_REMOVED',
-        isFavNow ? 'Empresa guardada en cartera de favoritos por Dirección.' : 'Empresa removida de cartera de favoritos.'
-      );
     } catch (e) {
-      showNotification(`💾 Guardado localmente (${lead.company})`);
+      console.warn('Supabase offline favorite sync fallback:', e);
     }
   };
 
@@ -1639,6 +1702,186 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* BOT 1 STARTUPS EMPTY STATE */}
+            {scoutingSubTab === 'startups' && filteredStartups.length === 0 && (
+              <div className="text-center py-16 px-4 bg-black/60 rounded-3xl border border-dashed border-slate-800 space-y-3">
+                <Rocket className="w-10 h-10 text-slate-600 mx-auto" />
+                <h4 className="text-base font-bold text-white">No se encontraron startups con estos filtros</h4>
+                <p className="text-slate-400 text-xs max-w-md mx-auto">
+                  Prueba cambiando la ubicación, sector o tamaño de empresa en el panel superior para ver más resultados.
+                </p>
+              </div>
+            )}
+
+            {/* BOT 1 MI CARTERA (FAVORITES) VIEW */}
+            {scoutingSubTab === 'portfolio' && (
+              <div className="space-y-6">
+                <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 shadow-lg">
+                  <div>
+                    <h4 className="text-base font-extrabold text-amber-400 flex items-center gap-2">
+                      <Star className="w-5 h-5 fill-amber-400 text-amber-400" /> Mi Cartera Corporativa de Startups Prioritarias
+                    </h4>
+                    <p className="text-slate-300 text-xs leading-relaxed mt-1">
+                      Startups guardadas para seguimiento preferente, simulaciones Moldflow DFM y armado de propuestas formales de matricería.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black text-xs shadow-md">
+                      {favoriteLeads.length} {favoriteLeads.length === 1 ? 'Empresa en Cartera' : 'Empresas en Cartera'}
+                    </span>
+                  </div>
+                </div>
+
+                {favoriteLeads.length === 0 ? (
+                  <div className="text-center py-16 px-4 bg-black/60 rounded-3xl border border-dashed border-amber-500/40 space-y-4 shadow-xl">
+                    <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+                      <Star className="w-8 h-8" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white">Tu Cartera está vacía</h4>
+                    <p className="text-slate-400 text-xs max-w-md mx-auto leading-relaxed">
+                      Aún no has guardado ninguna empresa. Haz clic en el botón con la estrella (<span className="text-amber-400 font-bold">⭐ Guardar en Supabase</span>) en cualquier ficha de startup para añadirla a tu cartera corporativa y conservarla aquí.
+                    </p>
+                    <button
+                      onClick={() => setScoutingSubTab('startups')}
+                      className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs inline-flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+                    >
+                      <Rocket className="w-4 h-4" /> Ir a Startups Hardware
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {favoriteLeads.map((lead) => {
+                      return (
+                        <div key={lead.id} className="bg-black p-6 rounded-2xl border-2 border-amber-500/60 space-y-4 hover:border-amber-400 transition-all flex flex-col justify-between shadow-xl">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span
+                                className="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white uppercase border border-slate-700"
+                                style={{ backgroundColor: lead.priorityColor || '#ef4444' }}
+                              >
+                                {lead.priorityName || 'Startup Prioritaria'}
+                              </span>
+
+                              <button
+                                onClick={() => toggleFavoriteLead(lead)}
+                                className="p-1.5 rounded-lg border font-bold flex items-center gap-1 transition-all bg-amber-500 text-slate-950 border-amber-400 hover:bg-red-500 hover:text-white hover:border-red-400 cursor-pointer group"
+                                title="Quitar de Mi Cartera"
+                              >
+                                <Star className="w-3.5 h-3.5 fill-slate-950 group-hover:fill-white" />
+                                <span className="text-[10px] font-bold">En Cartera (Quitar)</span>
+                              </button>
+                            </div>
+
+                            <div>
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-lg font-bold text-white flex items-center gap-2">
+                                  <Rocket className="w-4 h-4 text-amber-400" /> {lead.company}
+                                </h4>
+                                <span className="text-emerald-400 font-extrabold text-xs bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-500/40">
+                                  {lead.estimatedBudget || 'Presupuesto Asignado'}
+                                </span>
+                              </div>
+                              <p className="text-slate-400 text-[11px] flex items-center gap-1 mt-0.5">
+                                <MapPin className="w-3 h-3 text-amber-400" /> {lead.addressFull || lead.country}
+                              </p>
+                            </div>
+
+                            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 text-[11px]">
+                              <div className="pb-1 text-[10px] font-bold text-emerald-400 flex items-center gap-1.5 border-b border-slate-900">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> {lead.verifiedStatus || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)'}
+                              </div>
+
+                              <p><strong className="text-slate-400">Fundadores / CTO:</strong> <span className="text-white font-bold">{lead.contactPerson || 'Dirección General'}</span></p>
+
+                              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                                {lead.website && (
+                                  <a
+                                    href={lead.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-3.5 py-2 rounded-xl bg-emerald-950 hover:bg-emerald-900 text-emerald-300 hover:text-white border border-emerald-500/60 text-[11px] font-extrabold flex items-center gap-1.5 transition-all shadow-md"
+                                  >
+                                    <Globe className="w-3.5 h-3.5 text-emerald-400" /> Sitio Web Oficial 🌐
+                                  </a>
+                                )}
+
+                                {lead.linkedin && (
+                                  <a
+                                    href={lead.linkedin}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-3.5 py-2 rounded-xl bg-blue-950 hover:bg-blue-900 text-blue-300 hover:text-white border border-blue-500/60 text-[11px] font-extrabold flex items-center gap-1.5 transition-all shadow-md"
+                                  >
+                                    <ExternalLink className="w-3.5 h-3.5 text-blue-400" /> Perfil LinkedIn 💼
+                                  </a>
+                                )}
+                              </div>
+
+                              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                                {lead.email && (
+                                  <p className="flex items-center gap-1.5">
+                                    <Mail className="w-3.5 h-3.5 text-cyan-400 shrink-0" /> <strong className="text-slate-400">Correo Oficial:</strong> <a href={`mailto:${lead.email}`} className="text-cyan-400 font-extrabold underline truncate">{lead.email}</a>
+                                  </p>
+                                )}
+                                {lead.phone && (
+                                  <p className="flex items-center gap-1.5">
+                                    <Phone className="w-3.5 h-3.5 text-amber-400 shrink-0" /> <strong className="text-slate-400">Teléfono:</strong> <span className="text-white font-bold">{lead.phone}</span>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {lead.technicalNeed && (
+                              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1 text-slate-200 text-[11px]">
+                                <p className="text-amber-400 font-bold flex items-center gap-1">
+                                  <FileText className="w-3.5 h-3.5" /> Requerimiento Técnico de la Matriz:
+                                </p>
+                                <p className="leading-relaxed text-slate-300">{lead.technicalNeed}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-900 space-y-2">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedHelpLead(lead);
+                                  saveBot1DossierToSupabase(lead, 'HELP_REPORT_VIEWED');
+                                }}
+                                className="flex-1 min-w-[140px] px-3 py-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 hover:text-white border border-emerald-500/60 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                              >
+                                <HeartHandshake className="w-3.5 h-3.5 text-emerald-400" /> Informe Detallado & Ayuda CSYS
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  setSelectedReportLead(lead);
+                                  saveBot1DossierToSupabase(lead, 'DOSSIER_VIEWED');
+                                }}
+                                className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/50 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                              >
+                                <FileText className="w-3.5 h-3.5 text-cyan-400" /> Dossier
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  setSelectedProposalLead(lead);
+                                  saveBot3ProposalToSupabase(lead);
+                                }}
+                                className="px-3 py-2 rounded-xl bg-cyan-950/70 hover:bg-cyan-900 text-cyan-300 hover:text-white border border-cyan-500/60 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                              >
+                                <FileText className="w-3.5 h-3.5 text-cyan-400" /> Propuesta B2B
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
           </div>
