@@ -35,7 +35,7 @@ export default function Footer({ lang }) {
               <p>08450 Llinars del Vallès, Barcelona</p>
               <div className="pt-2 font-mono text-amber-400 space-y-1">
                 <p className="flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5" /> <a href="mailto:info@csysmould.com" className="hover:underline">info@csysmould.com</a>
+                  <Mail className="w-3.5 h-3.5" /> <a href="mailto:abraham@csysmould.com" className="hover:underline">abraham@csysmould.com</a>
                 </p>
                 <p className="flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5" /> <a href="tel:+34934607266" className="font-bold hover:underline">(+34) 934.607.266</a>
@@ -64,7 +64,7 @@ export default function Footer({ lang }) {
                 <FileText className="w-3.5 h-3.5" /> Protección de Datos & Consultas
               </div>
               <p className="leading-relaxed">
-                Si tienes dudas sobre los datos de la empresa o tratamiento de información, puedes contactarnos en <strong className="text-amber-400 font-mono">info@csysmould.com</strong> o al teléfono <strong className="text-amber-400 font-mono">(+34) 934.607.266</strong>.
+                Si tienes dudas sobre los datos de la empresa o tratamiento de información, puedes contactarnos en <a href="mailto:abraham@csysmould.com" className="text-amber-400 font-mono hover:underline">abraham@csysmould.com</a> o al teléfono <strong className="text-amber-400 font-mono">(+34) 934.607.266</strong>.
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function Footer({ lang }) {
 
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
-          <p>© 2026 CSYS MOULD. Todos los derechos reservados 2026. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: (+34) 934.607.266 | Email: info@csysmould.com</p>
+          <p>© 2026 CSYS MOULD. Todos los derechos reservados 2026. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: (+34) 934.607.266 | Email: <a href="mailto:abraham@csysmould.com" className="hover:underline">abraham@csysmould.com</a></p>
           
           <div className="flex items-center gap-4">
             <span className="px-3 py-1 rounded-full bg-slate-950 border border-amber-500/40 text-amber-400 font-mono font-bold text-[11px] tracking-wide flex items-center gap-1.5 shadow-md shadow-amber-500/10">

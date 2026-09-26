@@ -49,7 +49,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
               {/* IMMEDIATE HERO CALL TO ACTION BUTTON */}
               <div className="space-y-3 pt-2">
                 <a
-                  href="mailto:info@csysmould.com?subject=Solicitud%20de%20Informaci%C3%B3n%20y%20Presupuesto%20CSYS%20MOULD"
+                  href="mailto:abraham@csysmould.com?subject=Solicitud%20de%20Informaci%C3%B3n%20y%20Presupuesto%20CSYS%20MOULD"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm sm:text-base shadow-2xl shadow-amber-500/50 hover:shadow-amber-400/70 hover:scale-[1.02] transition-all duration-300"
                 >
                   <Mail className="w-5 h-5 text-slate-950" />
@@ -59,12 +59,20 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
                 {/* Secondary CTAs */}
                 <div className="flex flex-wrap items-center gap-3 pt-1">
+                  <a
+                    href="mailto:abraham@csysmould.com?subject=Consulta%20Directa%20CSYS%20MOULD"
+                    className="px-5 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2"
+                  >
+                    <Mail className="w-4 h-4 text-amber-400" />
+                    <span>Escribir a abraham@csysmould.com</span>
+                  </a>
+
                   <button
                     onClick={onOpenContact}
                     className="px-5 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2"
                   >
                     <Mail className="w-4 h-4 text-amber-400" />
-                    <span>Ir al Formulario Directo (info@csysmould.com)</span>
+                    <span>Formulario de Contacto</span>
                   </button>
 
                   <button
@@ -198,10 +206,16 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-black border border-amber-500/40 shrink-0 space-y-2 text-center">
+            <div className="p-6 rounded-2xl bg-black border border-amber-500/40 shrink-0 space-y-3 text-center">
               <Factory className="w-8 h-8 text-amber-400 mx-auto" />
               <p className="text-2xl font-extrabold text-white font-tech">Capacidad Multiplicada</p>
               <p className="text-xs font-mono text-slate-400">Control de Calidad CMM en España</p>
+              <a
+                href="mailto:abraham@csysmould.com?subject=Consulta%20Fabricaci%C3%B3n%20Dual%20y%20Hubs%20China"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-xs transition-all shadow-md"
+              >
+                <Mail className="w-3.5 h-3.5" /> Cotizar con Abraham
+              </a>
             </div>
           </div>
 

@@ -120,13 +120,13 @@ export default function CatalogSection({ onSelectMoldForContact }) {
                   <span>Ficha Técnica</span>
                 </button>
 
-                <button
-                  onClick={onSelectMoldForContact}
+                <a
+                  href={`mailto:abraham@csysmould.com?subject=Consulta%20T%C3%A9cnica%20-%20${encodeURIComponent(mold.title)}`}
                   className="px-3.5 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all flex items-center justify-center"
-                  title="Consultar Presupuesto con Dirección"
+                  title="Consultar Presupuesto con Abraham Lozano"
                 >
                   <Mail className="w-4 h-4" />
-                </button>
+                </a>
               </div>
             </div>
           ))}
@@ -206,15 +206,12 @@ export default function CatalogSection({ onSelectMoldForContact }) {
                 Cerrar
               </button>
 
-              <button
-                onClick={() => {
-                  setSelectedMold(null);
-                  onSelectMoldForContact();
-                }}
-                className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg shadow-amber-500/30"
+              <a
+                href={`mailto:abraham@csysmould.com?subject=Solicitud%20de%20Presupuesto%20-%20${encodeURIComponent(selectedMold.title)}&body=Hola%20Abraham,%0A%0AEstoy%20interesado%20en%20el%20molde%20o%20proyecto:%20${encodeURIComponent(selectedMold.title)}%20(${encodeURIComponent(selectedMold.category)}).%0A%0ASolicito%20presupuesto%20e%20informaci%C3%B3n%20t%C3%A9cnica.`}
+                className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-all"
               >
-                <Mail className="w-4 h-4" /> Solicitar Presupuesto a Dirección
-              </button>
+                <Mail className="w-4 h-4" /> Solicitar Presupuesto a Abraham
+              </a>
             </div>
 
           </div>

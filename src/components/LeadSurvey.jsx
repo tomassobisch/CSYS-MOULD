@@ -46,7 +46,7 @@ export default function LeadSurvey() {
     confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
   };
 
-  const mailtoLink = `mailto:info@csysmould.com?subject=Solicitud%20de%20Cotizaci%C3%B3n%20y%20Reuni%C3%B3n%20T%C3%A9cnica%20-${encodeURIComponent(industry)}&body=Hola%20Claudio%20y%20Abraham,%0A%0AMi%20empresa%20pertenece%20a%20la%20industria:%20${encodeURIComponent(industry)}.%0AObjetivo:%20${encodeURIComponent(objective)}.%0APlazo:%20${encodeURIComponent(timeline)}.%0A%0AMi%20correo:%20${encodeURIComponent(contactEmail)}%0ATel%C3%A9fono:%20${encodeURIComponent(contactPhone)}.%0A%0AMe%20gustar%C3%ADa%20recibir%20cotizaci%C3%B3n%20y%20agendar%20una%20reuni%C3%B3n.`;
+  const mailtoLink = `mailto:abraham@csysmould.com?subject=Solicitud%20de%20Cotizaci%C3%B3n%20y%20Reuni%C3%B3n%20T%C3%A9cnica%20-${encodeURIComponent(industry)}&body=Hola%20Abraham,%0A%0AMi%20empresa%20pertenece%20a%20la%20industria:%20${encodeURIComponent(industry)}.%0AObjetivo:%20${encodeURIComponent(objective)}.%0APlazo:%20${encodeURIComponent(timeline)}.%0A%0AMi%20correo:%20${encodeURIComponent(contactEmail)}%0ATel%C3%A9fono:%20${encodeURIComponent(contactPhone)}.%0A%0AMe%20gustar%C3%ADa%20recibir%20cotizaci%C3%B3n%20y%20agendar%20una%20reuni%C3%B3n.`;
 
   return (
     <section id="survey" className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -266,7 +266,7 @@ export default function LeadSurvey() {
                       href={mailtoLink}
                       className="w-full py-3.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30"
                     >
-                      <Mail className="w-4 h-4" /> Solicitar Cotización Instantánea por Correo (info@csysmould.com)
+                      <Mail className="w-4 h-4" /> Solicitar Cotización Instantánea por Correo (abraham@csysmould.com)
                     </a>
                   </div>
                 </form>

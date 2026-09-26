@@ -20,6 +20,12 @@ export default function ContactSection() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const subject = `Solicitud de Presupuesto - ${formData.company || formData.name} (${formData.moldType})`;
+    const body = `Estimado Abraham Lozano,\n\nLe contacto a través de la web de CSYS MOULD para solicitar presupuesto con los siguientes datos:\n\n• Nombre: ${formData.name}\n• Empresa: ${formData.company}\n• Email: ${formData.email}\n• Teléfono: ${formData.phone || 'No especificado'}\n• Tipo de Proyecto: ${formData.moldType}\n\nDetalles del Proyecto / Mensaje:\n${formData.message}\n\nQuedo a la espera de su respuesta técnica y cotización.\n\nAtentamente,\n${formData.name}`;
+
+    const mailtoUrl = `mailto:abraham@csysmould.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
@@ -88,6 +94,14 @@ export default function ContactSection() {
                 <p className="text-slate-300 font-mono">
                   Tel: <a href={`tel:${COMPANY_INFO.contacts.abraham.phone}`} className="text-amber-400 font-bold hover:underline">{COMPANY_INFO.contacts.abraham.phone}</a>
                 </p>
+                <div className="pt-1">
+                  <a
+                    href="mailto:abraham@csysmould.com?subject=Consulta%20Directa%20a%20Abraham%20Lozano"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-[11px] transition-all"
+                  >
+                    <Mail className="w-3.5 h-3.5" /> Enviar Correo a Abraham
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -212,11 +226,11 @@ export default function ContactSection() {
                     className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm shadow-xl shadow-amber-500/40 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
-                      <span>Enviando requerimiento...</span>
+                      <span>Abriendo cliente de correo...</span>
                     ) : (
                       <>
                         <Send className="w-4 h-4 text-slate-950" />
-                        <span>Enviar Solicitud a Claudio y Abraham Lozano</span>
+                        <span>Enviar Solicitud a Abraham Lozano (abraham@csysmould.com)</span>
                       </>
                     )}
                   </button>

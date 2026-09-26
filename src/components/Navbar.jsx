@@ -77,6 +77,17 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
 
           {/* Right Header Actions */}
           <div className="hidden sm:flex items-center gap-3">
+            {!isAuthenticated && (
+              <a
+                href="mailto:abraham@csysmould.com?subject=Contacto%20Desde%20Web%20CSYS%20MOULD"
+                className="px-4 py-2.5 rounded-xl bg-black border border-amber-500/60 hover:border-amber-400 text-xs font-bold text-amber-300 hover:text-white transition-all flex items-center gap-1.5 shadow-md shadow-amber-950/40"
+                title="Escribir a abraham@csysmould.com"
+              >
+                <Mail className="w-3.5 h-3.5 text-amber-400" />
+                <span>Contactar</span>
+              </a>
+            )}
+
             <button
               onClick={() => setLang(lang === 'ES' ? 'EN' : 'ES')}
               className="px-3 py-2 rounded-xl bg-black border border-slate-800 text-xs font-semibold text-slate-300 hover:text-amber-400 hover:border-amber-500/40 transition-all flex items-center gap-1.5"
@@ -128,12 +139,19 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
             ))}
           </div>
 
-          <div className="pt-2 flex items-center justify-between border-t border-slate-800">
+          <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800">
+            <a
+              href="mailto:abraham@csysmould.com?subject=Contacto%20Desde%20Web%20CSYS%20MOULD"
+              className="px-3 py-2 rounded-xl bg-black border border-amber-500/50 text-xs font-semibold text-amber-300 flex items-center gap-1.5"
+            >
+              <Mail className="w-3.5 h-3.5 text-amber-400" /> Contactar
+            </a>
+
             <button
               onClick={() => setLang(lang === 'ES' ? 'EN' : 'ES')}
               className="px-3 py-2 rounded-xl bg-black border border-slate-800 text-xs font-semibold text-slate-300 flex items-center gap-2"
             >
-              <Globe className="w-4 h-4 text-amber-400" /> Idioma: {lang}
+              <Globe className="w-4 h-4 text-amber-400" /> {lang}
             </button>
 
             <button
@@ -141,9 +159,9 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
                 setMobileMenuOpen(false);
                 onOpenLogin();
               }}
-              className="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg shadow-amber-500/30"
+              className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/30"
             >
-              <Lock className="w-4 h-4" /> Acceso Clientes
+              <Lock className="w-3.5 h-3.5" /> Clientes
             </button>
           </div>
         </div>
