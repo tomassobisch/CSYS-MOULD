@@ -23,7 +23,7 @@ export default function ContactSection({ onOpenEmailModal }) {
     setIsSubmitting(true);
 
     const subject = `Solicitud de Presupuesto - ${formData.company || formData.name} (${formData.moldType})`;
-    const body = `Estimado Abraham Lozano,\n\nLe contacto a través de la web de CSYS MOULD para solicitar presupuesto con los siguientes datos:\n\n• Nombre: ${formData.name}\n• Empresa: ${formData.company}\n• Email: ${formData.email}\n• Teléfono: ${formData.phone || 'No especificado'}\n• Tipo de Proyecto: ${formData.moldType}\n\nDetalles del Proyecto / Mensaje:\n${formData.message}\n\nQuedo a la espera de su respuesta técnica y cotización.\n\nAtentamente,\n${formData.name}`;
+    const body = `Estimado equipo técnico de CSYS MOULD,\n\nLes contacto a través de la web para solicitar presupuesto con los siguientes datos:\n\n• Nombre: ${formData.name}\n• Empresa: ${formData.company}\n• Email: ${formData.email}\n• Teléfono: ${formData.phone || 'No especificado'}\n• Tipo de Proyecto: ${formData.moldType}\n\nDetalles del Proyecto / Mensaje:\n${formData.message}\n\nQuedo a la espera de su respuesta técnica y cotización.\n\nAtentamente,\n${formData.name}`;
 
     openEmailClient({
       to: 'abraham@csysmould.com',
@@ -102,7 +102,7 @@ export default function ContactSection({ onOpenEmailModal }) {
                 </p>
                 <div className="pt-2 flex flex-wrap items-center gap-1.5">
                   <a
-                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Directa a Abraham Lozano (Gmail)', client: 'gmail' })}
+                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Técnica CSYS MOULD', client: 'gmail' })}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-950/60 hover:bg-red-600 border border-red-500/40 text-red-300 hover:text-white font-bold text-[10px] transition-all"
@@ -111,7 +111,7 @@ export default function ContactSection({ onOpenEmailModal }) {
                     <span className="font-black">G</span> Gmail
                   </a>
                   <a
-                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Directa a Abraham Lozano (Outlook)', client: 'outlook' })}
+                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Técnica CSYS MOULD', client: 'outlook' })}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-950/60 hover:bg-blue-600 border border-blue-500/40 text-blue-300 hover:text-white font-bold text-[10px] transition-all"
@@ -121,11 +121,11 @@ export default function ContactSection({ onOpenEmailModal }) {
                   </a>
                   <button
                     type="button"
-                    onClick={() => onOpenEmailModal?.({ subject: 'Consulta Directa a Abraham Lozano' })}
+                    onClick={() => onOpenEmailModal?.({ subject: 'Consulta Técnica CSYS MOULD' })}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-[10px] transition-all cursor-pointer"
-                    title="Más opciones de correo"
+                    title="Contactar por correo"
                   >
-                    <Mail className="w-3 h-3" /> Opciones
+                    <Mail className="w-3 h-3" /> Contactar
                   </button>
                 </div>
               </div>
@@ -250,9 +250,8 @@ export default function ContactSection({ onOpenEmailModal }) {
                   <div className="p-3.5 rounded-2xl bg-black border border-slate-800 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <span className="text-slate-300 font-bold text-xs flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-amber-400" /> Enviar mediante:
+                        <Mail className="w-3.5 h-3.5 text-amber-400" /> Selecciona tu servicio de correo preferido:
                       </span>
-                      <span className="text-[10px] text-amber-400 font-mono font-bold">abraham@csysmould.com</span>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
@@ -313,13 +312,7 @@ export default function ContactSection({ onOpenEmailModal }) {
                     ) : (
                       <>
                         <Send className="w-4 h-4 text-slate-950" />
-                        <span>
-                          {emailClient === 'gmail'
-                            ? 'Redactar y Enviar por Gmail Web'
-                            : emailClient === 'outlook'
-                            ? 'Redactar y Enviar por Outlook Web'
-                            : 'Enviar Solicitud a Abraham Lozano'}
-                        </span>
+                        <span>Enviar Solicitud</span>
                       </>
                     )}
                   </button>

@@ -82,7 +82,7 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
                 type="button"
                 onClick={() => onOpenEmailModal?.({ subject: 'Contacto Desde Web CSYS MOULD' })}
                 className="px-4 py-2.5 rounded-xl bg-black border border-amber-500/60 hover:border-amber-400 text-xs font-bold text-amber-300 hover:text-white transition-all flex items-center gap-1.5 shadow-md shadow-amber-950/40 cursor-pointer"
-                title="Escribir a abraham@csysmould.com (Gmail / Outlook)"
+                title="Contactar (Gmail / Outlook)"
               >
                 <Mail className="w-3.5 h-3.5 text-amber-400" />
                 <span>Contactar</span>

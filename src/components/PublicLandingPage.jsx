@@ -53,7 +53,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
                   type="button"
                   onClick={() => onOpenEmailModal?.({
                     subject: 'Solicitud de Información y Presupuesto CSYS MOULD',
-                    body: 'Hola Abraham,\n\nMe gustaría solicitar información y presupuesto para un proyecto de moldes / inyección plástica.\n\nEmpresa:\nTeléfono:\nDetalles preliminares:'
+                    body: 'Estimado equipo técnico de CSYS MOULD,\n\nMe gustaría solicitar información y presupuesto para un proyecto de moldes / inyección plástica.\n\nEmpresa:\nTeléfono:\nDetalles preliminares:'
                   })}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm sm:text-base shadow-2xl shadow-amber-500/50 hover:shadow-amber-400/70 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
                 >
@@ -241,11 +241,11 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
                 type="button"
                 onClick={() => onOpenEmailModal?.({
                   subject: 'Consulta Fabricación Dual y Hubs China',
-                  body: 'Hola Abraham,\n\nNos interesa conocer más sobre la capacidad de fabricación dual en Barcelona y centros asociados en Dongguan y Shenzhen (China).\n\nEmpresa:\nVolumen estimado de piezas / moldes:\nPlazo objetivo:'
+                  body: 'Estimado equipo técnico de CSYS MOULD,\n\nNos interesa conocer más sobre la capacidad de fabricación dual en Barcelona y centros asociados en Dongguan y Shenzhen (China).\n\nEmpresa:\nVolumen estimado de piezas / moldes:\nPlazo objetivo:'
                 })}
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-xs transition-all shadow-md cursor-pointer"
               >
-                <Mail className="w-3.5 h-3.5" /> Cotizar con Abraham
+                <Mail className="w-3.5 h-3.5" /> Contactar
               </button>
             </div>
           </div>

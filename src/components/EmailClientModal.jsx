@@ -59,10 +59,10 @@ export default function EmailClientModal({
             <Mail className="w-3.5 h-3.5" /> CONTACTO DIRECTO
           </div>
           <h3 className="text-xl sm:text-2xl font-extrabold text-white">
-            Escribir a Abraham Lozano
+            Enviar Solicitud
           </h3>
-          <p className="text-xs text-slate-300 font-mono">
-            Destinatario oficial: <span className="text-amber-400 font-bold">{to}</span>
+          <p className="text-xs text-slate-300">
+            Atención directa y asesoramiento técnico de ingeniería
           </p>
         </div>
 

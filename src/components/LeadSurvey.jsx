@@ -47,7 +47,7 @@ export default function LeadSurvey({ onOpenContact, onOpenEmailModal }) {
     confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
   };
 
-  const mailtoLink = `mailto:abraham@csysmould.com?subject=Solicitud%20de%20Cotizaci%C3%B3n%20y%20Reuni%C3%B3n%20T%C3%A9cnica%20-${encodeURIComponent(industry)}&body=Hola%20Abraham,%0A%0AMi%20empresa%20pertenece%20a%20la%20industria:%20${encodeURIComponent(industry)}.%0AObjetivo:%20${encodeURIComponent(objective)}.%0APlazo:%20${encodeURIComponent(timeline)}.%0A%0AMi%20correo:%20${encodeURIComponent(contactEmail)}%0ATel%C3%A9fono:%20${encodeURIComponent(contactPhone)}.%0A%0AMe%20gustar%C3%ADa%20recibir%20cotizaci%C3%B3n%20y%20agendar%20una%20reuni%C3%B3n.`;
+  const mailtoLink = `mailto:abraham@csysmould.com?subject=Solicitud%20de%20Cotizaci%C3%B3n%20y%20Reuni%C3%B3n%20T%C3%A9cnica%20-${encodeURIComponent(industry)}&body=Estimado%20equipo%20t%C3%A9cnico%20de%20CSYS%20MOULD,%0A%0AMi%20empresa%20pertenece%20a%20la%20industria:%20${encodeURIComponent(industry)}.%0AObjetivo:%20${encodeURIComponent(objective)}.%0APlazo:%20${encodeURIComponent(timeline)}.%0A%0AMi%20correo:%20${encodeURIComponent(contactEmail)}%0ATel%C3%A9fono:%20${encodeURIComponent(contactPhone)}.%0A%0AMe%20gustar%C3%ADa%20recibir%20cotizaci%C3%B3n%20y%20agendar%20una%20reuni%C3%B3n.`;
 
   return (
     <section id="survey" className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -268,7 +268,7 @@ export default function LeadSurvey({ onOpenContact, onOpenEmailModal }) {
                         href={getEmailComposeUrl({
                           to: 'abraham@csysmould.com',
                           subject: `Solicitud de Cotización y Reunión Técnica - ${industry}`,
-                          body: `Hola Abraham,\n\nMi empresa pertenece a la industria: ${industry}.\nObjetivo: ${objective}.\nPlazo estimado: ${timeline}.\n\nMi correo de contacto: ${contactEmail}\nTeléfono directo: ${contactPhone}.\n\nSolicito propuesta técnica y agendar una breve reunión.`,
+                          body: `Estimado equipo técnico de CSYS MOULD,\n\nMi empresa pertenece a la industria: ${industry}.\nObjetivo: ${objective}.\nPlazo estimado: ${timeline}.\n\nMi correo de contacto: ${contactEmail}\nTeléfono directo: ${contactPhone}.\n\nSolicito propuesta técnica y agendar una breve reunión.`,
                           client: 'gmail'
                         })}
                         target="_blank"
@@ -276,14 +276,14 @@ export default function LeadSurvey({ onOpenContact, onOpenEmailModal }) {
                         className="py-3.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-950/60 transition-all cursor-pointer"
                       >
                         <span className="w-5 h-5 rounded-md bg-white/20 font-black text-xs flex items-center justify-center">G</span>
-                        <span>Enviar por Gmail Web (Recomendado)</span>
+                        <span>Enviar Solicitud por Gmail</span>
                       </a>
 
                       <a
                         href={getEmailComposeUrl({
                           to: 'abraham@csysmould.com',
                           subject: `Solicitud de Cotización y Reunión Técnica - ${industry}`,
-                          body: `Hola Abraham,\n\nMi empresa pertenece a la industria: ${industry}.\nObjetivo: ${objective}.\nPlazo estimado: ${timeline}.\n\nMi correo de contacto: ${contactEmail}\nTeléfono directo: ${contactPhone}.\n\nSolicito propuesta técnica y agendar una breve reunión.`,
+                          body: `Estimado equipo técnico de CSYS MOULD,\n\nMi empresa pertenece a la industria: ${industry}.\nObjetivo: ${objective}.\nPlazo estimado: ${timeline}.\n\nMi correo de contacto: ${contactEmail}\nTeléfono directo: ${contactPhone}.\n\nSolicito propuesta técnica y agendar una breve reunión.`,
                           client: 'outlook'
                         })}
                         target="_blank"
@@ -291,7 +291,7 @@ export default function LeadSurvey({ onOpenContact, onOpenEmailModal }) {
                         className="py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-950/60 transition-all cursor-pointer"
                       >
                         <span className="w-5 h-5 rounded-md bg-white/20 font-black text-xs flex items-center justify-center">O</span>
-                        <span>Enviar por Outlook Web</span>
+                        <span>Enviar Solicitud por Outlook</span>
                       </a>
                     </div>
 
