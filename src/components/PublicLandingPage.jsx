@@ -36,10 +36,10 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
                 Expertos en Diseño y Fabricación de <span className="text-gradient-amber">Productos Plásticos</span>
               </h1>
 
-              {/* Subheadline - EXACT FROM SCREENSHOT */}
+              {/* Subheadline */}
               <div className="space-y-2 pt-1">
                 <p className="text-lg sm:text-xl font-bold text-slate-100">
-                  60 años creando para las mejores marcas
+                  44 años fabricando moldes para <span className="text-amber-400 font-extrabold">Nissan</span>, <span className="text-amber-400 font-extrabold">SEAT</span> y <span className="text-amber-400 font-extrabold">TOUS</span>
                 </p>
                 <p className="text-sm sm:text-base text-slate-300 font-mono font-medium">
                   Moldistas hasta 5 TN · Especialistas en Microinyección BABYPLAST
