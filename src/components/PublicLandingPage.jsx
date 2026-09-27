@@ -5,7 +5,6 @@ import VideoBackground from './VideoBackground';
 import RealPhotoGallery from './RealPhotoGallery';
 import LeadSurvey from './LeadSurvey';
 import ContactSection from './ContactSection';
-import { getEmailComposeUrl } from '../lib/emailService';
 
 export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEmailModal }) {
   return (
@@ -62,44 +61,14 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
                   <ArrowRight className="w-5 h-5 text-slate-950" />
                 </button>
 
-                {/* Secondary CTAs with direct Gmail and Outlook web links */}
-                <div className="flex flex-wrap items-center gap-2.5 pt-1">
-                  <a
-                    href={getEmailComposeUrl({
-                      to: 'abraham@csysmould.com',
-                      subject: 'Consulta Directa CSYS MOULD (Gmail)',
-                      client: 'gmail'
-                    })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-red-950/60 hover:bg-red-600 border border-red-500/60 text-white font-bold text-xs shadow-lg hover:shadow-red-900/50 transition-all flex items-center gap-2"
-                    title="Abrir redactor en Gmail Web"
-                  >
-                    <span className="w-4 h-4 rounded-md bg-red-600 text-white font-black text-[10px] flex items-center justify-center">G</span>
-                    <span>Abrir en Gmail</span>
-                  </a>
-
-                  <a
-                    href={getEmailComposeUrl({
-                      to: 'abraham@csysmould.com',
-                      subject: 'Consulta Directa CSYS MOULD (Outlook)',
-                      client: 'outlook'
-                    })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-blue-950/60 hover:bg-blue-600 border border-blue-500/60 text-white font-bold text-xs shadow-lg hover:shadow-blue-900/50 transition-all flex items-center gap-2"
-                    title="Abrir redactor en Outlook Web"
-                  >
-                    <span className="w-4 h-4 rounded-md bg-blue-600 text-white font-black text-[10px] flex items-center justify-center">O</span>
-                    <span>Abrir en Outlook</span>
-                  </a>
-
+                {/* Secondary CTAs */}
+                <div className="flex flex-wrap items-center gap-3 pt-1">
                   <button
                     onClick={onOpenContact}
-                    className="px-4 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2 cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2 cursor-pointer"
                   >
                     <Mail className="w-4 h-4 text-amber-400" />
-                    <span>Formulario Web</span>
+                    <span>Formulario de Contacto</span>
                   </button>
 
                   <button

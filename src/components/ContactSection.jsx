@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { COMPANY_INFO } from '../data/mouldData';
 import { Mail, Phone, MapPin, Send, CheckCircle2, UserCheck, Shield, Clock, Building, Sparkles, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { getEmailComposeUrl, getPreferredEmailClient, setPreferredEmailClient, openEmailClient } from '../lib/emailService';
+import { getPreferredEmailClient, setPreferredEmailClient, openEmailClient } from '../lib/emailService';
 
 export default function ContactSection({ onOpenEmailModal }) {
   const [formData, setFormData] = useState({
@@ -100,32 +100,18 @@ export default function ContactSection({ onOpenEmailModal }) {
                 <p className="text-slate-300 font-mono">
                   Tel: <a href={`tel:${COMPANY_INFO.contacts.abraham.phone}`} className="text-amber-400 font-bold hover:underline">{COMPANY_INFO.contacts.abraham.phone}</a>
                 </p>
-                <div className="pt-2 flex flex-wrap items-center gap-1.5">
-                  <a
-                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Técnica CSYS MOULD', client: 'gmail' })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-950/60 hover:bg-red-600 border border-red-500/40 text-red-300 hover:text-white font-bold text-[10px] transition-all"
-                    title="Redactar en Gmail Web"
-                  >
-                    <span className="font-black">G</span> Gmail
-                  </a>
-                  <a
-                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Técnica CSYS MOULD', client: 'outlook' })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-950/60 hover:bg-blue-600 border border-blue-500/40 text-blue-300 hover:text-white font-bold text-[10px] transition-all"
-                    title="Redactar en Outlook Web"
-                  >
-                    <span className="font-black">O</span> Outlook
-                  </a>
+                <div className="pt-2">
                   <button
                     type="button"
-                    onClick={() => onOpenEmailModal?.({ subject: 'Consulta Técnica CSYS MOULD' })}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-[10px] transition-all cursor-pointer"
+                    onClick={() => onOpenEmailModal?.({
+                      to: 'abraham@csysmould.com',
+                      subject: 'Consulta Técnica CSYS MOULD',
+                      body: 'Estimado equipo técnico de CSYS MOULD,\n\nMe pongo en contacto para consultar sobre:\n\n'
+                    })}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-xs transition-all cursor-pointer"
                     title="Contactar por correo"
                   >
-                    <Mail className="w-3 h-3" /> Contactar
+                    <Mail className="w-3.5 h-3.5" /> Contactar
                   </button>
                 </div>
               </div>
