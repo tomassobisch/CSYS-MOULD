@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { CheckCircle2, ArrowRight, Calendar, Mail, Phone, Sparkles, Building, Target, Clock, ShieldCheck, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getEmailComposeUrl } from '../lib/emailService';
 
-export default function LeadSurvey() {
+export default function LeadSurvey({ onOpenContact, onOpenEmailModal }) {
   const [isOpen, setIsOpen] = useState(true);
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState('');
@@ -261,13 +262,47 @@ export default function LeadSurvey() {
                     </div>
                   </div>
 
-                  <div className="pt-3 flex flex-col sm:flex-row items-center gap-3">
-                    <a
-                      href={mailtoLink}
-                      className="w-full py-3.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30"
-                    >
-                      <Mail className="w-4 h-4" /> Solicitar Cotización Instantánea por Correo (abraham@csysmould.com)
-                    </a>
+                  <div className="pt-3 space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <a
+                        href={getEmailComposeUrl({
+                          to: 'abraham@csysmould.com',
+                          subject: `Solicitud de Cotización y Reunión Técnica - ${industry}`,
+                          body: `Hola Abraham,\n\nMi empresa pertenece a la industria: ${industry}.\nObjetivo: ${objective}.\nPlazo estimado: ${timeline}.\n\nMi correo de contacto: ${contactEmail}\nTeléfono directo: ${contactPhone}.\n\nSolicito propuesta técnica y agendar una breve reunión.`,
+                          client: 'gmail'
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-3.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-950/60 transition-all cursor-pointer"
+                      >
+                        <span className="w-5 h-5 rounded-md bg-white/20 font-black text-xs flex items-center justify-center">G</span>
+                        <span>Enviar por Gmail Web (Recomendado)</span>
+                      </a>
+
+                      <a
+                        href={getEmailComposeUrl({
+                          to: 'abraham@csysmould.com',
+                          subject: `Solicitud de Cotización y Reunión Técnica - ${industry}`,
+                          body: `Hola Abraham,\n\nMi empresa pertenece a la industria: ${industry}.\nObjetivo: ${objective}.\nPlazo estimado: ${timeline}.\n\nMi correo de contacto: ${contactEmail}\nTeléfono directo: ${contactPhone}.\n\nSolicito propuesta técnica y agendar una breve reunión.`,
+                          client: 'outlook'
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-950/60 transition-all cursor-pointer"
+                      >
+                        <span className="w-5 h-5 rounded-md bg-white/20 font-black text-xs flex items-center justify-center">O</span>
+                        <span>Enviar por Outlook Web</span>
+                      </a>
+                    </div>
+
+                    <div className="text-center pt-1">
+                      <a
+                        href={mailtoLink}
+                        className="text-[11px] text-slate-400 hover:text-amber-400 font-mono underline"
+                      >
+                        O abrir con la app de correo predeterminada del sistema (mailto)
+                      </a>
+                    </div>
                   </div>
                 </form>
               )}

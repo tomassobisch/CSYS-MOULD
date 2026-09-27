@@ -5,8 +5,9 @@ import VideoBackground from './VideoBackground';
 import RealPhotoGallery from './RealPhotoGallery';
 import LeadSurvey from './LeadSurvey';
 import ContactSection from './ContactSection';
+import { getEmailComposeUrl } from '../lib/emailService';
 
-export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
+export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEmailModal }) {
   return (
     <div className="space-y-24 bg-black text-slate-100">
       
@@ -48,39 +49,65 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
               {/* IMMEDIATE HERO CALL TO ACTION BUTTON */}
               <div className="space-y-3 pt-2">
-                <a
-                  href="mailto:abraham@csysmould.com?subject=Solicitud%20de%20Informaci%C3%B3n%20y%20Presupuesto%20CSYS%20MOULD"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm sm:text-base shadow-2xl shadow-amber-500/50 hover:shadow-amber-400/70 hover:scale-[1.02] transition-all duration-300"
+                <button
+                  type="button"
+                  onClick={() => onOpenEmailModal?.({
+                    subject: 'Solicitud de Información y Presupuesto CSYS MOULD',
+                    body: 'Hola Abraham,\n\nMe gustaría solicitar información y presupuesto para un proyecto de moldes / inyección plástica.\n\nEmpresa:\nTeléfono:\nDetalles preliminares:'
+                  })}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm sm:text-base shadow-2xl shadow-amber-500/50 hover:shadow-amber-400/70 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
                 >
                   <Mail className="w-5 h-5 text-slate-950" />
                   <span>Contáctanos, comienza a trabajar con nosotros o entérate de más</span>
                   <ArrowRight className="w-5 h-5 text-slate-950" />
-                </a>
+                </button>
 
-                {/* Secondary CTAs */}
-                <div className="flex flex-wrap items-center gap-3 pt-1">
+                {/* Secondary CTAs with direct Gmail and Outlook web links */}
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
                   <a
-                    href="mailto:abraham@csysmould.com?subject=Consulta%20Directa%20CSYS%20MOULD"
-                    className="px-5 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2"
+                    href={getEmailComposeUrl({
+                      to: 'abraham@csysmould.com',
+                      subject: 'Consulta Directa CSYS MOULD (Gmail)',
+                      client: 'gmail'
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-red-950/60 hover:bg-red-600 border border-red-500/60 text-white font-bold text-xs shadow-lg hover:shadow-red-900/50 transition-all flex items-center gap-2"
+                    title="Abrir redactor en Gmail Web"
                   >
-                    <Mail className="w-4 h-4 text-amber-400" />
-                    <span>Escribir a abraham@csysmould.com</span>
+                    <span className="w-4 h-4 rounded-md bg-red-600 text-white font-black text-[10px] flex items-center justify-center">G</span>
+                    <span>Abrir en Gmail</span>
+                  </a>
+
+                  <a
+                    href={getEmailComposeUrl({
+                      to: 'abraham@csysmould.com',
+                      subject: 'Consulta Directa CSYS MOULD (Outlook)',
+                      client: 'outlook'
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-blue-950/60 hover:bg-blue-600 border border-blue-500/60 text-white font-bold text-xs shadow-lg hover:shadow-blue-900/50 transition-all flex items-center gap-2"
+                    title="Abrir redactor en Outlook Web"
+                  >
+                    <span className="w-4 h-4 rounded-md bg-blue-600 text-white font-black text-[10px] flex items-center justify-center">O</span>
+                    <span>Abrir en Outlook</span>
                   </a>
 
                   <button
                     onClick={onOpenContact}
-                    className="px-5 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2"
+                    className="px-4 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2 cursor-pointer"
                   >
                     <Mail className="w-4 h-4 text-amber-400" />
-                    <span>Formulario de Contacto</span>
+                    <span>Formulario Web</span>
                   </button>
 
                   <button
                     onClick={onOpenLogin}
-                    className="px-5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-amber-300 font-bold text-xs hover:bg-slate-800 transition-all flex items-center gap-2"
+                    className="px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-amber-300 font-bold text-xs hover:bg-slate-800 transition-all flex items-center gap-2 cursor-pointer"
                   >
                     <Lock className="w-4 h-4 text-amber-400" />
-                    <span>Portal Privado de Clientes</span>
+                    <span>Portal Clientes</span>
                   </button>
                 </div>
               </div>
@@ -210,12 +237,16 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
               <Factory className="w-8 h-8 text-amber-400 mx-auto" />
               <p className="text-2xl font-extrabold text-white font-tech">Capacidad Multiplicada</p>
               <p className="text-xs font-mono text-slate-400">Control de Calidad CMM en España</p>
-              <a
-                href="mailto:abraham@csysmould.com?subject=Consulta%20Fabricaci%C3%B3n%20Dual%20y%20Hubs%20China"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-xs transition-all shadow-md"
+              <button
+                type="button"
+                onClick={() => onOpenEmailModal?.({
+                  subject: 'Consulta Fabricación Dual y Hubs China',
+                  body: 'Hola Abraham,\n\nNos interesa conocer más sobre la capacidad de fabricación dual en Barcelona y centros asociados en Dongguan y Shenzhen (China).\n\nEmpresa:\nVolumen estimado de piezas / moldes:\nPlazo objetivo:'
+                })}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-xs transition-all shadow-md cursor-pointer"
               >
                 <Mail className="w-3.5 h-3.5" /> Cotizar con Abraham
-              </a>
+              </button>
             </div>
           </div>
 
@@ -293,12 +324,12 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact }) {
 
       {/* 4. SURVEY SECTION */}
       <section id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LeadSurvey onOpenContact={onOpenContact} />
+        <LeadSurvey onOpenContact={onOpenContact} onOpenEmailModal={onOpenEmailModal} />
       </section>
 
       {/* 5. CONTACT SECTION */}
       <section id="contact">
-        <ContactSection />
+        <ContactSection onOpenEmailModal={onOpenEmailModal} />
       </section>
 
     </div>

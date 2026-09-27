@@ -2,7 +2,7 @@ import React from 'react';
 import { COMPANY_INFO } from '../data/mouldData';
 import { Shield, Mail, Phone, MapPin, ArrowUp, FileText, Code2 } from 'lucide-react';
 
-export default function Footer({ lang }) {
+export default function Footer({ lang, onOpenEmailModal }) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -35,7 +35,14 @@ export default function Footer({ lang }) {
               <p>08450 Llinars del Vallès, Barcelona</p>
               <div className="pt-2 font-mono text-amber-400 space-y-1">
                 <p className="flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5" /> <a href="mailto:abraham@csysmould.com" className="hover:underline">abraham@csysmould.com</a>
+                  <Mail className="w-3.5 h-3.5" /> 
+                  <button
+                    type="button"
+                    onClick={() => onOpenEmailModal?.({ subject: 'Consulta desde Footer CSYS MOULD' })}
+                    className="hover:underline text-left cursor-pointer"
+                  >
+                    abraham@csysmould.com
+                  </button>
                 </p>
                 <p className="flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5" /> <a href="tel:+34934607266" className="font-bold hover:underline">(+34) 934.607.266</a>
@@ -64,7 +71,15 @@ export default function Footer({ lang }) {
                 <FileText className="w-3.5 h-3.5" /> Protección de Datos & Consultas
               </div>
               <p className="leading-relaxed">
-                Si tienes dudas sobre los datos de la empresa o tratamiento de información, puedes contactarnos en <a href="mailto:abraham@csysmould.com" className="text-amber-400 font-mono hover:underline">abraham@csysmould.com</a> o al teléfono <strong className="text-amber-400 font-mono">(+34) 934.607.266</strong>.
+                Si tienes dudas sobre los datos de la empresa o tratamiento de información, puedes contactarnos en{' '}
+                <button
+                  type="button"
+                  onClick={() => onOpenEmailModal?.({ subject: 'Consulta Legal y Protección de Datos' })}
+                  className="text-amber-400 font-mono hover:underline cursor-pointer"
+                >
+                  abraham@csysmould.com
+                </button>{' '}
+                o al teléfono <strong className="text-amber-400 font-mono">(+34) 934.607.266</strong>.
               </p>
             </div>
           </div>
@@ -73,7 +88,16 @@ export default function Footer({ lang }) {
 
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
-          <p>© 2026 CSYS MOULD. Todos los derechos reservados 2026. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: (+34) 934.607.266 | Email: <a href="mailto:abraham@csysmould.com" className="hover:underline">abraham@csysmould.com</a></p>
+          <p>
+            © 2026 CSYS MOULD. Todos los derechos reservados 2026. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: (+34) 934.607.266 | Email:{' '}
+            <button
+              type="button"
+              onClick={() => onOpenEmailModal?.({ subject: 'Contacto Desde Web CSYS MOULD' })}
+              className="text-slate-300 hover:text-amber-400 hover:underline cursor-pointer"
+            >
+              abraham@csysmould.com
+            </button>
+          </p>
           
           <div className="flex items-center gap-4">
             <span className="px-3 py-1 rounded-full bg-slate-950 border border-amber-500/40 text-amber-400 font-mono font-bold text-[11px] tracking-wide flex items-center gap-1.5 shadow-md shadow-amber-500/10">

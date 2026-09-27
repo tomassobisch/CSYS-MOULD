@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Globe, Mail, Lock, Menu, X, ArrowRight } from 'lucide-react';
 
-export default function Navbar({ activeSection, setActiveSection, onOpenContact, lang, setLang, isAuthenticated, onOpenLogin }) {
+export default function Navbar({ activeSection, setActiveSection, onOpenContact, onOpenEmailModal, lang, setLang, isAuthenticated, onOpenLogin }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -78,14 +78,15 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
           {/* Right Header Actions */}
           <div className="hidden sm:flex items-center gap-3">
             {!isAuthenticated && (
-              <a
-                href="mailto:abraham@csysmould.com?subject=Contacto%20Desde%20Web%20CSYS%20MOULD"
-                className="px-4 py-2.5 rounded-xl bg-black border border-amber-500/60 hover:border-amber-400 text-xs font-bold text-amber-300 hover:text-white transition-all flex items-center gap-1.5 shadow-md shadow-amber-950/40"
-                title="Escribir a abraham@csysmould.com"
+              <button
+                type="button"
+                onClick={() => onOpenEmailModal?.({ subject: 'Contacto Desde Web CSYS MOULD' })}
+                className="px-4 py-2.5 rounded-xl bg-black border border-amber-500/60 hover:border-amber-400 text-xs font-bold text-amber-300 hover:text-white transition-all flex items-center gap-1.5 shadow-md shadow-amber-950/40 cursor-pointer"
+                title="Escribir a abraham@csysmould.com (Gmail / Outlook)"
               >
                 <Mail className="w-3.5 h-3.5 text-amber-400" />
                 <span>Contactar</span>
-              </a>
+              </button>
             )}
 
             <button
@@ -140,12 +141,16 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
           </div>
 
           <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800">
-            <a
-              href="mailto:abraham@csysmould.com?subject=Contacto%20Desde%20Web%20CSYS%20MOULD"
-              className="px-3 py-2 rounded-xl bg-black border border-amber-500/50 text-xs font-semibold text-amber-300 flex items-center gap-1.5"
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenEmailModal?.({ subject: 'Contacto Desde Web CSYS MOULD' });
+              }}
+              className="px-3 py-2 rounded-xl bg-black border border-amber-500/50 text-xs font-semibold text-amber-300 flex items-center gap-1.5 cursor-pointer"
             >
               <Mail className="w-3.5 h-3.5 text-amber-400" /> Contactar
-            </a>
+            </button>
 
             <button
               onClick={() => setLang(lang === 'ES' ? 'EN' : 'ES')}

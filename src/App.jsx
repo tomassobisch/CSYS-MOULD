@@ -6,12 +6,28 @@ import DirectorCorporateDashboard from './components/DirectorCorporateDashboard'
 import ClientPortalDashboard from './components/ClientPortalDashboard';
 import Footer from './components/Footer';
 import CookieBanner from './components/CookieBanner';
+import EmailClientModal from './components/EmailClientModal';
 import { Shield, Lock, LogOut, CheckCircle2, Eye } from 'lucide-react';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
   const [lang, setLang] = useState('ES');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [emailModal, setEmailModal] = useState({
+    isOpen: false,
+    to: 'abraham@csysmould.com',
+    subject: 'Solicitud de Información y Presupuesto CSYS MOULD',
+    body: ''
+  });
+
+  const handleOpenEmailModal = (options = {}) => {
+    setEmailModal({
+      isOpen: true,
+      to: options.to || 'abraham@csysmould.com',
+      subject: options.subject || 'Solicitud de Información y Presupuesto CSYS MOULD',
+      body: options.body || ''
+    });
+  };
 
   // PERSISTENT SESSION MANAGEMENT VIA LOCALSTORAGE
   const [userProfile, setUserProfile] = useState(() => {
@@ -104,6 +120,7 @@ export default function App() {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         onOpenContact={scrollToContact}
+        onOpenEmailModal={handleOpenEmailModal}
         lang={lang}
         setLang={setLang}
         isAuthenticated={isAuthenticated}
@@ -116,6 +133,7 @@ export default function App() {
         <PublicLandingPage
           onOpenLogin={() => setIsLoginModalOpen(true)}
           onOpenContact={scrollToContact}
+          onOpenEmailModal={handleOpenEmailModal}
         />
       ) : userProfile?.role === 'director' ? (
         /* 2. CORPORATE EXECUTIVE DASHBOARD WITH BOTS CENTER (Claudio & Abraham) */
@@ -132,7 +150,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <Footer lang={lang} />
+      <Footer lang={lang} onOpenEmailModal={handleOpenEmailModal} />
 
       {/* COOKIE CONSENT BANNER */}
       <CookieBanner />
@@ -142,6 +160,15 @@ export default function App() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+      />
+
+      {/* EMAIL CLIENT CHOOSER MODAL (GMAIL / OUTLOOK / MAILTO) */}
+      <EmailClientModal
+        isOpen={emailModal.isOpen}
+        onClose={() => setEmailModal(prev => ({ ...prev, isOpen: false }))}
+        to={emailModal.to}
+        subject={emailModal.subject}
+        body={emailModal.body}
       />
 
     </div>

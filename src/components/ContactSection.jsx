@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { COMPANY_INFO } from '../data/mouldData';
-import { Mail, Phone, MapPin, Send, CheckCircle2, UserCheck, Shield, Clock, Building, Sparkles } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, UserCheck, Shield, Clock, Building, Sparkles, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getEmailComposeUrl, getPreferredEmailClient, setPreferredEmailClient, openEmailClient } from '../lib/emailService';
 
-export default function ContactSection() {
+export default function ContactSection({ onOpenEmailModal }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,6 +14,7 @@ export default function ContactSection() {
     message: ''
   });
 
+  const [emailClient, setEmailClient] = useState(() => getPreferredEmailClient() || 'gmail');
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,8 +25,12 @@ export default function ContactSection() {
     const subject = `Solicitud de Presupuesto - ${formData.company || formData.name} (${formData.moldType})`;
     const body = `Estimado Abraham Lozano,\n\nLe contacto a través de la web de CSYS MOULD para solicitar presupuesto con los siguientes datos:\n\n• Nombre: ${formData.name}\n• Empresa: ${formData.company}\n• Email: ${formData.email}\n• Teléfono: ${formData.phone || 'No especificado'}\n• Tipo de Proyecto: ${formData.moldType}\n\nDetalles del Proyecto / Mensaje:\n${formData.message}\n\nQuedo a la espera de su respuesta técnica y cotización.\n\nAtentamente,\n${formData.name}`;
 
-    const mailtoUrl = `mailto:abraham@csysmould.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
+    openEmailClient({
+      to: 'abraham@csysmould.com',
+      subject,
+      body,
+      client: emailClient
+    });
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -94,13 +100,33 @@ export default function ContactSection() {
                 <p className="text-slate-300 font-mono">
                   Tel: <a href={`tel:${COMPANY_INFO.contacts.abraham.phone}`} className="text-amber-400 font-bold hover:underline">{COMPANY_INFO.contacts.abraham.phone}</a>
                 </p>
-                <div className="pt-1">
+                <div className="pt-2 flex flex-wrap items-center gap-1.5">
                   <a
-                    href="mailto:abraham@csysmould.com?subject=Consulta%20Directa%20a%20Abraham%20Lozano"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-[11px] transition-all"
+                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Directa a Abraham Lozano (Gmail)', client: 'gmail' })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-950/60 hover:bg-red-600 border border-red-500/40 text-red-300 hover:text-white font-bold text-[10px] transition-all"
+                    title="Redactar en Gmail Web"
                   >
-                    <Mail className="w-3.5 h-3.5" /> Enviar Correo a Abraham
+                    <span className="font-black">G</span> Gmail
                   </a>
+                  <a
+                    href={getEmailComposeUrl({ to: 'abraham@csysmould.com', subject: 'Consulta Directa a Abraham Lozano (Outlook)', client: 'outlook' })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-950/60 hover:bg-blue-600 border border-blue-500/40 text-blue-300 hover:text-white font-bold text-[10px] transition-all"
+                    title="Redactar en Outlook Web"
+                  >
+                    <span className="font-black">O</span> Outlook
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => onOpenEmailModal?.({ subject: 'Consulta Directa a Abraham Lozano' })}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 text-amber-300 hover:text-slate-950 font-bold text-[10px] transition-all cursor-pointer"
+                    title="Más opciones de correo"
+                  >
+                    <Mail className="w-3 h-3" /> Opciones
+                  </button>
                 </div>
               </div>
             </div>
@@ -220,17 +246,80 @@ export default function ContactSection() {
                     />
                   </div>
 
+                  {/* Email Service Selector */}
+                  <div className="p-3.5 rounded-2xl bg-black border border-slate-800 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-300 font-bold text-xs flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-amber-400" /> Enviar mediante:
+                      </span>
+                      <span className="text-[10px] text-amber-400 font-mono font-bold">abraham@csysmould.com</span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEmailClient('gmail');
+                          setPreferredEmailClient('gmail');
+                        }}
+                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                          emailClient === 'gmail'
+                            ? 'bg-red-600 text-white shadow-md shadow-red-950/60 ring-2 ring-red-400'
+                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-red-400 inline-block" /> Gmail Web
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEmailClient('outlook');
+                          setPreferredEmailClient('outlook');
+                        }}
+                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                          emailClient === 'outlook'
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-950/60 ring-2 ring-blue-400'
+                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" /> Outlook Web
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEmailClient('mailto');
+                          setPreferredEmailClient('mailto');
+                        }}
+                        className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                          emailClient === 'mailto'
+                            ? 'bg-amber-500 text-slate-950 shadow-md ring-2 ring-amber-300'
+                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                      >
+                        <Mail className="w-3.5 h-3.5" /> App Sistema
+                      </button>
+                    </div>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm shadow-xl shadow-amber-500/40 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm shadow-xl shadow-amber-500/40 hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {isSubmitting ? (
-                      <span>Abriendo cliente de correo...</span>
+                      <span>Abriendo redactor de correo...</span>
                     ) : (
                       <>
                         <Send className="w-4 h-4 text-slate-950" />
-                        <span>Enviar Solicitud a Abraham Lozano (abraham@csysmould.com)</span>
+                        <span>
+                          {emailClient === 'gmail'
+                            ? 'Redactar y Enviar por Gmail Web'
+                            : emailClient === 'outlook'
+                            ? 'Redactar y Enviar por Outlook Web'
+                            : 'Enviar Solicitud a Abraham Lozano'}
+                        </span>
                       </>
                     )}
                   </button>
