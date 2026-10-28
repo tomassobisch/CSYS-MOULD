@@ -160,7 +160,7 @@ export const REAL_FACTORY_PHOTOS = [
     id: "gallery-6",
     title: "Trabajo en Equipo & Desarrollo CAD",
     category: "Oficina Técnica",
-    image: "/multimedia/real_team_meeting.jpg",
+    image: "/multimedia/DSC00133.JPG",
     desc: "Revisión conjunta de planos de inyección con Claudio y Abraham Lozano."
   }
 ];
