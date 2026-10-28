@@ -130,10 +130,10 @@ export const REAL_FACTORY_PHOTOS = [
   },
   {
     id: "gallery-2",
-    title: "Mecanizado CNC 5 Ejes de Matriz de Acero",
-    category: "Matricería",
-    image: "/multimedia/factory_cnc_machining.jpg",
-    desc: "Fresado de cavidades de acero S136 con refrigeración de taladrina en nave de 500 m² (Llinars del Vallès)."
+    title: "EDM CNC, Grafito & Cobre",
+    category: "Electroerosión & EDM",
+    image: "/multimedia/edm_cnc_grafito_cobre.jpg",
+    desc: "Electroerosión por penetración EDM CNC con electrodos de grafito y cobre para cavidades complejas en nave de 500 m² (Llinars del Vallès)."
   },
   {
     id: "gallery-3",
