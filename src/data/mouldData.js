@@ -137,10 +137,10 @@ export const REAL_FACTORY_PHOTOS = [
   },
   {
     id: "gallery-3",
-    title: "Metrología CMM ZEISS & Óptica",
-    category: "Control Calidad",
-    image: "/multimedia/mold_inspection_zeiss.jpg",
-    desc: "Verificación tridimensional de cotas micrométricas (±0,02 mm) antes de pruebas T1."
+    title: "Nuestro Equipo",
+    category: "Equipo CSYS",
+    image: "/multimedia/DSC03133.JPG",
+    desc: "Equipo técnico y especialistas de moldes en las instalaciones de CSYS MOULD en Barcelona."
   },
   {
     id: "gallery-4",
