@@ -76,9 +76,6 @@ export default function ContactSection({ onOpenEmailModal }) {
                 <p className="text-slate-300 font-mono">
                   Email: <a href={`mailto:${COMPANY_INFO.contacts.claudio.email}`} className="text-amber-400 hover:underline">{COMPANY_INFO.contacts.claudio.email}</a>
                 </p>
-                <p className="text-slate-300 font-mono">
-                  Tel: <a href={`tel:${COMPANY_INFO.contacts.claudio.phone}`} className="text-amber-400 font-bold hover:underline">{COMPANY_INFO.contacts.claudio.phone}</a>
-                </p>
               </div>
             </div>
 
@@ -96,9 +93,6 @@ export default function ContactSection({ onOpenEmailModal }) {
                 <h3 className="text-base font-bold text-white">Abraham Lozano</h3>
                 <p className="text-slate-300 font-mono">
                   Email: <a href={`mailto:${COMPANY_INFO.contacts.abraham.email}`} className="text-amber-400 hover:underline">{COMPANY_INFO.contacts.abraham.email}</a>
-                </p>
-                <p className="text-slate-300 font-mono">
-                  Tel: <a href={`tel:${COMPANY_INFO.contacts.abraham.phone}`} className="text-amber-400 font-bold hover:underline">{COMPANY_INFO.contacts.abraham.phone}</a>
                 </p>
                 <div className="pt-2">
                   <button
@@ -124,7 +118,9 @@ export default function ContactSection({ onOpenEmailModal }) {
               </div>
               <p className="text-slate-200 font-bold">{COMPANY_INFO.spainPlant.address}</p>
               <p className="text-slate-400">{COMPANY_INFO.spainPlant.city}</p>
-              <p className="text-slate-400 font-mono pt-1">Tel. Oficina: {COMPANY_INFO.contacts.phoneOffice}</p>
+              <p className="text-slate-400 font-mono pt-1">
+                Tel. Oficina: <a href="tel:+34696764127" className="text-amber-400 font-bold hover:underline">+34 696 76 41 27</a>
+              </p>
               <p className="text-emerald-400 font-bold pt-1">Plantas asociadas en China: Dongguan & Shenzhen</p>
             </div>
 

@@ -18,7 +18,7 @@ export const COMPANY_INFO = {
     desc: "Centros de fabricación asociados de alta velocidad para multiplicar la capacidad productiva en tiempo récord."
   },
   contacts: {
-    phoneOffice: "(+34) 934 607 266",
+    phoneOffice: "+34 696 76 41 27",
     emailInfo: "info@csysmould.com",
     claudio: {
       name: "Claudio",

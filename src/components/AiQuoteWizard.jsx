@@ -156,7 +156,7 @@ export default function AiQuoteWizard({ prefilledMold = null, onClose }) {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
     doc.text('Directores: Claudio (claudio@csysmould.com) y Abraham Lozano (abraham@csysmould.com)', 15, 205);
-    doc.text('Planta Llinars del Valles: (+34) 934 607 266 | Ecosistema IA por TJ Developer: Tsteam.fit@gmail.com', 15, 212);
+    doc.text('Planta Llinars del Valles: +34 696 76 41 27 | Ecosistema IA por TJ Developer: Tsteam.fit@gmail.com', 15, 212);
 
     doc.save(`CSYS_MOULD_Presupuesto_${quoteResult.quoteId}.pdf`);
   };

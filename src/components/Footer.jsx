@@ -45,7 +45,7 @@ export default function Footer({ lang, onOpenEmailModal }) {
                   </button>
                 </p>
                 <p className="flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5" /> <a href="tel:+34934607266" className="font-bold hover:underline">(+34) 934.607.266</a>
+                  <Phone className="w-3.5 h-3.5" /> <a href="tel:+34696764127" className="font-bold hover:underline">+34 696 76 41 27</a>
                 </p>
               </div>
             </div>
@@ -79,7 +79,7 @@ export default function Footer({ lang, onOpenEmailModal }) {
                 >
                   abraham@csysmould.com
                 </button>{' '}
-                o al teléfono <strong className="text-amber-400 font-mono">(+34) 934.607.266</strong>.
+                o al teléfono <a href="tel:+34696764127" className="text-amber-400 font-mono font-bold hover:underline">+34 696 76 41 27</a>.
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default function Footer({ lang, onOpenEmailModal }) {
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
           <p>
-            © 2026 CSYS MOULD. Todos los derechos reservados 2026. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: (+34) 934.607.266 | Email:{' '}
+            © 2026 CSYS MOULD. Todos los derechos reservados 2026. C/ Sant Celoni 54, Llinars del Vallès, Barcelona. Tel: <a href="tel:+34696764127" className="hover:text-amber-400 hover:underline">+34 696 76 41 27</a> | Email:{' '}
             <button
               type="button"
               onClick={() => onOpenEmailModal?.({ subject: 'Contacto Desde Web CSYS MOULD' })}
