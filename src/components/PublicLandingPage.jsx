@@ -123,23 +123,13 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
                     className="absolute inset-0 m-auto max-h-44 opacity-15 filter blur-[0.5px] drop-shadow-[0_0_20px_rgba(224,153,0,0.5)] pointer-events-none"
                   />
                   
-                  {/* Both Abaham.png & Claudio.PNG PNG Cutout Portraits with Abraham locked in position and Claudio adjusted to match */}
+                  {/* Abraham & Claudio PNG Cutout Portrait */}
                   <div className="relative z-10 h-full w-full flex items-end justify-center pt-0 pb-0">
-                    
-                    {/* Abraham PNG (Left side, locked in current position) */}
                     <img
-                      src="/multimedia/Abaham.png"
-                      alt="Abraham Lozano - Socio CSYS MOULD"
-                      className="h-[101%] sm:h-[103%] max-w-[55%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-10 translate-y-12 sm:translate-y-16 -mr-8 sm:-mr-12"
+                      src="/multimedia/IMG_2008.PNG"
+                      alt="Claudio Arriaga y Abraham Lozano - Socios CSYS MOULD"
+                      className="h-full w-full object-contain object-bottom filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-10 group-hover:scale-[1.02] transition-transform duration-500"
                     />
-
-                    {/* Claudio PNG (Right side, in front, adjusted in size and position to match Abraham) */}
-                    <img
-                      src="/multimedia/Claudio.PNG"
-                      alt="Claudio Arriaga - Socio CSYS MOULD"
-                      className="h-[99%] sm:h-[101%] max-w-[54%] object-contain filter drop-shadow-[0_0_25px_rgba(224,153,0,0.85)] relative z-20 translate-y-10 sm:translate-y-14 scale-[1.0] group-hover:scale-[1.03] transition-transform duration-500"
-                    />
-
                   </div>
 
                   {/* ELEGANT PNG BRANDING BADGE OVERLAPPING & COVERING THE BOTTOM CORNER CUT SEAMLESSLY */}
