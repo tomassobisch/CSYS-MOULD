@@ -153,7 +153,7 @@ export const REAL_FACTORY_PHOTOS = [
     id: "gallery-5",
     title: "Cavidades de Molde Inoxidable",
     category: "Moldes Alta Cadencia",
-    image: "/multimedia/real_mold_cavity_1.jpg",
+    image: "/multimedia/DSC00125.JPG",
     desc: "Detalle de postizos e insertos templados pulidos a espejo SPI-A1."
   },
   {
