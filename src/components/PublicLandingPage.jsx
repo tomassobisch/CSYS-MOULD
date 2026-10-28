@@ -39,7 +39,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
               {/* Subheadline */}
               <div className="space-y-2 pt-1">
                 <p className="text-lg sm:text-xl font-bold text-slate-100">
-                  44 años fabricando moldes para <span className="text-amber-400 font-extrabold">Nissan</span>, <span className="text-amber-400 font-extrabold">SEAT</span> y <span className="text-amber-400 font-extrabold">TOUS</span>
+                  44 años fabricando moldes para <span className="text-amber-400 font-extrabold">NISSAN</span>, <span className="text-amber-400 font-extrabold">SEAT</span> y <span className="text-amber-400 font-extrabold">TOUS</span>
                 </p>
                 <p className="text-sm sm:text-base text-slate-300 font-mono font-medium">
                   Moldistas hasta 5 TN · Especialistas en Microinyección BABYPLAST
