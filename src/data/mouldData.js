@@ -123,10 +123,10 @@ export const REAL_PROJECTS = [
 export const REAL_FACTORY_PHOTOS = [
   {
     id: "gallery-1",
-    title: "Inspección de Modelo CAD 3D",
-    category: "Ingeniería & DFM",
-    image: "/multimedia/hero_mold_framed.jpg",
-    desc: "Ingeniero examinando modelo tridimensional de matriz de alta precisión en puesto de trabajo."
+    title: "Ajuste en prensa 100TN",
+    category: "Ajuste & Prensas",
+    image: "/multimedia/DSC02858.png",
+    desc: "Ajuste y puesta a punto de molde en prensa de 100 Toneladas en nave de Llinars del Vallès."
   },
   {
     id: "gallery-2",
