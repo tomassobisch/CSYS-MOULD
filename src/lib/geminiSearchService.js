@@ -1,6 +1,10 @@
 // ==============================================================================
 // CSYS MOULD WEB - GEMINI AI & LIVE WEB SEARCH SERVICE
 // Rastreo en tiempo real en internet mediante Google Search Grounding & Gemini API
+// Adaptado estrictamente a los 3 Perfiles ICP de CSYS MOULD:
+// - Perfil A: Startups tecnológicas (Robótica & MedTech)
+// - Perfil B: Empresas con producto propio (20 a 50 trab., no multinacionales)
+// - Perfil C: Empresas de inyección con máquinas propias (moldes China garantía 3 años + Babyplast)
 // ==============================================================================
 
 import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
@@ -22,14 +26,45 @@ export const saveGeminiApiKey = (key) => {
   }
 };
 
+export const ICP_PROFILES_INFO = {
+  profile_a: {
+    id: 'profile_a',
+    code: 'PERFIL A',
+    title: 'Startups Tecnológicas',
+    subtitle: 'Robótica & Tecnología Médica Avanzada',
+    description: 'Startups y empresas tecnológicas en sus primeras etapas, incluidas las ubicadas en viveros de empresas, que desarrollan proyectos de robótica o tecnología médica avanzada. Acompañamiento en cualquier fase, desde la idea inicial hasta la producción.',
+    badgeColor: 'bg-cyan-950 text-cyan-400 border-cyan-500/60',
+    borderColor: 'border-cyan-500/60'
+  },
+  profile_b: {
+    id: 'profile_b',
+    code: 'PERFIL B',
+    title: 'Empresas con Producto Propio',
+    subtitle: 'Pymes de 20 a 50 trabajadores con diseño propio',
+    description: 'Empresas consolidadas con producto propio, idealmente de 20 a 50 trabajadores y con su propio equipo de diseño o ingeniería. Enfoque: apoyar el desarrollo de nuevas piezas de plástico y reducir costes de fabricación, aportando experiencia en materiales, moldes e inyección. No dirigido a multinacionales ni grandes corporaciones.',
+    badgeColor: 'bg-amber-950 text-amber-400 border-amber-500/60',
+    borderColor: 'border-amber-500/60'
+  },
+  profile_c: {
+    id: 'profile_c',
+    code: 'PERFIL C',
+    title: 'Inyectores con Máquinas Propias',
+    subtitle: 'Moldes China garantía 3 años + BABYPLAST (sin inyección)',
+    description: 'Empresas de inyección de plástico con máquinas propias que necesitan moldes nuevos. Propuesta centrada en moldes fabricados en China, entregados funcionando y con garantía de 3 años, con servicio posventa en Barcelona. Incluye especialización en moldes para microinyección BABYPLAST; no se ofrece producción de piezas por inyección a este perfil.',
+    badgeColor: 'bg-emerald-950 text-emerald-400 border-emerald-500/60',
+    borderColor: 'border-emerald-500/60'
+  }
+};
+
 /**
  * Searches the web in real-time using Google Gemini API with Google Search Grounding.
- * If no API key is provided, falls back to intelligent matching across the expanded real dataset.
+ * Strictly focuses on CSYS MOULD's 3 Target ICP Profiles.
  */
 export async function searchCompaniesOnWeb({
   query = '',
   location = 'all',
   sector = 'all',
+  icpProfile = 'all',
   existingCount = 0
 }) {
   const apiKey = getGeminiApiKey();
@@ -39,58 +74,75 @@ export async function searchCompaniesOnWeb({
     try {
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-      const systemPrompt = `Eres un agente de prospección industrial B2B de élite para CSYS MOULD S.L., una planta de matricería e inyección de plásticos de alta precisión en Barcelona (Llinars del Vallès, con puente grúa de 10 TN y microinyección BABYPLAST).
-Tu misión es buscar en Google en vivo empresas REALES y activas que fabriquen productos plásticos, carcasas, piezas técnicas, dispositivos médicos, packaging o componentes de automoción.
+      const systemPrompt = `Eres el agente de prospección industrial B2B de élite para CSYS MOULD S.L., planta de matricería e inyección plástica en Llinars del Vallès, Barcelona (puente grúa 10 TN y microinyección BABYPLAST).
 
-Parámetros de búsqueda solicitados por el director:
-- Término / Búsqueda libre: "${query || 'Empresas de inyección de plástico y desarrollo de moldes'}"
+Tu objetivo es rastrear Google en vivo y encontrar empresas REALES y activas en España (especialmente Cataluña, Valencia, Madrid, País Vasco y resto de España) que encajen estrictamente en alguno de los 3 PERFILES OBJETIVO (ICP) DE CSYS:
+
+PERFIL A - Startups tecnológicas:
+- Startups en fases tempranas o viveros/incubadoras (ej. 22@ Barcelona, Barcelona Activa, Lanzadera, Parques Científicos).
+- Desarrollan robótica, sensores o tecnología médica avanzada.
+- Necesidad: Acompañamiento desde la idea/diseño hasta el molde y producción T1.
+
+PERFIL B - Empresas con producto propio:
+- Pymes consolidadas de 20 a 50 trabajadores con su propio equipo de diseño o ingeniería.
+- Tienen producto propio en mercado. NO multinacionales ni gigantescas corporaciones.
+- Necesidad: Apoyo en nuevas piezas plásticas y reducción de costes de fabricación con experiencia en moldes y materiales.
+
+PERFIL C - Empresas de inyección con máquinas propias:
+- Empresas transformadoras de plástico que ya tienen inyectoras en planta y necesitan moldes nuevos.
+- Propuesta CSYS: Moldes fabricados en China, entregados funcionando con 3 AÑOS DE GARANTÍA y servicio posventa técnico en Barcelona. Especialización en moldes BABYPLAST. (Aclaración: NO se les ofrece inyección de piezas).
+
+Filtros activos solicitados:
+- Búsqueda libre: "${query || 'Empresas industriales para inyección de plástico y moldes'}"
+- Filtro Perfil ICP: "${icpProfile}"
 - Filtro Ubicación: "${location}"
 - Filtro Sector: "${sector}"
 
 INSTRUCCIONES ESTRICTAS:
-1. Encuentra entre 3 y 6 empresas REALES verificables (NO inventes empresas ni URLs inexistentes).
-2. Devuelve EXCLUSIVAMENTE un array JSON válido con la siguiente estructura para cada empresa:
+1. Encuentra entre 3 y 5 empresas REALES verificables con sitio web real.
+2. Asigna obligatoriamente a cada una su "icpProfile" ("profile_a", "profile_b" o "profile_c").
+3. Devuelve EXCLUSIVAMENTE un array JSON válido con la siguiente estructura:
 [
   {
     "id": "web-live-${Date.now()}-1",
-    "company": "Nombre Real S.L. / S.A.",
-    "priorityLevel": "cat", // "cat" para Cataluña, "and" para Andalucía, "esp" para Resto España, "int" para Internacional
+    "icpProfile": "profile_a", // "profile_a", "profile_b", "profile_c"
+    "icpProfileName": "Perfil A: Startup Tecnológica",
+    "company": "Nombre Real S.L.",
+    "priorityLevel": "cat", // "cat", "and", "esp", "int"
     "priorityName": "Prioridad 1: Cataluña",
     "priorityColor": "#ef4444",
-    "closingProbabilityScore": 92,
-    "closingProbabilityLabel": "92% • Alta Probabilidad de Cierre",
-    "closingBadgeColor": "bg-emerald-950 text-emerald-400 border-emerald-500/60",
-    "sectorKey": "automotive", // "automotive", "medtech", "deeptech", "iot", "packaging", "robotics"
-    "sector": "Sector específico de la empresa",
-    "companySize": "51-200",
-    "companySizeLabel": "51 - 200 empleados",
-    "companyAge": "5+",
-    "companyAgeLabel": "Empresa consolidada",
-    "stage": "Fabricación & Carcasas Plásticas",
-    "foundationYear": 2015,
-    "country": "Ciudad / Provincia / Parque Industrial",
-    "incubatorHub": "Parque tecnológico o polígono industrial",
-    "website": "https://www.dominio-real.com",
-    "linkedin": "https://www.linkedin.com/company/nombre",
-    "contactPerson": "Nombre del directivo o Departamento de Compras / Ingeniería",
-    "email": "contacto@dominio-real.com",
+    "closingProbabilityScore": 93,
+    "closingProbabilityLabel": "93% • Alta Probabilidad",
+    "closingBadgeColor": "bg-cyan-950 text-cyan-400 border-cyan-500/60",
+    "sectorKey": "robotics", // "robotics", "medtech", "deeptech", "iot", "automotive"
+    "sector": "Sector exacto",
+    "companySize": "11-50",
+    "companySizeLabel": "20 - 45 empleados",
+    "companyAge": "1-3",
+    "companyAgeLabel": "Startup en fase de escalado",
+    "stage": "Fase de desarrollo",
+    "foundationYear": 2021,
+    "country": "Barcelona / Parc Tecnològic",
+    "incubatorHub": "Vivero o Polígono Industrial",
+    "website": "https://www.web-real.com",
+    "linkedin": "https://www.linkedin.com/company/web-real",
+    "contactPerson": "Nombre del Fundador / Director de Ingeniería",
+    "email": "contacto@web-real.com",
     "phone": "+34 930 000 000",
-    "rfqTitle": "Necesidad de Molde de Inyección Técnica para...",
-    "estimatedBudget": "55.000 €",
-    "technicalNeed": "Detalle técnico del molde, acero recomendado (Stavax, H13) y tolerancia centesimal.",
+    "rfqTitle": "Requerimiento de molde para...",
+    "estimatedBudget": "45.000 €",
+    "technicalNeed": "Detalle técnico específico adaptado al perfil (A: acompañamiento/DFM, B: reducción de costes/nuevas piezas, C: molde China 3 años garantía o Babyplast).",
     "verifiedStatus": "🌐 Encontrada en Google Search (Web Verificada)",
-    "googleMapsSearch": "Nombre de la empresa y ciudad",
-    "addressFull": "Dirección completa en España",
-    "isLiveWebResult": true,
+    "addressFull": "Dirección en España",
     "study360": {
-      "growthMetrics": "Datos recientes de crecimiento o rondas de inversión.",
-      "recentNews": ["• Noticia o proyecto reciente de la empresa."],
-      "agreementsAndPartnerships": ["• Principales clientes o asociaciones del sector."],
-      "executivesLinkedin": [{ "name": "Directivo", "role": "CEO / Director Técnico", "linkedin": "https://www.linkedin.com/company/...", "email": "contacto@..." }]
+      "growthMetrics": "Datos de crecimiento o clientes.",
+      "recentNews": ["• Noticia relevante."],
+      "agreementsAndPartnerships": ["• Convenio o cliente."],
+      "executivesLinkedin": [{ "name": "Directivo", "role": "CEO / CTO", "linkedin": "https://...", "email": "contacto@..." }]
     },
     "detailedDiagnosis": {
-      "businessProblem": "Problema técnico habitual en moldes para este producto.",
-      "csysHelpStrategy": ["1. Solución técnica de CSYS MOULD en Barcelona.", "2. Acompañamiento por Claudio y Abraham Lozano."]
+      "businessProblem": "Problema del cliente según su perfil.",
+      "csysHelpStrategy": ["1. Solución de CSYS MOULD en Barcelona.", "2. Acompañamiento por Claudio y Abraham Lozano."]
     }
   }
 ]`;
@@ -98,9 +150,7 @@ INSTRUCCIONES ESTRICTAS:
       const requestBody = {
         contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
         tools: [{ google_search: {} }],
-        generationConfig: {
-          temperature: 0.2
-        }
+        generationConfig: { temperature: 0.2 }
       };
 
       const response = await fetch(endpoint, {
@@ -113,7 +163,6 @@ INSTRUCCIONES ESTRICTAS:
         const data = await response.json();
         const textResponse = data.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || '';
 
-        // Extract JSON array from text response
         const jsonMatch = textResponse.match(/\[\s*\{[\s\S]*\}\s*\]/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
@@ -122,48 +171,52 @@ INSTRUCCIONES ESTRICTAS:
               success: true,
               source: 'google_ai_search',
               leads: parsed,
-              message: `Se encontraron ${parsed.length} empresas reales en internet mediante Google Search Grounding.`
+              message: `Se encontraron ${parsed.length} empresas reales en internet alineadas con los Perfiles ICP de CSYS.`
             };
           }
         }
       }
     } catch (err) {
-      console.warn('Gemini API search encountered an error, falling back to local search engine:', err);
+      console.warn('Gemini API search encountered an error, using expanded database fallback:', err);
     }
   }
 
-  // 2. INTELLIGENT REAL-DATASET FILTER & EXPANSION FALLBACK
-  // Filters and discovers matches from the expanded real database with dynamic scoring
+  // 2. INTELLIGENT REAL-DATASET FILTER ACROSS THE 3 ICP PROFILES
   const cleanQ = query.trim().toLowerCase();
-
   let candidates = [...EXPANDED_REAL_STARTUPS];
+
+  if (icpProfile && icpProfile !== 'all') {
+    candidates = candidates.filter(c => c.icpProfile === icpProfile);
+  }
 
   if (location && location !== 'all') {
     candidates = candidates.filter(c => c.priorityLevel === location);
   }
 
   if (sector && sector !== 'all') {
-    candidates = candidates.filter(c => c.sectorKey === sector || c.sector.toLowerCase().includes(sector));
+    candidates = candidates.filter(c => c.sectorKey === sector || (c.sector && c.sector.toLowerCase().includes(sector)));
   }
 
   if (cleanQ) {
     const queryTokens = cleanQ.split(/\s+/).filter(t => t.length > 2);
     candidates = candidates.filter(c => {
-      const haystack = `${c.company} ${c.sector} ${c.country} ${c.technicalNeed} ${c.rfqTitle} ${c.addressFull}`.toLowerCase();
+      const haystack = `${c.company} ${c.sector} ${c.country} ${c.technicalNeed} ${c.rfqTitle} ${c.icpProfileName || ''}`.toLowerCase();
       return queryTokens.some(token => haystack.includes(token));
     });
   }
 
-  // If no candidates matched strictly, take from full expanded pool
   if (candidates.length === 0) {
-    candidates = [...EXPANDED_REAL_STARTUPS].sort(() => Math.random() - 0.5).slice(0, 4);
+    if (icpProfile && icpProfile !== 'all') {
+      candidates = EXPANDED_REAL_STARTUPS.filter(c => c.icpProfile === icpProfile);
+    } else {
+      candidates = [...EXPANDED_REAL_STARTUPS].sort(() => Math.random() - 0.5).slice(0, 4);
+    }
   }
 
-  // Tag as newly discovered
   const discovered = candidates.map((lead, idx) => ({
     ...lead,
     id: `discovered-${Date.now()}-${idx}`,
-    verifiedStatus: '🟢 Empresa Real Verificada en Catálogo Ampliado',
+    verifiedStatus: '🟢 Empresa Real Verificada en Catálogo ICP',
     isExpandedCatalog: true
   }));
 
@@ -173,7 +226,7 @@ INSTRUCCIONES ESTRICTAS:
     leads: discovered,
     needsKeyForLiveGoogle: !apiKey,
     message: apiKey
-      ? `Se sincronizaron ${discovered.length} empresas de la base de datos ampliada.`
-      : `Búsqueda ampliada completada (${discovered.length} empresas reales). Para conectar Google Search en tiempo real ilimitado, puedes agregar tu clave gratuita de Gemini API.`
+      ? `Se sincronizaron ${discovered.length} empresas del catálogo ICP.`
+      : `Búsqueda completada (${discovered.length} empresas reales alineadas con los Perfiles A, B y C).`
   };
 }

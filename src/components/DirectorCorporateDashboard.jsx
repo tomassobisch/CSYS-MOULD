@@ -3,11 +3,11 @@ import { createPortal } from 'react-dom';
 import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban, Edit3, Wrench } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
-import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
+import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb, ICP_PROFILES_INFO } from '../lib/geminiSearchService';
 
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
-  const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'location_map' | 'icp_prompt' | 'portfolio' | 'blacklist'
+  const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'icp_profiles' | 'location_map' | 'portfolio' | 'blacklist'
   const [favoriteLeads, setFavoriteLeads] = useState(() => {
     try {
       const saved = localStorage.getItem('csys_favorite_leads');
@@ -20,6 +20,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   });
   
   // DYNAMIC SEARCH FILTER ENGINE STATES (FOR BOT 1 & BOT 2)
+  const [filterIcpProfile, setFilterIcpProfile] = useState('all'); // 'all' | 'profile_a' | 'profile_b' | 'profile_c'
   const [filterLocation, setFilterLocation] = useState('all'); // 'all' | 'cat' | 'and' | 'esp' | 'int'
   const [filterSector, setFilterSector] = useState('all'); // 'all' | 'deeptech' | 'medtech' | 'robotics' | 'iot'
   const [filterSize, setFilterSize] = useState('all'); // 'all' | '1-10' | '11-50' | '51-200'
@@ -979,6 +980,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
       // Select matching real startups excluding blacklisted ex-clients
       let matched = safeRealStartups.filter(lead => {
+        if (filterIcpProfile !== 'all' && lead.icpProfile !== filterIcpProfile) return false;
         if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
         if (filterSector !== 'all' && lead.sectorKey !== filterSector) return false;
         if (filterSize !== 'all' && lead.companySize !== filterSize) return false;
@@ -1082,6 +1084,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         query: webSearchQuery,
         location: filterLocation,
         sector: filterSector,
+        icpProfile: filterIcpProfile,
         existingCount: dbStartups.length
       });
 
@@ -1256,6 +1259,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   // Filtered Leads by Active Filters & Blacklist
   const filteredStartups = dbStartups.filter(lead => {
     if (isCompanyBlacklisted(lead.company)) return false;
+    if (filterIcpProfile !== 'all' && lead.icpProfile !== filterIcpProfile) return false;
     if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
     if (filterSector !== 'all' && lead.sectorKey !== filterSector) return false;
     if (filterSize !== 'all' && lead.companySize !== filterSize) return false;
@@ -1698,6 +1702,101 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
             </div>
           </div>
 
+          {/* 3 ICP TARGET PROFILES INTERACTIVE SELECTOR (PERFILES A, B Y C DE CSYS MOULD) */}
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5" /> Segmentación por Perfil de Cliente Objetivo (ICP)
+              </span>
+              {filterIcpProfile !== 'all' && (
+                <button
+                  type="button"
+                  onClick={() => setFilterIcpProfile('all')}
+                  className="text-[10px] text-slate-400 hover:text-white underline cursor-pointer"
+                >
+                  Mostrar Todos los Perfiles
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Profile A */}
+              <div
+                onClick={() => setFilterIcpProfile(filterIcpProfile === 'profile_a' ? 'all' : 'profile_a')}
+                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden group ${
+                  filterIcpProfile === 'profile_a'
+                    ? 'border-cyan-400 bg-cyan-950/50 shadow-xl shadow-cyan-950/60 scale-[1.01]'
+                    : 'border-slate-800 bg-slate-950/90 hover:border-cyan-500/50 hover:bg-slate-900/60'
+                }`}
+              >
+                <div className="flex items-center justify-between pb-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40">
+                    PERFIL A
+                  </span>
+                  <span className="text-[10px] font-bold text-cyan-300">
+                    {filterIcpProfile === 'profile_a' ? '✓ Filtro Activo' : 'Seleccionar'}
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-white flex items-center gap-1.5 pb-1">
+                  <Rocket className="w-4 h-4 text-cyan-400" /> Startups Tecnológicas
+                </h4>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  Fases tempranas y viveros de empresas. Proyectos de robótica o tecnología médica avanzada. Acompañamiento integral desde la idea inicial hasta la producción.
+                </p>
+              </div>
+
+              {/* Profile B */}
+              <div
+                onClick={() => setFilterIcpProfile(filterIcpProfile === 'profile_b' ? 'all' : 'profile_b')}
+                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden group ${
+                  filterIcpProfile === 'profile_b'
+                    ? 'border-amber-400 bg-amber-950/50 shadow-xl shadow-amber-950/60 scale-[1.01]'
+                    : 'border-slate-800 bg-slate-950/90 hover:border-amber-500/50 hover:bg-slate-900/60'
+                }`}
+              >
+                <div className="flex items-center justify-between pb-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-950 text-amber-400 border border-amber-500/40">
+                    PERFIL B
+                  </span>
+                  <span className="text-[10px] font-bold text-amber-300">
+                    {filterIcpProfile === 'profile_b' ? '✓ Filtro Activo' : 'Seleccionar'}
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-white flex items-center gap-1.5 pb-1">
+                  <Building2 className="w-4 h-4 text-amber-400" /> Producto Propio (20-50 trab.)
+                </h4>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  Pymes consolidadas con producto propio y equipo de diseño/ingeniería (no multinacionales ni grandes corporaciones). Desarrollo de piezas y reducción de costes.
+                </p>
+              </div>
+
+              {/* Profile C */}
+              <div
+                onClick={() => setFilterIcpProfile(filterIcpProfile === 'profile_c' ? 'all' : 'profile_c')}
+                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden group ${
+                  filterIcpProfile === 'profile_c'
+                    ? 'border-emerald-400 bg-emerald-950/50 shadow-xl shadow-emerald-950/60 scale-[1.01]'
+                    : 'border-slate-800 bg-slate-950/90 hover:border-emerald-500/50 hover:bg-slate-900/60'
+                }`}
+              >
+                <div className="flex items-center justify-between pb-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40">
+                    PERFIL C
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-300">
+                    {filterIcpProfile === 'profile_c' ? '✓ Filtro Activo' : 'Seleccionar'}
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-white flex items-center gap-1.5 pb-1">
+                  <Wrench className="w-4 h-4 text-emerald-400" /> Inyectores con Máquinas Propias
+                </h4>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  Empresas con parque de inyectoras que compran moldes nuevos. Moldes China con 3 años de garantía, posventa en Barcelona y matrices BABYPLAST (sin inyección).
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* 4 DYNAMIC FILTER SELECTORS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
@@ -1845,7 +1944,18 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                       : 'bg-black text-slate-300 border border-slate-800 hover:text-white'
                   }`}
                 >
-                  <Rocket className="w-4 h-4 text-amber-400" /> Startups Hardware ({filteredStartups.length})
+                  <Rocket className="w-4 h-4 text-amber-400" /> Startups & Empresas ({filteredStartups.length})
+                </button>
+
+                <button
+                  onClick={() => setScoutingSubTab('icp_profiles')}
+                  className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${
+                    scoutingSubTab === 'icp_profiles'
+                      ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30'
+                      : 'bg-black text-slate-300 border border-slate-800 hover:text-white'
+                  }`}
+                >
+                  <Target className="w-4 h-4 text-amber-400" /> 🎯 Perfiles Objetivo ICP (A, B, C)
                 </button>
 
                 <button
@@ -1949,6 +2059,119 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </div>
             )}
 
+            {/* ICP PROFILES GUIDE TAB */}
+            {scoutingSubTab === 'icp_profiles' && (
+              <div className="space-y-6">
+                <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 border-2 border-amber-500/60 space-y-3">
+                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-sm uppercase tracking-wider">
+                    <Target className="w-5 h-5 text-amber-400" />
+                    <span>Criterios Oficiales de Prospección B2B - CSYS MOULD</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                    Estos 3 perfiles representan la segmentación estratégica exacta para la prospección de clientes. Cada perfil cuenta con una propuesta de valor técnica diferenciada y una estrategia de contacto comercial a medida:
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Perfil A */}
+                  <div className="p-6 rounded-3xl bg-black border-2 border-cyan-500/60 space-y-4 shadow-xl flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/50">
+                          PERFIL A
+                        </span>
+                        <Rocket className="w-5 h-5 text-cyan-400" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">Startups Tecnológicas</h3>
+                      <p className="text-xs font-mono text-cyan-300 font-bold">Robótica & Tecnología Médica Avanzada</p>
+                      <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300 font-sans leading-relaxed">
+                        <p>
+                          <strong>¿Quiénes son?</strong> Startups y empresas tecnológicas en sus primeras etapas, incluidas las ubicadas en viveros de empresas (22@ Barcelona, Barcelona Activa, Lanzadera, Parques Científicos), que desarrollan proyectos de robótica o tecnología médica avanzada.
+                        </p>
+                        <p>
+                          <strong>Propuesta CSYS:</strong> Acompañamiento integral en cualquier fase, desde la idea inicial y diseño CAD 3D hasta la fabricación de moldes y producción T1.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFilterIcpProfile('profile_a');
+                        setScoutingSubTab('startups');
+                      }}
+                      className="w-full px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/20"
+                    >
+                      <Search className="w-4 h-4" /> Ver Empresas Perfil A
+                    </button>
+                  </div>
+
+                  {/* Perfil B */}
+                  <div className="p-6 rounded-3xl bg-black border-2 border-amber-500/60 space-y-4 shadow-xl flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-amber-950 text-amber-400 border border-amber-500/50">
+                          PERFIL B
+                        </span>
+                        <Building2 className="w-5 h-5 text-amber-400" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">Empresas con Producto Propio</h3>
+                      <p className="text-xs font-mono text-amber-300 font-bold">Pymes 20 a 50 trabajadores con diseño propio</p>
+                      <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300 font-sans leading-relaxed">
+                        <p>
+                          <strong>¿Quiénes son?</strong> Empresas consolidadas con producto propio, idealmente de 20 a 50 trabajadores y con su propio equipo de diseño o ingeniería. No se dirige a multinacionales ni a grandes corporaciones.
+                        </p>
+                        <p>
+                          <strong>Propuesta CSYS:</strong> Apoyar el desarrollo de nuevas piezas de plástico y reducir costes de fabricación, aportando experiencia en materiales termoplásticos, moldes e inyección.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFilterIcpProfile('profile_b');
+                        setScoutingSubTab('startups');
+                      }}
+                      className="w-full px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-500/20"
+                    >
+                      <Search className="w-4 h-4" /> Ver Empresas Perfil B
+                    </button>
+                  </div>
+
+                  {/* Perfil C */}
+                  <div className="p-6 rounded-3xl bg-black border-2 border-emerald-500/60 space-y-4 shadow-xl flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/50">
+                          PERFIL C
+                        </span>
+                        <Wrench className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">Inyectores con Máquinas Propias</h3>
+                      <p className="text-xs font-mono text-emerald-300 font-bold">Moldes China garantía 3 años & BABYPLAST</p>
+                      <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300 font-sans leading-relaxed">
+                        <p>
+                          <strong>¿Quiénes son?</strong> Empresas de inyección de plástico con máquinas propias que necesitan moldes nuevos.
+                        </p>
+                        <p>
+                          <strong>Propuesta CSYS:</strong> Moldes fabricados en China, entregados funcionando y con garantía de 3 años, con servicio posventa en Barcelona. Especialización en moldes para microinyección BABYPLAST. (Aclaración: No se ofrece producción de piezas por inyección a este perfil).
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFilterIcpProfile('profile_c');
+                        setScoutingSubTab('startups');
+                      }}
+                      className="w-full px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
+                    >
+                      <Search className="w-4 h-4" /> Ver Empresas Perfil C
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* GOOGLE MAPS TAB */}
             {scoutingSubTab === 'location_map' && (
               <div className="space-y-6">
@@ -1991,13 +2214,34 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                   return (
                     <div key={lead.id} className="bg-black p-6 rounded-2xl border border-amber-500/40 space-y-4 hover:border-amber-400 transition-all flex flex-col justify-between shadow-xl">
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span
-                            className="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white uppercase border border-slate-700"
-                            style={{ backgroundColor: lead.priorityColor }}
-                          >
-                            {lead.priorityName}
-                          </span>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span
+                              className="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white uppercase border border-slate-700"
+                              style={{ backgroundColor: lead.priorityColor }}
+                            >
+                              {lead.priorityName}
+                            </span>
+                            {lead.icpProfile && (
+                              <span
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase border ${
+                                  lead.icpProfile === 'profile_a'
+                                    ? 'bg-cyan-950 text-cyan-400 border-cyan-500/50'
+                                    : lead.icpProfile === 'profile_b'
+                                    ? 'bg-amber-950 text-amber-400 border-amber-500/50'
+                                    : 'bg-emerald-950 text-emerald-400 border-emerald-500/50'
+                                }`}
+                              >
+                                {lead.icpProfileName || (
+                                  lead.icpProfile === 'profile_a'
+                                    ? 'Perfil A: Startup Tecnológica'
+                                    : lead.icpProfile === 'profile_b'
+                                    ? 'Perfil B: Producto Propio'
+                                    : 'Perfil C: Inyector con Máquinas'
+                                )}
+                              </span>
+                            )}
+                          </div>
 
                           <div className="flex items-center gap-1.5">
                             <button
@@ -2921,7 +3165,18 @@ function ProposalModal({ lead, onClose, onNotification }) {
   const emailSubject = `[Propuesta Formal CSYS MOULD] Solución de Inyección y Matricería para ${company}`;
 
   const generateDefaultBody = () => {
-    return `Estimado/a ${contactPerson},\n\nEs un placer saludarle desde CSYS MOULD S.L. (Planta de Matricería e Inyección de Plásticos en Llinars del Vallès, Barcelona).\n\nTras analizar el requerimiento técnico de ${company} ("${technicalNeed}"), le presentamos nuestra propuesta formal técnico-económica personalizada:\n\nRESUMEN DE LA PROPUESTA TÉCNICA CSYS:\n• Matriz de Inyección de Alta Precisión: ${steelType}.\n• Tolerancias Centesimales garantizadas: ${tolerance} con informe metrológico CMM 3D.\n• Estudio de Simulación DFM & Moldflow incluido sin coste previo.\n• Presupuesto Estimado: ${budget} (Ingeniería DFM 3D incluida).\n• Plazo de Entrega T1 (Primeras Muestras): ${deliveryTime}.\n• Garantía de Producción: ${guaranteeCycles} desde nuestra planta en Barcelona.\n\nQuedamos a su entera disposición para agendar una breve videollamada de 10 minutos esta semana o recibirle en nuestra planta industrial en Llinars del Vallès.\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com | info@csysmould.com\n🌐 https://csys-mould.vercel.app`;
+    // PERFIL C: EMPRESAS DE INYECCIÓN CON MÁQUINAS PROPIAS
+    if (lead?.icpProfile === 'profile_c') {
+      return `Estimado/a ${contactPerson},\n\nNos dirigimos a usted desde CSYS MOULD S.L. (Planta de Matricería e Ingeniería de Moldes en Llinars del Vallès, Barcelona).\n\nConocemos su trayectoria como empresa transformadora con parque propio de máquinas de inyección. Queremos presentarle nuestro servicio especializado en suministro de moldes de inyección nuevos:\n\nPROPUESTA EXCLUSIVA PARA EMPRESAS INYECTORAS (PERFIL C):\n• Moldes fabricados en nuestras plantas asociadas en China, entregados 100% funcionando llave en mano.\n• GARANTÍA TOTAL DE 3 AÑOS respaldada por contrato sobre el molde.\n• Servicio posventa y mantenimiento técnico directo desde nuestro taller en Barcelona (500 m², puente grúa 10 TN y maquinaria 5 ejes).\n• Especialización en moldes para microinyección BABYPLAST.\n• Presupuesto Estimado de Matriz: ${budget}.\n• Plazo de Entrega T1: ${deliveryTime}.\n\n(Aclaramos que respetamos plenamente su actividad: no ofrecemos producción de piezas por inyección a este perfil, sino suministro de moldes garantizados y asistencia técnica local).\n\n¿Dispone de unos minutos esta semana para agendar una llamada o visitar nuestra nave en Llinars del Vallès?\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com\n📞 +34 696 76 41 27\n🌐 https://csys-mould.vercel.app`;
+    }
+
+    // PERFIL B: EMPRESAS CON PRODUCTO PROPIO (20-50 TRABAJADORES)
+    if (lead?.icpProfile === 'profile_b') {
+      return `Estimado/a ${contactPerson},\n\nLe contactamos desde CSYS MOULD S.L. (Matricería e Inyección Técnica en Llinars del Vallès, Barcelona).\n\nHemos analizado su catálogo de producto propio y sus requerimientos técnicos ("${technicalNeed}"). Como matriceros especializados en empresas consolidadas con equipo propio de diseño e ingeniería:\n\nPROPUESTA DE DESARROLLO Y REDUCCIÓN DE COSTES (PERFIL B):\n• Apoyo integral a su equipo técnico en el desarrollo de nuevas piezas de plástico.\n• Reducción de costes de fabricación mediante optimización de espesores, tiempos de ciclo y geometrías de molde.\n• Aportamos más de 40 años de experiencia en selección de termoplásticos avanzados e inyección técnica.\n• Matriz de Inyección de Alta Precisión: ${steelType} con tolerancias ${tolerance}.\n• Estudio DFM & Moldflow previo incluido sin coste para validar desmoldeos y puntos de inyección.\n• Presupuesto Estimado: ${budget}.\n• Plazo de Entrega T1: ${deliveryTime}.\n\nEstaremos encantados de revisar planos CAD conjuntamente con sus ingenieros sin compromiso alguno.\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com\n📞 +34 696 76 41 27\n🌐 https://csys-mould.vercel.app`;
+    }
+
+    // PERFIL A / DEFAULT: STARTUPS TECNOLÓGICAS (ROBÓTICA & MEDTECH)
+    return `Estimado/a ${contactPerson},\n\nEs un placer saludarle desde CSYS MOULD S.L. (Planta de Matricería y Micro-Inyección en Llinars del Vallès, Barcelona).\n\nHemos seguido el desarrollo innovador de ${company} en robótica y tecnología médica. Como especialistas en acompañamiento a startups tecnológicas en etapas iniciales y viveros:\n\nPROPUESTA DE ACOMPAÑAMIENTO TÉCNICO (PERFIL A - STARTUPS):\n• Acompañamiento en cualquier fase: desde la primera idea y diseño CAD 3D hasta la producción en serie.\n• Simulación Moldflow DFM previa para evitar fallos antes de mecanizar acero.\n• Matrices de alta precisión para carcasas estancas, piezas técnicas y microinyección BABYPLAST (±0,02 mm).\n• Matriz de Inyección: ${steelType}.\n• Presupuesto Estimado: ${budget} (Ingeniería DFM 3D incluida).\n• Plazo T1 (Primeras Muestras Reales): ${deliveryTime}.\n\n¿Tendrían disponibilidad para una breve videollamada de 10 minutos esta semana o recibirles en nuestro taller de Barcelona?\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com\n📞 +34 696 76 41 27\n🌐 https://csys-mould.vercel.app`;
   };
 
   useEffect(() => {
