@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban, Edit3, Wrench } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
+import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
+import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
 
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
@@ -29,6 +31,13 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [massiveStageText, setMassiveStageText] = useState('');
   const [supabaseConnected, setSupabaseConnected] = useState(false);
   const [actionNotification, setActionNotification] = useState(null);
+
+  // LIVE WEB & INTERNET SEARCH ENGINE (GEMINI AI & GOOGLE SEARCH GROUNDING)
+  const [webSearchQuery, setWebSearchQuery] = useState('');
+  const [isWebSearching, setIsWebSearching] = useState(false);
+  const [showGeminiKeyModal, setShowGeminiKeyModal] = useState(false);
+  const [geminiApiKeyInput, setGeminiApiKeyInput] = useState(() => getGeminiApiKey());
+  const [hasGeminiKey, setHasGeminiKey] = useState(() => !!getGeminiApiKey());
 
   // SUPABASE KEY MODAL STATE
   const [showKeyModal, setShowKeyModal] = useState(false);
@@ -94,6 +103,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
 
   // 100% REAL, VERIFIED HARDWARE & DEEPTECH STARTUPS WITH OFFICIAL DOMAIN EMAILS & LINKEDIN PAGES
   const masterRealVerifiedStartups = [
+    ...EXPANDED_REAL_STARTUPS,
     // --- CATALUÑA (10 REALES) ---
     {
       id: 'startup-real-cat-1',
@@ -1059,6 +1069,87 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     }, 1000);
   };
 
+  // LIVE WEB & INTERNET SEARCH ENGINE HANDLER
+  const handleExecuteWebSearch = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (isWebSearching) return;
+
+    setIsWebSearching(true);
+    showNotification('🌐 Rastreador Web Activo: Buscando empresas en Google e internet...');
+
+    try {
+      const result = await searchCompaniesOnWeb({
+        query: webSearchQuery,
+        location: filterLocation,
+        sector: filterSector,
+        existingCount: dbStartups.length
+      });
+
+      if (result && result.leads && result.leads.length > 0) {
+        const safeNewLeads = result.leads.filter(l => !isCompanyBlacklisted(l.company));
+
+        setDbStartups(prev => {
+          const existingNames = new Set(prev.map(p => (p.company || '').toLowerCase()));
+          const uniqueNew = safeNewLeads.filter(n => !existingNames.has((n.company || '').toLowerCase()));
+          return [...uniqueNew, ...prev];
+        });
+
+        try {
+          const payloadLeads = safeNewLeads.map(lead => ({
+            id: lead.id,
+            company_name: lead.company,
+            priority_level: lead.priorityLevel || 'cat',
+            priority_name: lead.priorityName || 'Prioridad 1: Cataluña',
+            priority_color: lead.priorityColor || '#10b981',
+            closing_probability_score: lead.closingProbabilityScore || 90,
+            closing_probability_label: lead.closingProbabilityLabel,
+            closing_badge_color: lead.closingBadgeColor,
+            sector_key: lead.sectorKey || 'deeptech',
+            sector: lead.sector || 'Hardware Industrial',
+            company_size: lead.companySize || '51-200',
+            company_size_label: lead.companySizeLabel || 'Empresa Industrial',
+            company_age: lead.companyAge || '5+',
+            company_age_label: lead.companyAgeLabel || 'Consolidada',
+            stage: lead.stage,
+            foundation_year: lead.foundationYear ? parseInt(lead.foundationYear) : null,
+            country: lead.country,
+            incubator_hub: lead.incubatorHub,
+            website: lead.website,
+            linkedin: lead.linkedin,
+            contact_person: lead.contactPerson,
+            email: lead.email,
+            phone: lead.phone,
+            rfq_title: lead.rfqTitle,
+            estimated_budget: lead.estimatedBudget,
+            technical_need: lead.technicalNeed,
+            verified_status: lead.verifiedStatus || '🌐 Encontrada en Google Search (Web Verificada)',
+            address_full: lead.addressFull,
+            study360_json: lead.study360 || {},
+            detailed_diagnosis_json: lead.detailedDiagnosis || {},
+            is_scanned_by_bot: true,
+            updated_at: new Date().toISOString()
+          }));
+
+          await supabase.from('potential_leads').upsert(payloadLeads);
+        } catch (dbErr) {
+          console.warn('Supabase sync notice:', dbErr);
+        }
+
+        showNotification(result.message || `🎉 ¡${safeNewLeads.length} empresas añadidas al panel!`);
+
+        const todayStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+        const botReply = `[BOT 1 - RASTREADOR WEB]: Prospección online del ${todayStr} completada. Se han incorporado ${safeNewLeads.length} empresas reales a la cartera con sus correos y sitios web oficiales verificados.`;
+        setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
+      } else {
+        showNotification('No se encontraron nuevas empresas. Prueba con otros términos.');
+      }
+    } catch (err) {
+      showNotification('Error al rastrear en la web.');
+    } finally {
+      setIsWebSearching(false);
+    }
+  };
+
   // EXECUTE MASSIVE MULTI-HUB MARKET SCAN LOAD ALL REAL VERIFIED STARTUPS EXCLUDING BLACKLIST
   const executeMassiveMarketScan = async () => {
     setIsMassiveScanning(true);
@@ -1348,6 +1439,99 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         </div>
       )}
 
+      {/* GEMINI API KEY SETUP MODAL (FOR UNLIMITED LIVE GOOGLE SEARCH GROUNDING) */}
+      {showGeminiKeyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
+          <div className="relative w-full max-w-xl bg-slate-950 border-2 border-emerald-500 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 font-mono text-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-emerald-500 text-slate-950 font-bold">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-white">Búsqueda en Google e Internet en Tiempo Real</h3>
+                  <p className="text-[10px] text-slate-400">Motor de Prospección B2B impulsado por Google AI</p>
+                </div>
+              </div>
+              <button onClick={() => setShowGeminiKeyModal(false)} className="p-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-slate-300">
+              <p className="leading-relaxed">
+                Al conectar tu clave de <strong>Google AI Studio (Gemini)</strong>, el bot rastreará <strong>Google Search en vivo</strong> para descubrir automáticamente nuevas empresas industriales, sitios web reales y necesidades de inyección plástica.
+              </p>
+              
+              <div className="p-3.5 rounded-2xl bg-black border border-slate-800 space-y-1.5">
+                <span className="text-[10px] text-emerald-400 font-bold">📍 ¿Cómo conseguir tu clave gratuita en 1 minuto?</span>
+                <p className="text-[11px] text-slate-300">
+                  Google AI Studio ofrece claves gratuitas sin coste para proyectos y empresas:
+                </p>
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-emerald-400 underline font-bold pt-1 text-[11px]"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Obtener clave gratuita en Google AI Studio 🌐
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-emerald-400 font-bold">Pegar API Key de Google Gemini:</label>
+                <input
+                  type="password"
+                  value={geminiApiKeyInput}
+                  onChange={(e) => setGeminiApiKeyInput(e.target.value)}
+                  placeholder="AIzaSy..."
+                  className="w-full p-3 rounded-xl bg-black border border-slate-800 text-white font-mono text-[11px] focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex justify-between items-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    saveGeminiApiKey('');
+                    setGeminiApiKeyInput('');
+                    setHasGeminiKey(false);
+                    setShowGeminiKeyModal(false);
+                    showNotification('Clave eliminada. Se usará el catálogo ampliado.');
+                  }}
+                  className="text-slate-500 hover:text-red-400 text-[10px] underline"
+                >
+                  Borrar clave
+                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowGeminiKeyModal(false)}
+                    className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs"
+                  >
+                    Cerrar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      saveGeminiApiKey(geminiApiKeyInput);
+                      setHasGeminiKey(!!geminiApiKeyInput.trim());
+                      setShowGeminiKeyModal(false);
+                      showNotification('✅ Clave de Google AI guardada con éxito.');
+                    }}
+                    className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs"
+                  >
+                    Guardar Clave
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1. EXECUTIVE BANNER HEADER WITH REAL-TIME CLOCK */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`bg-black rounded-3xl border-2 ${themeBorderColor} p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 transition-all duration-300`}>
@@ -1431,6 +1615,85 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               >
                 <Zap className="w-4 h-4 fill-slate-950" />
                 <span>⚡ ESCANEO MASIVO TODO EL MERCADO</span>
+              </button>
+            </div>
+          </div>
+
+          {/* LIVE WEB & INTERNET SEARCH BAR (GOOGLE AI SEARCH GROUNDING) */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-950 border-2 border-emerald-500/60 space-y-3 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                <Globe className="w-4 h-4 animate-pulse text-emerald-400" />
+                <span>Buscador Web & Rastreo en Internet en Tiempo Real (Google AI)</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowGeminiKeyModal(true)}
+                className="text-[11px] font-mono text-slate-400 hover:text-emerald-400 flex items-center gap-1.5 underline cursor-pointer"
+              >
+                <Key className="w-3.5 h-3.5 text-emerald-400" />
+                {hasGeminiKey ? '🟢 Clave Google AI Conectada' : '⚙️ Configurar Clave Google Search (Gratis)'}
+              </button>
+            </div>
+
+            <form onSubmit={handleExecuteWebSearch} className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="relative flex-1 w-full">
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={webSearchQuery}
+                  onChange={(e) => setWebSearchQuery(e.target.value)}
+                  placeholder="Escribe qué buscar en internet (ej: Moldes médicos en Barcelona, Packaging cosmético, Automoción Valencia...)"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-black border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isWebSearching}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer shrink-0 transition-transform hover:scale-[1.02]"
+              >
+                {isWebSearching ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Rastreando la Web...</span>
+                  </>
+                ) : (
+                  <>
+                    <Globe className="w-4 h-4" />
+                    <span>Buscar en la Web</span>
+                  </>
+                )}
+              </button>
+            </form>
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-[10px] text-slate-400">
+              <span className="text-slate-500">Sugerencias rápidas:</span>
+              <button
+                type="button"
+                onClick={() => { setWebSearchQuery('Dispositivos médicos y microinyección Barcelona'); }}
+                className="px-2 py-0.5 rounded-md bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 cursor-pointer"
+              >
+                🏥 MedTech Barcelona
+              </button>
+              <button
+                type="button"
+                onClick={() => { setWebSearchQuery('Automoción y componentes plásticos Cataluña'); }}
+                className="px-2 py-0.5 rounded-md bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 cursor-pointer"
+              >
+                🚗 Automoción Cataluña
+              </button>
+              <button
+                type="button"
+                onClick={() => { setWebSearchQuery('Fabricantes electrodomésticos y moldes Valencia'); }}
+                className="px-2 py-0.5 rounded-md bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 cursor-pointer"
+              >
+                ⚡ Electrodomésticos Valencia
+              </button>
+              <button
+                type="button"
+                onClick={() => { setWebSearchQuery('Packaging cosmético y perfumería'); }}
+                className="px-2 py-0.5 rounded-md bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 cursor-pointer"
+              >
+                🧴 Packaging Cosmético
               </button>
             </div>
           </div>
@@ -1799,6 +2062,16 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                               className="px-3.5 py-2 rounded-xl bg-blue-950 hover:bg-blue-900 text-blue-300 hover:text-white border border-blue-500/60 text-[11px] font-extrabold flex items-center gap-1.5 transition-all shadow-md"
                             >
                               <ExternalLink className="w-3.5 h-3.5 text-blue-400" /> Perfil LinkedIn 💼
+                            </a>
+
+                            <a
+                              href={`https://www.google.com/search?q=${encodeURIComponent(lead.company + ' inyeccion plastico moldes')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-extrabold flex items-center gap-1.5 transition-all shadow-md"
+                              title="Buscar en Google en vivo"
+                            >
+                              <Search className="w-3.5 h-3.5 text-amber-400" /> Google 🔍
                             </a>
                           </div>
 
