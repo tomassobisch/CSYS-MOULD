@@ -249,7 +249,7 @@ INSTRUCCIONES ESTRICTAS:
     if (icpProfile && icpProfile !== 'all') {
       candidates = EXPANDED_REAL_STARTUPS.filter(c => c.icpProfile === icpProfile);
     } else {
-      candidates = [...EXPANDED_REAL_STARTUPS].sort(() => Math.random() - 0.5).slice(0, 4);
+      candidates = [...EXPANDED_REAL_STARTUPS];
     }
   }
 

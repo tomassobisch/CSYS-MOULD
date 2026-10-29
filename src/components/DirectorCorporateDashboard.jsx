@@ -629,7 +629,14 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
           setMassiveProgress(95);
           setMassiveStageText('🔵 4/4 Sincronizando Empresas Reales con Correos Corporativos Oficiales...');
 
-          const shuffledAll = [...safeRealStartups].sort(() => Math.random() - 0.5);
+          // Reset all filters so all companies are displayed without restrictions
+          setFilterIcpProfile('all');
+          setFilterLocation('all');
+          setFilterSector('all');
+          setFilterSize('all');
+          setFilterAge('all');
+
+          const shuffledAll = [...safeRealStartups];
 
           setDbStartups(shuffledAll);
 
@@ -1058,7 +1065,26 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* SHOW ALL BUTTON */}
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterIcpProfile('all');
+                  setFilterLocation('all');
+                  setFilterSector('all');
+                  setFilterSize('all');
+                  setFilterAge('all');
+                  setDbStartups([...safeRealStartups]);
+                  showNotification(`Mostrando todas las ${safeRealStartups.length} empresas reales verificadas`);
+                }}
+                className="px-4 py-3 rounded-2xl bg-cyan-950/70 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/60 font-extrabold text-xs shadow-xl flex items-center gap-2 transition-all transform hover:scale-105"
+                title="Mostrar todas las empresas reales sin filtros"
+              >
+                <Layers className="w-4 h-4 text-cyan-400" />
+                <span>TODAS LAS EMPRESAS ({safeRealStartups.length})</span>
+              </button>
+
               {/* SCAN ACTION BUTTON */}
               <button
                 onClick={executeScanWithFilters}
@@ -1066,7 +1092,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 className={`px-5 py-3 rounded-2xl ${themeBgColor} hover:opacity-90 text-slate-950 font-extrabold text-xs shadow-xl flex items-center gap-2 transition-all transform hover:scale-105`}
               >
                 {isScanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
-                <span>{isScanning ? 'ROTANDO EMPRESAS REALES...' : '🚀 FILTRAR EMPRESAS REALES (CORREOS OFICIALES)'}</span>
+                <span>{isScanning ? 'ROTANDO EMPRESAS REALES...' : '🚀 FILTRAR EMPRESAS'}</span>
               </button>
 
               {/* MASSIVE SCAN BUTTON */}
@@ -1076,7 +1102,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 className="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-xl flex items-center gap-2 transition-all transform hover:scale-105"
               >
                 <Zap className="w-4 h-4 fill-slate-950" />
-                <span>⚡ ESCANEO MASIVO TODO EL MERCADO</span>
+                <span>⚡ ESCANEO MASIVO ({safeRealStartups.length})</span>
               </button>
             </div>
           </div>
