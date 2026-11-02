@@ -1,6 +1,5 @@
 import React from 'react';
-import { COMPANY_INFO, REAL_PROJECTS } from '../data/mouldData';
-import { Shield, Lock, MapPin, Phone, Mail, ArrowRight, CheckCircle2, Sparkles, UserCheck, Layers, Cpu, Zap, Cog, Activity, Eye, Camera, Check, Award, Clock, Globe, ShieldCheck, Factory } from 'lucide-react';
+import { Shield, Lock, MapPin, Mail, ArrowRight, CheckCircle2, Award, Globe, ShieldCheck, Factory } from 'lucide-react';
 import VideoBackground from './VideoBackground';
 import RealPhotoGallery from './RealPhotoGallery';
 import LeadSurvey from './LeadSurvey';
@@ -8,7 +7,7 @@ import ContactSection from './ContactSection';
 
 export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEmailModal }) {
   return (
-    <div className="space-y-24 bg-black text-slate-100">
+    <div className="space-y-16 sm:space-y-20 bg-black text-slate-100">
       
       {/* 1. PUBLIC HERO SECTION - PURELY INFORMATIVE WITH IMMEDIATE ACTION BUTTON */}
       <section id="hero" className="relative pt-36 pb-20 overflow-hidden min-h-[92vh] flex items-center bg-black">
@@ -62,18 +61,18 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
                 </button>
 
                 {/* Secondary CTAs */}
-                <div className="flex flex-wrap items-center gap-3 pt-1">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3 pt-1">
                   <button
                     onClick={onOpenContact}
-                    className="px-5 py-2.5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center gap-2 cursor-pointer"
+                    className="h-11 px-4 sm:px-5 rounded-xl bg-black border border-slate-700/80 hover:border-amber-500/50 text-slate-200 hover:text-white font-bold text-xs shadow-lg hover:bg-slate-900 transition-all backdrop-blur-md flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Mail className="w-4 h-4 text-amber-400" />
-                    <span>Formulario de Contacto</span>
+                    <span><span className="sm:hidden">Contacto</span><span className="hidden sm:inline">Formulario de Contacto</span></span>
                   </button>
 
                   <button
                     onClick={onOpenLogin}
-                    className="px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-amber-300 font-bold text-xs hover:bg-slate-800 transition-all flex items-center gap-2 cursor-pointer"
+                    className="h-11 px-4 sm:px-5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 text-amber-300 font-bold text-xs hover:bg-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Lock className="w-4 h-4 text-amber-400" />
                     <span>Portal Clientes</span>
@@ -277,19 +276,15 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
       </section>
 
       {/* 3. REAL PHOTO GALLERY SECTION */}
-      <section id="gallery">
-        <RealPhotoGallery />
-      </section>
+      <RealPhotoGallery />
 
       {/* 4. SURVEY SECTION */}
-      <section id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LeadSurvey onOpenContact={onOpenContact} onOpenEmailModal={onOpenEmailModal} />
-      </section>
+      <div id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
+        <LeadSurvey />
+      </div>
 
       {/* 5. CONTACT SECTION */}
-      <section id="contact">
-        <ContactSection onOpenEmailModal={onOpenEmailModal} />
-      </section>
+      <ContactSection onOpenEmailModal={onOpenEmailModal} />
 
     </div>
   );

@@ -117,3 +117,47 @@
   border-right: 3px solid #e09900;
   z-index: 25;
 }
+
+/* Terminaciones globales: anclas bajo el header fijo, selección de texto, foco accesible y scrollbar a juego */
+html {
+  scroll-padding-top: 96px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(245, 158, 11, 0.35);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(245, 158, 11, 0.85);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+html {
+  scrollbar-color: #3f3f46 #000;
+}
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 8px; border: 2px solid #000; }
+::-webkit-scrollbar-thumb:hover { background: #b45309; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Entrada suave del aviso de cookies */
+@keyframes cookieBannerIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cookie-banner-enter {
+  animation: cookieBannerIn 0.35s ease-out both;
+}

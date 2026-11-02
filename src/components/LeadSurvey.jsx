@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { CheckCircle2, ArrowRight, Calendar, Mail, Phone, Sparkles, Building, Target, Clock, ShieldCheck, ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Calendar, Sparkles, Building, Target, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getEmailComposeUrl } from '../lib/emailService';
 
-export default function LeadSurvey({ onOpenContact, onOpenEmailModal }) {
+export default function LeadSurvey() {
   const [isOpen, setIsOpen] = useState(true);
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState('');
@@ -23,7 +23,7 @@ export default function LeadSurvey({ onOpenContact, onOpenEmailModal }) {
 
   const objectives = [
     { id: 'new_mold', label: 'Desarrollo de nuevo molde desde cero (CAD 3D / DFM)' },
-    { id: 'micro_injection', label: 'Micro-Inyección de piezas de alta precisión (±0.002mm)' },
+    { id: 'micro_injection', label: 'Micro-Inyección de piezas de alta precisión (±0,02 mm)' },
     { id: 'mold_optimization', label: 'Optimización y reducción de tiempo de ciclo en molde existente' },
     { id: 'volume_production', label: 'Fabricación en volumen (Planta Barcelona / China Hubs)' }
   ];

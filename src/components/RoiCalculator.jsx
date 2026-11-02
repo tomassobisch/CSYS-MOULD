@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Clock, Zap, DollarSign, Sliders, CheckCircle2, ArrowRight, Mail } from 'lucide-react';
+import { TrendingUp, Sliders, ArrowRight, Mail } from 'lucide-react';
 
 export default function RoiCalculator({ onOpenContact }) {
   const [annualUnits, setAnnualUnits] = useState(2500000);

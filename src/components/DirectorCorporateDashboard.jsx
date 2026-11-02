@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban, Edit3, Wrench } from 'lucide-react';
+import { Bot, Zap, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, Sparkles, Loader2, Star, Trash2, Database, CheckSquare, Printer, X, Rocket, MapPin, SlidersHorizontal, CheckCircle, HeartHandshake, Users, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Ban, Edit3, Wrench } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
 import { B2B_EMAIL_TEMPLATES } from '../data/emailTemplates';
-import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb, ICP_PROFILES_INFO } from '../lib/geminiSearchService';
+import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
 
-export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
+export default function DirectorCorporateDashboard({ userProfile }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
   const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'icp_profiles' | 'location_map' | 'portfolio' | 'blacklist'
   const [favoriteLeads, setFavoriteLeads] = useState(() => {
@@ -15,7 +15,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       if (!saved) return [];
       const parsed = JSON.parse(saved);
       return Array.isArray(parsed) ? parsed : [];
-    } catch (e) {
+    } catch  {
       return [];
     }
   });
@@ -31,7 +31,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   const [isMassiveScanning, setIsMassiveScanning] = useState(false);
   const [massiveProgress, setMassiveProgress] = useState(0);
   const [massiveStageText, setMassiveStageText] = useState('');
-  const [supabaseConnected, setSupabaseConnected] = useState(false);
+  const [, setSupabaseConnected] = useState(false);
   const [actionNotification, setActionNotification] = useState(null);
 
   // LIVE WEB & INTERNET SEARCH ENGINE (GEMINI AI & GOOGLE SEARCH GROUNDING)
@@ -58,7 +58,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
   
   // Google Maps Active Search Location Query State
   const [activeMapQuery, setActiveMapQuery] = useState('Distrito 22@ Barcelona, Spain');
-  const [activeMapTitle, setActiveMapTitle] = useState('Distrito 22@ de Barcelona & Hubs Tecnológicos de Cataluña');
+  const [, setActiveMapTitle] = useState('Distrito 22@ de Barcelona & Hubs Tecnológicos de Cataluña');
   const [mapType, setMapType] = useState('roadmap'); // 'roadmap' | 'satellite'
 
   // Real-time Clock State
@@ -89,7 +89,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         }
       }
       return defaultBlacklistedExClients;
-    } catch (e) {
+    } catch  {
       return defaultBlacklistedExClients;
     }
   });
@@ -171,7 +171,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               });
               try {
                 localStorage.setItem('csys_favorite_leads', JSON.stringify(combined));
-              } catch (e) {}
+              } catch  {}
               return combined;
             });
           }
@@ -191,6 +191,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       }
     }
     loadSupabaseData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al montar
   }, []);
 
   const handleSaveAnonKey = (e) => {
@@ -374,7 +375,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     setNewBlacklistCompany('');
     try {
       localStorage.setItem('csys_blacklist', JSON.stringify(updated));
-    } catch (err) {}
+    } catch  {}
 
     // Auto-remove from favoriteLeads if present
     setFavoriteLeads(prev => {
@@ -382,7 +383,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       const filtered = current.filter(lead => !lead.company?.toUpperCase().includes(cleanName));
       try {
         localStorage.setItem('csys_favorite_leads', JSON.stringify(filtered));
-      } catch (err) {}
+      } catch  {}
       return filtered;
     });
 
@@ -396,7 +397,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     setBlacklistedExClients(updated);
     try {
       localStorage.setItem('csys_blacklist', JSON.stringify(updated));
-    } catch (err) {}
+    } catch  {}
     showNotification(`✅ "${companyToRemove}" retirada de la Lista Negra`);
     trackLeadAction({ company: companyToRemove, id: `blacklist-rm-${Date.now()}` }, 'BLACKLIST_MANUAL_REMOVED', `Empresa ${companyToRemove} retirada de la Lista Negra.`);
   };
@@ -414,7 +415,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
     setBlacklistedExClients(updated);
     try {
       localStorage.setItem('csys_blacklist', JSON.stringify(updated));
-    } catch (err) {}
+    } catch  {}
 
     // Auto-remove from favoriteLeads if present
     setFavoriteLeads(prev => {
@@ -422,7 +423,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       const filtered = current.filter(f => f.id !== lead.id);
       try {
         localStorage.setItem('csys_favorite_leads', JSON.stringify(filtered));
-      } catch (err) {}
+      } catch  {}
       return filtered;
     });
 
@@ -512,7 +513,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
         });
 
         showNotification(`🚀 ¡${shuffled.length} Empresas verificadas con correos oficiales sincronizadas!`);
-      } catch (e) {
+      } catch  {
         showNotification(`🚀 Búsqueda completada (${shuffled.length} empresas reales)`);
       }
 
@@ -605,7 +606,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
       } else {
         showNotification('No se encontraron nuevas empresas. Prueba con otros términos.');
       }
-    } catch (err) {
+    } catch  {
       showNotification('Error al rastrear en la web.');
     } finally {
       setIsWebSearching(false);
@@ -709,11 +710,10 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
               showNotification(`⚡ ¡Escaneo Masivo Finalizado! (${shuffledAll.length} empresas reales en Supabase)`);
             }, 600);
 
-          } catch (err) {
+          } catch  {
             setIsMassiveScanning(false);
           }
 
-          const todayStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
           const botReply = `[BOT ESCANEO MASIVO]: Escaneo Multiregional finalizado. Se han registrado ${shuffledAll.length} empresas reales únicas con sus correos oficiales corporativos (@empresa.com) en Supabase.`;
           setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
 
@@ -2177,7 +2177,6 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 const leadCompany = lead?.company || 'Empresa';
                 const leadEmail = lead?.email || 'info@empresa.com';
                 const leadPerson = lead?.contactPerson || 'Contacto Corporativo';
-                const leadNeed = lead?.technicalNeed || 'Matrices de inyección de alta precisión';
                 const leadBudget = lead?.estimatedBudget || '45.000 €';
 
                 // Selección automática del modelo de correo oficial de Abraham Lozano según Perfil ICP
@@ -2647,7 +2646,6 @@ function ProposalModal({ lead, onClose, onNotification }) {
   const [tolerance, setTolerance] = useState('±0,01 mm (Mecanizado CNC 5 Ejes & EDM)');
   const [budget, setBudget] = useState(lead?.estimatedBudget || '45.000 €');
   const [deliveryTime, setDeliveryTime] = useState('35 a 40 días laborables');
-  const [guaranteeCycles, setGuaranteeCycles] = useState('1.000.000 de ciclos respaldados');
 
   // Selección automática de plantilla según Perfil ICP de la empresa (o Perfil A por defecto)
   const initialKey = (lead?.icpProfile && B2B_EMAIL_TEMPLATES[lead.icpProfile]) ? lead.icpProfile : 'profile_a';
@@ -2656,17 +2654,17 @@ function ProposalModal({ lead, onClose, onNotification }) {
   const [customEmailBody, setCustomEmailBody] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.getBody(lead?.company || 'Empresa Objetivo'));
   const [isManuallyEdited, setIsManuallyEdited] = useState(false);
 
-  if (!lead) return null;
-
-  const proposalCode = String(lead?.id || '000000').toUpperCase().slice(-6);
-
   // Sincronizar el cuerpo del correo con el nombre de la empresa si no ha habido edición manual
   useEffect(() => {
     if (!isManuallyEdited) {
       const activeTpl = B2B_EMAIL_TEMPLATES[selectedTemplateKey] || B2B_EMAIL_TEMPLATES.profile_a;
       setCustomEmailBody(activeTpl.getBody(company));
     }
-  }, [company, selectedTemplateKey]);
+  }, [company, selectedTemplateKey, isManuallyEdited]);
+
+  if (!lead) return null;
+
+  const proposalCode = String(lead?.id || '000000').toUpperCase().slice(-6);
 
   // Manejador para cambiar entre los 3 modelos de email
   const handleSelectTemplate = (key) => {
@@ -2964,7 +2962,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
                     } else {
                       onNotification?.('📋 Texto listo en pantalla (Copia manual)');
                     }
-                  } catch (e) {
+                  } catch  {
                     onNotification?.('📋 Texto listo en pantalla (Copia manual)');
                   }
                 }}

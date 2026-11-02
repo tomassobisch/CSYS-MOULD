@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, ShieldCheck, Zap, Database, Bot, ArrowRight, CheckCircle2, Award, Sparkles } from 'lucide-react';
+import { Cpu, Zap, Database, Bot, CheckCircle2, Sparkles } from 'lucide-react';
 
 export default function TjDeveloperEcosystem() {
   return (

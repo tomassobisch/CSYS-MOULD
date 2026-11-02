@@ -1,6 +1,5 @@
 import React from 'react';
-import { COMPANY_INFO } from '../data/mouldData';
-import { ShieldCheck, Cpu, ArrowRight, Sparkles, MapPin, Award, CheckCircle2, Mail } from 'lucide-react';
+import { Cpu, ArrowRight, MapPin, CheckCircle2, Mail } from 'lucide-react';
 import MoldViewer3D from './MoldViewer3D';
 import VideoBackground from './VideoBackground';
 

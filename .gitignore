@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 video de fondo landing page/
+
+# Variables de entorno locales (no subir)
+.env
+.env.*
+!.env.example

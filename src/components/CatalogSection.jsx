@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { MOLD_CATALOG } from '../data/mouldData';
-import { Layers, Shield, Clock, Flame, CheckCircle, ArrowRight, X, Sparkles, Filter, Zap, Mail } from 'lucide-react';
+import { Layers, Shield, CheckCircle, X, Mail } from 'lucide-react';
 
-export default function CatalogSection({ onSelectMoldForContact }) {
+export default function CatalogSection() {
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [selectedMold, setSelectedMold] = useState(null);
 

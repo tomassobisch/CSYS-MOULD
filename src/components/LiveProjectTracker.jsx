@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DEMO_PROJECTS } from '../data/mouldData';
-import { Activity, Search, CheckCircle2, Clock, FileText, Download, ShieldCheck, Cpu, ChevronRight } from 'lucide-react';
+import { Activity, Search, CheckCircle2, Clock, FileText, ShieldCheck } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 export default function LiveProjectTracker() {

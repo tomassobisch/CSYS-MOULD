@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Globe, Mail, Lock, Menu, X, ArrowRight } from 'lucide-react';
+import { Globe, Mail, Lock, Menu, X } from 'lucide-react';
 
-export default function Navbar({ activeSection, setActiveSection, onOpenContact, onOpenEmailModal, lang, setLang, isAuthenticated, onOpenLogin }) {
+export default function Navbar({ activeSection, setActiveSection, onOpenEmailModal, lang, setLang, isAuthenticated, onOpenLogin }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -9,9 +9,28 @@ export default function Navbar({ activeSection, setActiveSection, onOpenContact,
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Scroll-spy: resalta en el menú la sección visible mientras se hace scroll
+  useEffect(() => {
+    if (isAuthenticated) return;
+    const ids = ['hero', 'gallery', 'catalog', 'contact'];
+    const handleSpy = () => {
+      const offset = 140;
+      let current = 'hero';
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top - offset <= 0) current = id;
+      }
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) current = 'contact';
+      setActiveSection(current);
+    };
+    window.addEventListener('scroll', handleSpy, { passive: true });
+    handleSpy();
+    return () => window.removeEventListener('scroll', handleSpy);
+  }, [isAuthenticated, setActiveSection]);
 
   const navLinks = [
     { id: 'hero', label: lang === 'ES' ? 'Inicio' : 'Home' },

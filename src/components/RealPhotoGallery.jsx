@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { REAL_FACTORY_PHOTOS } from '../data/mouldData';
-import { Camera, MapPin, Shield, CheckCircle, Eye, X, ZoomIn, ArrowRight } from 'lucide-react';
+import { Camera, X, ZoomIn } from 'lucide-react';
 
 export default function RealPhotoGallery() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);

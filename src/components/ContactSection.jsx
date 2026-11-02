@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { COMPANY_INFO } from '../data/mouldData';
-import { Mail, Phone, MapPin, Send, CheckCircle2, UserCheck, Shield, Clock, Building, Sparkles, ExternalLink } from 'lucide-react';
+import { Mail, Send, CheckCircle2, UserCheck, Building } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getPreferredEmailClient, setPreferredEmailClient, openEmailClient } from '../lib/emailService';
 
@@ -245,8 +245,8 @@ export default function ContactSection({ onOpenEmailModal }) {
                         }}
                         className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                           emailClient === 'gmail'
-                            ? 'bg-red-600 text-white shadow-md shadow-red-950/60 ring-2 ring-red-400'
-                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                            ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/70 shadow-md shadow-amber-950/40'
+                            : 'bg-slate-900 text-slate-400 hover:text-white hover:border-slate-700 border border-slate-800'
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-red-400 inline-block" /> Gmail Web
@@ -260,8 +260,8 @@ export default function ContactSection({ onOpenEmailModal }) {
                         }}
                         className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                           emailClient === 'outlook'
-                            ? 'bg-blue-600 text-white shadow-md shadow-blue-950/60 ring-2 ring-blue-400'
-                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                            ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/70 shadow-md shadow-amber-950/40'
+                            : 'bg-slate-900 text-slate-400 hover:text-white hover:border-slate-700 border border-slate-800'
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" /> Outlook Web
@@ -275,8 +275,8 @@ export default function ContactSection({ onOpenEmailModal }) {
                         }}
                         className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                           emailClient === 'mailto'
-                            ? 'bg-amber-500 text-slate-950 shadow-md ring-2 ring-amber-300'
-                            : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                            ? 'bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/70 shadow-md shadow-amber-950/40'
+                            : 'bg-slate-900 text-slate-400 hover:text-white hover:border-slate-700 border border-slate-800'
                         }`}
                       >
                         <Mail className="w-3.5 h-3.5" /> App Sistema

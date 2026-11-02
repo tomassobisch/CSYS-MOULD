@@ -28,7 +28,7 @@ export const getEmailComposeUrl = ({
 export const getPreferredEmailClient = () => {
   try {
     return localStorage.getItem('csys_preferred_email_client') || 'gmail'; // Default to Gmail if none set
-  } catch (e) {
+  } catch  {
     return 'gmail';
   }
 };
@@ -40,7 +40,7 @@ export const setPreferredEmailClient = (client) => {
     } else {
       localStorage.removeItem('csys_preferred_email_client');
     }
-  } catch (e) {}
+  } catch  {}
 };
 
 export const openEmailClient = ({

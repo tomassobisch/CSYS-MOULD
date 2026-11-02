@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Mail, Check, ExternalLink, Sparkles, Send } from 'lucide-react';
+import { X, Mail, ExternalLink, Send } from 'lucide-react';
 import { getEmailComposeUrl, getPreferredEmailClient, setPreferredEmailClient } from '../lib/emailService';
 
 export default function EmailClientModal({

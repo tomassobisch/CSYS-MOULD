@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Lock, Mail, User, Key, Shield, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Cpu, Bot, Building2, UserCheck, Wrench, X } from 'lucide-react';
+import { Lock, Mail, Key, Shield, ArrowRight, AlertCircle, Bot, Building2 } from 'lucide-react';
+import { verifyCorporateLogin } from '../lib/auth';
 
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [loginType, setLoginType] = useState('client'); // 'client' | 'corporate'
@@ -37,57 +38,20 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         return;
       }
 
-      // 2. ACCESO CORPORATIVO CREDENTIALS (MANUAL SECURITY LOGIN FOR DIRECTORS)
-      const cleanEmail = email.trim().toLowerCase();
-      const cleanPass = password.trim();
-
-      const isClaudioEmail = cleanEmail === 'claudio@csysmould.com' || cleanEmail === 'claudio';
-      const isAbrahamEmail = cleanEmail === 'abraham@csysmould.com' || cleanEmail === 'abraham';
-
-      if (isClaudioEmail) {
-        if (cleanPass === 'claudiocsys') {
-          onLoginSuccess({
-            name: 'Claudio Arriaga Silva',
-            email: 'claudio@csysmould.com',
-            company: 'CSYS MOULD Dirección Corporativa',
-            role: 'director',
-            avatar: '/multimedia/team_photo.jpg'
-          });
-        } else {
-          setError('Credenciales corporativas inválidas.');
+      // 2. ACCESO CORPORATIVO: verificación contra hashes PBKDF2 (sin contraseñas en claro)
+      verifyCorporateLogin(email, password)
+        .then((result) => {
+          if (result.ok) {
+            onLoginSuccess(result.user);
+          } else {
+            setError(result.error);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          setError('No se pudo verificar el acceso. Inténtalo de nuevo.');
           setLoading(false);
-        }
-      } else if (isAbrahamEmail) {
-        if (cleanPass === 'abrahamcsys') {
-          onLoginSuccess({
-            name: 'Abraham Lozano',
-            email: 'abraham@csysmould.com',
-            company: 'CSYS MOULD Dirección Corporativa',
-            role: 'director',
-            avatar: '/multimedia/team_photo.jpg'
-          });
-        } else {
-          setError('Credenciales corporativas inválidas.');
-          setLoading(false);
-        }
-      } else if (cleanEmail.endsWith('@csysmould.com')) {
-        // Fallback for general csysmould corporate domain
-        if (cleanPass === 'claudiocsys' || cleanPass === 'abrahamcsys' || cleanPass === 'csys2026') {
-          onLoginSuccess({
-            name: 'Claudio Arriaga Silva',
-            email: cleanEmail,
-            company: 'CSYS MOULD Dirección Corporativa',
-            role: 'director',
-            avatar: '/multimedia/team_photo.jpg'
-          });
-        } else {
-          setError('Credenciales corporativas inválidas.');
-          setLoading(false);
-        }
-      } else {
-        setError('Acceso denegado. Introduzca sus credenciales directivas.');
-        setLoading(false);
-      }
+        });
     }, 300);
   };
 

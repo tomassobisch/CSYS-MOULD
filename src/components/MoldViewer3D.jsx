@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { RotateCw, Eye, Flame, Layers, Sparkles, Sliders, Info, Zap, Activity, Gauge, Cpu } from 'lucide-react';
+import { RotateCw, Eye, Flame, Layers, Sparkles, Sliders, Info, Zap, Activity } from 'lucide-react';
 
-export default function MoldViewer3D({ activeTab = 'solid' }) {
+export default function MoldViewer3D() {
   const canvasRef = useRef(null);
   const [explode, setExplode] = useState(35); // 0 to 100
   const [viewMode, setViewMode] = useState('solid'); // 'solid' | 'wireframe' | 'thermal' | 'xray'
@@ -9,7 +9,6 @@ export default function MoldViewer3D({ activeTab = 'solid' }) {
   const [selectedPart, setSelectedPart] = useState('cavity');
   const [rotationAngle, setRotationAngle] = useState(30);
   const [pitchAngle, setPitchAngle] = useState(20);
-  const [injectionProgress, setInjectionProgress] = useState(65); // Plastic melt fill percentage
   const isDraggingRef = useRef(false);
   const previousMouseRef = useRef({ x: 0, y: 0 });
 
@@ -25,7 +24,7 @@ export default function MoldViewer3D({ activeTab = 'solid' }) {
     core: {
       name: "Placa Macho / Núcleo Móvil",
       steel: "Acero H13 Premium (54 HRC)",
-      desc: "Forma la geometría interior y costillas de la pieza. Montado sobre puente grúa de hasta 10 toneladas con guía micrométrica ±0.002mm.",
+      desc: "Forma la geometría interior y costillas de la pieza. Montado sobre puente grúa de hasta 10 toneladas con guía micrométrica ±0,02 mm.",
       temp: "50°C - 60°C",
       pressure: "1,200 Bar"
     },
@@ -227,6 +226,7 @@ export default function MoldViewer3D({ activeTab = 'solid' }) {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- rotationAngle es solo el ángulo inicial; la animación lleva su propio estado
   }, [explode, viewMode, isRotating, selectedPart, pitchAngle]);
 
   const handleMouseDown = (e) => {
@@ -326,7 +326,7 @@ export default function MoldViewer3D({ activeTab = 'solid' }) {
           </p>
           <p className="text-slate-400">Presión Inyección: <span className="text-white font-bold">{PART_DETAILS[selectedPart].pressure}</span></p>
           <p className="text-slate-400">Temp. Matriz: <span className="text-amber-400 font-bold">{PART_DETAILS[selectedPart].temp}</span></p>
-          <p className="text-slate-400">Tolerancia Metrología: <span className="text-emerald-400 font-bold">±0.002mm</span></p>
+          <p className="text-slate-400">Tolerancia Metrología: <span className="text-emerald-400 font-bold">±0,02 mm</span></p>
         </div>
 
         <canvas

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, CheckCircle2, AlertCircle, Calendar, ShieldCheck, Cpu, ChevronRight, FileText, Camera, Search, RefreshCw, Layers, MapPin, Truck } from 'lucide-react';
+import { Clock, CheckCircle2, RefreshCw, Layers } from 'lucide-react';
 
 export default function ProjectTrackerClient() {
   const [selectedProjectId, setSelectedProjectId] = useState('proj-01');
@@ -20,7 +20,7 @@ export default function ProjectTrackerClient() {
         { name: 'Mecanizado CNC 5 Ejes & EDM', status: 'completed', date: '21 Jul 2026', notes: 'Cavidades templadas a 54 HRC y pulido espejo.' },
         { name: 'Ajuste de Matriz & Ensamblaje', status: 'in_progress', date: 'En curso (70%)', notes: 'Montaje de sistema de expulsión y canal caliente.' },
         { name: 'Prueba T1 Inyección en Prensa', status: 'pending', date: '08 Ago 2026', notes: 'Pruebas de inyección en máquina 120T.' },
-        { name: 'Metrología CMM & Muestras FAI', status: 'pending', date: '14 Ago 2026', notes: 'Informe de tolerancias ±0.002mm en máquina ZEISS.' },
+        { name: 'Metrología CMM & Muestras FAI', status: 'pending', date: '14 Ago 2026', notes: 'Informe de tolerancias ±0,02 mm en máquina ZEISS.' },
         { name: 'Expedición & Entrega Final', status: 'pending', date: '18 Ago 2026', notes: 'Entrega de molde certificado e historial técnico.' }
       ],
       recentLog: [

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { jsPDF } from 'jspdf';
-import { PLASTIC_MATERIALS, COMPANY_INFO } from '../data/mouldData';
-import { Calculator, Sparkles, Check, ArrowRight, Download, Cpu, ShieldCheck, RefreshCw, FileText, Zap, Box } from 'lucide-react';
+import { PLASTIC_MATERIALS } from '../data/mouldData';
+import { Calculator, Sparkles, Check, ArrowRight, Download, Cpu, ShieldCheck, RefreshCw, Zap, Box } from 'lucide-react';
 
-export default function AiQuoteWizard({ prefilledMold = null, onClose }) {
+export default function AiQuoteWizard({ prefilledMold = null }) {
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState('Automoción');
   const [dimensions, setDimensions] = useState({ length: 120, width: 80, height: 45 });

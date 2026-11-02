@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AI_KNOWLEDGE_BASE, COMPANY_INFO } from '../data/mouldData';
-import { Bot, Send, Sparkles, User, Cpu, ShieldAlert, CheckCircle, RefreshCw, Terminal } from 'lucide-react';
+import { COMPANY_INFO } from '../data/mouldData';
+import { Bot, Send, User, RefreshCw, Terminal } from 'lucide-react';
 
 export default function AiTechnicalAssistant() {
   const [messages, setMessages] = useState([

@@ -65,7 +65,7 @@ export async function searchCompaniesOnWeb({
   location = 'all',
   sector = 'all',
   icpProfile = 'all',
-  existingCount = 0
+  existingCount: _existingCount = 0
 }) {
   const apiKey = getGeminiApiKey();
 
@@ -179,7 +179,7 @@ INSTRUCCIONES ESTRICTAS:
                   const urlObj = new URL(lead.website.startsWith('http') ? lead.website : `https://${lead.website}`);
                   domain = urlObj.hostname.replace(/^www\./i, '');
                 }
-              } catch (e) {}
+              } catch  {}
 
               let cleanEmail = lead.email ? lead.email.trim() : '';
               const isPlaceholder = !cleanEmail || cleanEmail.includes('web-real.com') || cleanEmail.includes('ejemplo.com') || cleanEmail.includes('test.com') || cleanEmail.includes('placeholder');

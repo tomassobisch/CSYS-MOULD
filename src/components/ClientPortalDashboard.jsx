@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import MoldViewer3D from './MoldViewer3D';
 import RoiCalculator from './RoiCalculator';
-import LiveProjectTracker from './LiveProjectTracker';
 import ProjectTrackerClient from './ProjectTrackerClient';
 import AiTechnicalAssistant from './AiTechnicalAssistant';
 import CatalogSection from './CatalogSection';
-import { Newspaper, MessageSquare, TrendingUp, Cpu, Sparkles, CheckCircle2, Shield, ArrowRight, Layers, BookOpen, Lightbulb, Factory, ThumbsUp, Clock, Radio, Award, Calendar, ChevronDown, ChevronUp, FileText, Check, Share2, X } from 'lucide-react';
+import { Newspaper, TrendingUp, Cpu, Sparkles, BookOpen, Lightbulb, Clock, Radio, Award, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function ClientPortalDashboard({ userProfile, onOpenContact }) {
+export default function ClientPortalDashboard({ userProfile }) {
   const [activeTab, setActiveTab] = useState('tracking'); // 'tracking' | 'news' | 'newsletter' | 'roi' | '3d'
   const [expandedNewsId, setExpandedNewsId] = useState(null);
   const [expandedForumId, setExpandedForumId] = useState(null);
@@ -19,7 +18,7 @@ export default function ClientPortalDashboard({ userProfile, onOpenContact }) {
       category: 'EVENTOS & FERIAS',
       date: '15 de Julio, 2026',
       image: '/multimedia/dsc02858_real.png',
-      summary: 'Claudio y Abraham Lozano presentan las nuevas matrices de micro-inyección de precisión con tolerancias de ±0.002 mm ante más de 400 líderes del sector.',
+      summary: 'Claudio y Abraham Lozano presentan las nuevas matrices de micro-inyección de precisión con tolerancias de ±0,02 mm ante más de 400 líderes del sector.',
       fullContent: `
         <p class="mb-3">Durante la convención industrial celebrada en el recinto Gran Vía de Barcelona, CSYS MOULD exhibió sus últimas innovaciones en matrices para componentes de alta tecnología. Los socios fundadores Claudio y Abraham Lozano lideraron las demostraciones en vivo ante ingenieros y responsables de compras del sector MedTech y automoción.</p>
         <h4 class="font-bold text-amber-400 text-sm mb-2 font-mono">Puntos Clave Presentados:</h4>
@@ -47,7 +46,7 @@ export default function ClientPortalDashboard({ userProfile, onOpenContact }) {
           <li>Capacidad para matrices de hasta 10 Toneladas gracias al puente grúa de gran tonelaje instalado en Llinars.</li>
           <li>Verificación metrológica inmediata en máquina de coordenadas ZEISS CMM tras cada fase de desbaste y templado.</li>
         </ul>
-        <p>Esta inversión asegura que todo proyecto mantenga las estrictas tolerancias de ±0.002 mm sin depender de subcontratas externas.</p>
+        <p>Esta inversión asegura que todo proyecto mantenga las estrictas tolerancias de ±0,02 mm sin depender de subcontratas externas.</p>
       `,
       tag: 'Taller Llinars 500m²'
     },
@@ -98,7 +97,7 @@ export default function ClientPortalDashboard({ userProfile, onOpenContact }) {
       category: 'TENDENCIAS MOULD',
       date: 'Julio 2026',
       readTime: '4 min lectura',
-      summary: 'Cómo las tolerancias micrométricas (±0.002 mm) y los aceros inoxidables Stavax ESR están transformando los componentes electrónicos y conectores médicos.',
+      summary: 'Cómo las tolerancias micrométricas (±0,02 mm) y los aceros inoxidables Stavax ESR están transformando los componentes electrónicos y conectores médicos.',
       fullContent: `
         <p class="mb-3">La micro-inyección de plásticos representa una de las disciplinas más exigentes de la matricería moderna. La creciente miniaturización de dispositivos médicos, sensores estancos IP67 y componentes de automoción exige moldes capaces de trabajar con volúmenes de dosis inferiores a 0.1 g.</p>
         <h4 class="font-bold text-amber-400 text-sm mb-2 font-mono">Estrategias de Diseño DFM en CSYS MOULD:</h4>

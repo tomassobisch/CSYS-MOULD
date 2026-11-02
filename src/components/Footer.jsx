@@ -1,8 +1,7 @@
 import React from 'react';
-import { COMPANY_INFO } from '../data/mouldData';
-import { Shield, Mail, Phone, MapPin, ArrowUp, FileText, Code2 } from 'lucide-react';
+import { Mail, Phone, ArrowUp, FileText, Code2 } from 'lucide-react';
 
-export default function Footer({ lang, onOpenEmailModal }) {
+export default function Footer({ onOpenEmailModal }) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -55,7 +54,7 @@ export default function Footer({ lang, onOpenEmailModal }) {
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-white uppercase font-mono tracking-wider">Especialidades</h4>
             <ul className="space-y-1.5 text-xs text-slate-400">
-              <li><a href="#catalog" className="hover:text-amber-400 transition-colors">Micro-Inyección Tecnológica (±0.002 mm)</a></li>
+              <li><a href="#catalog" className="hover:text-amber-400 transition-colors">Micro-Inyección Tecnológica (±0,02 mm)</a></li>
               <li><a href="#catalog" className="hover:text-amber-400 transition-colors">Desarrollo CAD/CAM & Moldflow 3D</a></li>
               <li><a href="#catalog" className="hover:text-amber-400 transition-colors">Moldes Médicos & Grado Alimentario</a></li>
               <li><a href="#catalog" className="hover:text-amber-400 transition-colors">Moldes Electrónicos UL94-V0</a></li>

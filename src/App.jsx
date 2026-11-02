@@ -7,7 +7,7 @@ import ClientPortalDashboard from './components/ClientPortalDashboard';
 import Footer from './components/Footer';
 import CookieBanner from './components/CookieBanner';
 import EmailClientModal from './components/EmailClientModal';
-import { Shield, Lock, LogOut, CheckCircle2, Eye } from 'lucide-react';
+import { LogOut, Eye } from 'lucide-react';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
@@ -34,7 +34,7 @@ export default function App() {
     try {
       const saved = localStorage.getItem('csys_user_session');
       return saved ? JSON.parse(saved) : null;
-    } catch (e) {
+    } catch  {
       return null;
     }
   });
@@ -43,7 +43,7 @@ export default function App() {
     try {
       const saved = localStorage.getItem('csys_user_session');
       return !!saved;
-    } catch (e) {
+    } catch  {
       return false;
     }
   });
