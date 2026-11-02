@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Bot, Cpu, Zap, Activity, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, MessageSquare, Flame, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, ArrowRight, Sparkles, Loader2, Star, Trash2, BookmarkCheck, Filter, Download, Info, Database, Compass, Sliders, Server, Brain, BookOpen, Award, CheckSquare, ChevronRight, Calendar, ToggleLeft, ToggleRight, Play, Pause, Bell, Printer, X, Eye, Rocket, MapPin, Code, SlidersHorizontal, CheckCircle, Navigation, ZoomIn, ZoomOut, Maximize2, HelpCircle, HeartHandshake, PlayCircle, Users, Tag, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Globe2, Sparkle, Ban, Edit3, Wrench } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
+import { B2B_EMAIL_TEMPLATES } from '../data/emailTemplates';
 import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb, ICP_PROFILES_INFO } from '../lib/geminiSearchService';
 
 export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
@@ -2179,8 +2180,11 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                 const leadNeed = lead?.technicalNeed || 'Matrices de inyección de alta precisión';
                 const leadBudget = lead?.estimatedBudget || '45.000 €';
 
-                const cardSubject = `[Propuesta Formal CSYS MOULD] Solución de Inyección y Matricería para ${leadCompany}`;
-                const cardBody = `Estimado/a ${leadPerson},\n\nNos dirigimos a usted desde CSYS MOULD S.L. (Planta de Matricería e Inyección de Plásticos en Llinars del Vallès, Barcelona).\n\nHemos analizado su requerimiento técnico para ${leadCompany}: "${leadNeed}".\n\nLe enviamos adjunta nuestra propuesta técnico-económica formal personalizada para la fabricación de moldes de inyección con tolerancia centesimal (±0,01 mm) y acero Stavax ESR a 54 HRC.\n\nPresupuesto Estimado: ${leadBudget} (Ingeniería DFM 3D incluida).\nPlazo de Entrega T1: 35-40 días laborables.\n\n¿Dispone de unos minutos esta semana para agendar una breve videollamada o coordinar una visita a nuestra planta en Barcelona?\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\nwww.csysmould.com | info@csysmould.com`;
+                // Selección automática del modelo de correo oficial de Abraham Lozano según Perfil ICP
+                const templateKey = (lead?.icpProfile && B2B_EMAIL_TEMPLATES[lead.icpProfile]) ? lead.icpProfile : 'profile_a';
+                const activeTemplate = B2B_EMAIL_TEMPLATES[templateKey];
+                const cardSubject = activeTemplate.subject;
+                const cardBody = activeTemplate.getBody(leadCompany);
 
                 const cardMailtoUrl = `mailto:${encodeURIComponent(leadEmail)}?subject=${encodeURIComponent(cardSubject)}&body=${encodeURIComponent(cardBody)}`;
                 const cardGmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(leadEmail)}&su=${encodeURIComponent(cardSubject)}&body=${encodeURIComponent(cardBody)}`;
@@ -2189,8 +2193,8 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                   <div key={lead.id} className="bg-black p-6 rounded-2xl border-2 border-cyan-500/50 space-y-4 hover:border-cyan-400 transition-all flex flex-col justify-between shadow-xl">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-cyan-950 text-cyan-300 border border-cyan-500/60 flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-cyan-400" /> Solución Lista: {leadCompany}
+                        <span className={`px-2.5 py-1 rounded-xl text-xs font-extrabold flex items-center gap-1.5 ${activeTemplate.badgeColor}`}>
+                          <Sparkles className="w-3.5 h-3.5" /> Modelo Sugerido: {activeTemplate.code} ({activeTemplate.title})
                         </span>
 
                         <button
@@ -2227,9 +2231,14 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                         <p className="flex items-center gap-1 text-cyan-400 font-bold">
                           <Mail className="w-3.5 h-3.5 text-cyan-400" /> Correo Corporativo: <a href={`mailto:${leadEmail}`} className="text-white font-extrabold underline">{leadEmail}</a>
                         </p>
-                        <p className="text-slate-300 text-[11px] pt-1">
-                          <strong className="text-cyan-400">Necesidad del Cliente:</strong> {leadNeed}
-                        </p>
+                        <div className="pt-1 border-t border-slate-900 space-y-1">
+                          <p className="text-slate-300 text-[11px]">
+                            <strong className="text-cyan-400">Asunto:</strong> <span className="text-white font-bold">{cardSubject}</span>
+                          </p>
+                          <p className="text-slate-400 text-[10px] italic">
+                            "Hola, {leadCompany}: Me gustaría presentarme brevemente. Soy Abraham Lozano, gerente del Grupo CSYS..."
+                          </p>
+                        </div>
                       </div>
                     </div>
 
@@ -2239,10 +2248,10 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                           setSelectedProposalLead(lead);
                           saveBot3ProposalToSupabase(lead);
                         }}
-                        className="flex-1 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all"
+                        className="flex-1 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
                       >
                         <FileText className="w-4 h-4" />
-                        <span>📄 Armar Propuesta Formal & Redactar Correo</span>
+                        <span>📄 Abrir Redactor B2B (Elegir entre 3 Modelos)</span>
                       </button>
 
                       <a
@@ -2250,7 +2259,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-3 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
-                        title="Enviar por Gmail Web"
+                        title="Enviar por Gmail Web con plantilla de Abraham Lozano"
                       >
                         <Mail className="w-3.5 h-3.5" /> Gmail
                       </a>
@@ -2258,7 +2267,7 @@ export default function DirectorCorporateDashboard({ userProfile, onLogout }) {
                       <a
                         href={cardMailtoUrl}
                         className="px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/50 font-bold text-xs flex items-center gap-1.5 transition-all"
-                        title="Enviar vía App de Correo"
+                        title="Enviar vía App de Correo con plantilla de Abraham Lozano"
                       >
                         <Send className="w-3.5 h-3.5 text-cyan-400" /> App Mail
                       </a>
@@ -2640,36 +2649,45 @@ function ProposalModal({ lead, onClose, onNotification }) {
   const [deliveryTime, setDeliveryTime] = useState('35 a 40 días laborables');
   const [guaranteeCycles, setGuaranteeCycles] = useState('1.000.000 de ciclos respaldados');
 
-  const [customEmailBody, setCustomEmailBody] = useState('');
+  // Selección automática de plantilla según Perfil ICP de la empresa (o Perfil A por defecto)
+  const initialKey = (lead?.icpProfile && B2B_EMAIL_TEMPLATES[lead.icpProfile]) ? lead.icpProfile : 'profile_a';
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState(initialKey);
+  const [emailSubject, setEmailSubject] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.subject || 'Experiencia de fabricación para nuevos proyectos tecnológicos');
+  const [customEmailBody, setCustomEmailBody] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.getBody(lead?.company || 'Empresa Objetivo'));
   const [isManuallyEdited, setIsManuallyEdited] = useState(false);
 
   if (!lead) return null;
 
   const proposalCode = String(lead?.id || '000000').toUpperCase().slice(-6);
-  const emailSubject = `[Propuesta Formal CSYS MOULD] Solución de Inyección y Matricería para ${company}`;
 
-  const generateDefaultBody = () => {
-    // PERFIL C: EMPRESAS DE INYECCIÓN CON MÁQUINAS PROPIAS
-    if (lead?.icpProfile === 'profile_c') {
-      return `Estimado/a ${contactPerson},\n\nNos dirigimos a usted desde CSYS MOULD S.L. (Planta de Matricería e Ingeniería de Moldes en Llinars del Vallès, Barcelona).\n\nConocemos su trayectoria como empresa transformadora con parque propio de máquinas de inyección. Queremos presentarle nuestro servicio especializado en suministro de moldes de inyección nuevos:\n\nPROPUESTA EXCLUSIVA PARA EMPRESAS INYECTORAS (PERFIL C):\n• Moldes fabricados en nuestras plantas asociadas en China, entregados 100% funcionando llave en mano.\n• GARANTÍA TOTAL DE 3 AÑOS respaldada por contrato sobre el molde.\n• Servicio posventa y mantenimiento técnico directo desde nuestro taller en Barcelona (500 m², puente grúa 10 TN y maquinaria 5 ejes).\n• Especialización en moldes para microinyección BABYPLAST.\n• Presupuesto Estimado de Matriz: ${budget}.\n• Plazo de Entrega T1: ${deliveryTime}.\n\n(Aclaramos que respetamos plenamente su actividad: no ofrecemos producción de piezas por inyección a este perfil, sino suministro de moldes garantizados y asistencia técnica local).\n\n¿Dispone de unos minutos esta semana para agendar una llamada o visitar nuestra nave en Llinars del Vallès?\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com\n📞 +34 696 76 41 27\n🌐 https://csys-mould.vercel.app`;
-    }
-
-    // PERFIL B: EMPRESAS CON PRODUCTO PROPIO (20-50 TRABAJADORES)
-    if (lead?.icpProfile === 'profile_b') {
-      return `Estimado/a ${contactPerson},\n\nLe contactamos desde CSYS MOULD S.L. (Matricería e Inyección Técnica en Llinars del Vallès, Barcelona).\n\nHemos analizado su catálogo de producto propio y sus requerimientos técnicos ("${technicalNeed}"). Como matriceros especializados en empresas consolidadas con equipo propio de diseño e ingeniería:\n\nPROPUESTA DE DESARROLLO Y REDUCCIÓN DE COSTES (PERFIL B):\n• Apoyo integral a su equipo técnico en el desarrollo de nuevas piezas de plástico.\n• Reducción de costes de fabricación mediante optimización de espesores, tiempos de ciclo y geometrías de molde.\n• Aportamos más de 40 años de experiencia en selección de termoplásticos avanzados e inyección técnica.\n• Matriz de Inyección de Alta Precisión: ${steelType} con tolerancias ${tolerance}.\n• Estudio DFM & Moldflow previo incluido sin coste para validar desmoldeos y puntos de inyección.\n• Presupuesto Estimado: ${budget}.\n• Plazo de Entrega T1: ${deliveryTime}.\n\nEstaremos encantados de revisar planos CAD conjuntamente con sus ingenieros sin compromiso alguno.\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com\n📞 +34 696 76 41 27\n🌐 https://csys-mould.vercel.app`;
-    }
-
-    // PERFIL A / DEFAULT: STARTUPS TECNOLÓGICAS (ROBÓTICA & MEDTECH)
-    return `Estimado/a ${contactPerson},\n\nEs un placer saludarle desde CSYS MOULD S.L. (Planta de Matricería y Micro-Inyección en Llinars del Vallès, Barcelona).\n\nHemos seguido el desarrollo innovador de ${company} en robótica y tecnología médica. Como especialistas en acompañamiento a startups tecnológicas en etapas iniciales y viveros:\n\nPROPUESTA DE ACOMPAÑAMIENTO TÉCNICO (PERFIL A - STARTUPS):\n• Acompañamiento en cualquier fase: desde la primera idea y diseño CAD 3D hasta la producción en serie.\n• Simulación Moldflow DFM previa para evitar fallos antes de mecanizar acero.\n• Matrices de alta precisión para carcasas estancas, piezas técnicas y microinyección BABYPLAST (±0,02 mm).\n• Matriz de Inyección: ${steelType}.\n• Presupuesto Estimado: ${budget} (Ingeniería DFM 3D incluida).\n• Plazo T1 (Primeras Muestras Reales): ${deliveryTime}.\n\n¿Tendrían disponibilidad para una breve videollamada de 10 minutos esta semana o recibirles en nuestro taller de Barcelona?\n\nAtentamente,\n\nClaudio Arriaga Silva / Abraham Lozano\nDirección Corporativa CSYS MOULD S.L.\n📍 Planta Industrial: Llinars del Vallès, Barcelona (500 m²)\n✉️ claudio@csysmould.com | abraham@csysmould.com\n📞 +34 696 76 41 27\n🌐 https://csys-mould.vercel.app`;
-  };
-
+  // Sincronizar el cuerpo del correo con el nombre de la empresa si no ha habido edición manual
   useEffect(() => {
     if (!isManuallyEdited) {
-      setCustomEmailBody(generateDefaultBody());
+      const activeTpl = B2B_EMAIL_TEMPLATES[selectedTemplateKey] || B2B_EMAIL_TEMPLATES.profile_a;
+      setCustomEmailBody(activeTpl.getBody(company));
     }
-  }, [company, contactPerson, email, technicalNeed, steelType, tolerance, budget, deliveryTime, guaranteeCycles]);
+  }, [company, selectedTemplateKey]);
 
-  const currentBody = customEmailBody || generateDefaultBody();
+  // Manejador para cambiar entre los 3 modelos de email
+  const handleSelectTemplate = (key) => {
+    const tpl = B2B_EMAIL_TEMPLATES[key];
+    if (!tpl) return;
+    setSelectedTemplateKey(key);
+    setEmailSubject(tpl.subject);
+    setCustomEmailBody(tpl.getBody(company));
+    setIsManuallyEdited(false);
+    onNotification?.(`📧 Activado: ${tpl.code} (${tpl.title})`);
+  };
+
+  const handleResetOriginal = () => {
+    const activeTpl = B2B_EMAIL_TEMPLATES[selectedTemplateKey] || B2B_EMAIL_TEMPLATES.profile_a;
+    setIsManuallyEdited(false);
+    setEmailSubject(activeTpl.subject);
+    setCustomEmailBody(activeTpl.getBody(company));
+    onNotification?.(`🔄 Plantilla restablecida a ${activeTpl.code} (${activeTpl.title})`);
+  };
+
+  const currentBody = customEmailBody;
 
   const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
   const outlookUrl = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(email)}&subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
@@ -2698,7 +2716,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
             </div>
             <div>
               <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-widest flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> BOT 3: PROPUESTA FORMAL EDITABLE & REVISIÓN B2B
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> BOT 3: REDACTOR DE CORREOS B2B & MODELOS OFICIALES ABRAHAM LOZANO
               </span>
               <h3 className="text-2xl font-extrabold text-white">{company}</h3>
             </div>
@@ -2724,7 +2742,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
         <div className="relative z-10 p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/50 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-cyan-300 font-bold text-xs flex items-center gap-1.5">
-              <Edit3 className="w-4 h-4 text-cyan-400" /> VISTA PREVIA Y EDICIÓN DE CAMPOS EN TIEMPO REAL
+              <Edit3 className="w-4 h-4 text-cyan-400" /> DATOS DEL DESTINATARIO & EMPRESA
             </span>
             <span className="text-[10px] text-slate-400 font-mono">
               CÓDIGO: <strong className="text-cyan-300">PROP-2026-{proposalCode}</strong>
@@ -2733,7 +2751,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-[11px]">
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase font-bold block">Empresa Cliente:</label>
+              <label className="text-[10px] text-slate-400 uppercase font-bold block">Empresa Cliente (se sustituye en [nombre]):</label>
               <input
                 type="text"
                 value={company}
@@ -2780,163 +2798,248 @@ function ProposalModal({ lead, onClose, onNotification }) {
           </div>
         </div>
 
-        {/* SECCIÓN 1: SOLUCIÓN TÉCNICA RECOMENDADA EDITABLE */}
-        <div className="relative z-10 space-y-6 text-slate-200 leading-relaxed">
-          <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-            <h4 className="text-cyan-400 font-extrabold text-sm flex items-center gap-2">
-              <Wrench className="w-4 h-4" /> 1. Solución Técnica de Inyección & Matricería CSYS (Campos Editables)
-            </h4>
+        {/* SELECTOR INTERACTIVO ENTRE LOS 3 MODELOS DE CORREO DE ABRAHAM LOZANO */}
+        <div className="relative z-10 space-y-3 p-5 rounded-2xl bg-slate-950 border-2 border-cyan-500/60 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
+            <span className="text-cyan-300 font-extrabold text-xs uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-cyan-400" /> SELECCIONAR MODELO DE CORREO OFICIAL (3 OPCIONES SEGÚN PERFIL):
+            </span>
+            <span className="text-[10px] text-slate-400">
+              *Clic en cualquier opción para aplicar inmediatamente
+            </span>
+          </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase font-bold block">Requerimiento / Necesidad del Cliente:</label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {Object.entries(B2B_EMAIL_TEMPLATES).map(([key, tpl]) => {
+              const isSelected = selectedTemplateKey === key;
+              const isRecommended = (lead?.icpProfile === key) || (!lead?.icpProfile && key === 'profile_a');
+
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleSelectTemplate(key)}
+                  className={`p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
+                    isSelected
+                      ? `${tpl.activeBg} border-2 ring-2 ring-cyan-400/50 scale-[1.01]`
+                      : 'bg-black/70 border-slate-800 hover:border-slate-700 hover:bg-slate-900/60 text-slate-300'
+                  }`}
+                >
+                  {isRecommended && (
+                    <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-cyan-500 text-slate-950 shadow-md flex items-center gap-1">
+                      ★ Sugerido para {company}
+                    </span>
+                  )}
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold ${tpl.badgeColor}`}>
+                        {tpl.code}
+                      </span>
+                      {isSelected && (
+                        <span className="text-[10px] font-extrabold text-cyan-300 flex items-center gap-1">
+                          <CheckCircle className="w-3.5 h-3.5 text-cyan-400" /> Activo
+                        </span>
+                      )}
+                    </div>
+
+                    <h5 className="font-extrabold text-xs text-white leading-snug">
+                      {tpl.title}
+                    </h5>
+
+                    <p className="text-[10px] text-slate-400 leading-normal line-clamp-3">
+                      {tpl.description}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-cyan-300 font-sans italic line-clamp-1">
+                    <strong>Asunto:</strong> "{tpl.subject}"
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* SECCIÓN 2: CORREO REDACTADO CON VISTA PREVIA Y EDICIÓN COMPLETA */}
+        <div className="relative z-10 p-5 rounded-2xl bg-cyan-950/40 border-2 border-cyan-500/70 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-cyan-500/30">
+            <div className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-cyan-400" />
+              <div>
+                <h4 className="text-cyan-300 font-extrabold text-sm">
+                  Vista Previa & Redacción Final: {B2B_EMAIL_TEMPLATES[selectedTemplateKey]?.code} - {B2B_EMAIL_TEMPLATES[selectedTemplateKey]?.title}
+                </h4>
+                <p className="text-[10px] text-slate-400">
+                  Redactado por Abraham Lozano (Gerente · Grupo CSYS) • Sustitución automática de [nombre] por "{company}"
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleResetOriginal}
+              className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-[10px] border border-slate-800 flex items-center gap-1 transition-all cursor-pointer"
+              title="Restablecer el texto oficial de Abraham Lozano para esta plantilla"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-cyan-400" /> Restablecer Plantilla
+            </button>
+          </div>
+
+          <div className="p-4 rounded-xl bg-black border border-slate-800 space-y-3 font-mono text-xs text-slate-200">
+            <div className="pb-3 border-b border-slate-800 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400 font-bold text-xs shrink-0 w-16">Para:</span>
+                <span className="text-cyan-400 font-bold text-xs bg-cyan-950/70 px-2.5 py-1 rounded border border-cyan-500/40">{email}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400 font-bold text-xs shrink-0 w-16">Asunto:</span>
+                <input
+                  type="text"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 focus:border-cyan-400 text-white font-bold text-xs focus:outline-none"
+                  placeholder="Asunto del correo"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] text-cyan-400 font-bold uppercase flex items-center justify-between">
+                <span>Cuerpo del Correo (Redacción Oficial Abraham Lozano):</span>
+                <span className="text-[9px] text-slate-400">
+                  {isManuallyEdited ? '✍️ Texto editado manualmente' : '⚡ Sincronizado automáticamente con ' + company}
+                </span>
+              </label>
+
               <textarea
-                rows={2}
-                value={technicalNeed}
-                onChange={(e) => setTechnicalNeed(e.target.value)}
-                className="w-full p-3 rounded-xl bg-black border border-slate-800 text-white font-mono text-xs focus:border-cyan-500 focus:outline-none"
+                rows={16}
+                value={customEmailBody}
+                onChange={(e) => {
+                  setCustomEmailBody(e.target.value);
+                  setIsManuallyEdited(true);
+                }}
+                className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-[11px] leading-relaxed focus:border-cyan-400 focus:outline-none selection:bg-cyan-500 selection:text-slate-950"
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
-              <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
-                <label className="text-slate-400 font-bold text-[10px] uppercase block">• Especificación de Acero:</label>
-                <input
-                  type="text"
-                  value={steelType}
-                  onChange={(e) => setSteelType(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white font-bold text-xs"
-                />
-              </div>
-
-              <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
-                <label className="text-slate-400 font-bold text-[10px] uppercase block">• Tolerancia & Precisión Centesimal:</label>
-                <input
-                  type="text"
-                  value={tolerance}
-                  onChange={(e) => setTolerance(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-emerald-400 font-bold text-xs"
-                />
-              </div>
-
-              <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
-                <label className="text-slate-400 font-bold text-[10px] uppercase block">• Presupuesto Estimado Matriz:</label>
-                <input
-                  type="text"
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-cyan-400 font-extrabold text-xs"
-                />
-              </div>
-
-              <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
-                <label className="text-slate-400 font-bold text-[10px] uppercase block">• Plazo Muestras T1:</label>
-                <input
-                  type="text"
-                  value={deliveryTime}
-                  onChange={(e) => setDeliveryTime(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-amber-300 font-bold text-xs"
-                />
-              </div>
-            </div>
           </div>
 
-          {/* SECCIÓN 2: CORREO REDACTADO CON VISTA PREVIA Y EDICIÓN COMPLETA */}
-          <div className="p-5 rounded-2xl bg-cyan-950/40 border-2 border-cyan-500/70 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h4 className="text-cyan-300 font-extrabold text-sm flex items-center gap-2">
-                <Mail className="w-4 h-4" /> 2. Vista Previa del Correo Comercial (Redactado & Modificable)
-              </h4>
+          {/* BOTONES DE ENVÍO DIRECTO CONTEXTUAL (GMAIL, OUTLOOK, MAIL APP, COPIAR) */}
+          <div className="space-y-2 pt-2 border-t border-slate-900">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block">
+              Selecciona la plataforma para enviar este correo redactado:
+            </span>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    setIsManuallyEdited(false);
-                    setCustomEmailBody(generateDefaultBody());
-                    onNotification?.('🔄 Redacción restablecida al formato original del Bot');
-                  }}
-                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-[10px] border border-slate-800 flex items-center gap-1"
-                >
-                  <RefreshCw className="w-3.5 h-3.5 text-cyan-400" /> Restablecer Original
-                </button>
-              </div>
-            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href={gmailUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+              >
+                <Mail className="w-4 h-4" /> Enviar por Gmail Web 🔴
+              </a>
 
-            <div className="p-4 rounded-xl bg-black border border-slate-800 space-y-3 font-mono text-xs text-slate-200">
-              <div className="pb-2 border-b border-slate-800 flex flex-col gap-1">
-                <p><strong className="text-slate-400">Para:</strong> <span className="text-cyan-400 font-bold">{email}</span></p>
-                <p><strong className="text-slate-400">Asunto:</strong> <span className="text-white font-bold">{emailSubject}</span></p>
-              </div>
+              <a
+                href={outlookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+              >
+                <Mail className="w-4 h-4" /> Enviar por Outlook / 365 🟦
+              </a>
 
-              <div className="space-y-2">
-                <label className="text-[10px] text-cyan-400 font-bold uppercase flex items-center justify-between">
-                  <span>Edita el texto final del correo si deseas personalizarlo aún más:</span>
-                  <span className="text-[9px] text-slate-500">{isManuallyEdited ? '✍️ Texto modificado manualmente' : '⚡ Sincronizado automáticamente'}</span>
-                </label>
+              <a
+                href={mailtoUrl}
+                className="px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+              >
+                <Send className="w-4 h-4" /> App de Correo Client (mailto) 💻
+              </a>
 
-                <textarea
-                  rows={14}
-                  value={currentBody}
-                  onChange={(e) => {
-                    setCustomEmailBody(e.target.value);
-                    setIsManuallyEdited(true);
-                  }}
-                  className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-[11px] leading-relaxed focus:border-cyan-400 focus:outline-none selection:bg-cyan-500 selection:text-slate-950"
-                />
-              </div>
-            </div>
-
-            {/* BOTONES DE ENVÍO DIRECTO CONTEXTUAL (GMAIL, OUTLOOK, MAIL APP, COPIAR) */}
-            <div className="space-y-2 pt-2 border-t border-slate-900">
-              <span className="text-[10px] text-slate-400 font-bold uppercase block">
-                Selecciona la plataforma para enviar la propuesta modificada:
-              </span>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href={gmailUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all"
-                >
-                  <Mail className="w-4 h-4" /> Enviar por Gmail Web 🔴
-                </a>
-
-                <a
-                  href={outlookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all"
-                >
-                  <Mail className="w-4 h-4" /> Enviar por Outlook / 365 🟦
-                </a>
-
-                <a
-                  href={mailtoUrl}
-                  className="px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all"
-                >
-                  <Send className="w-4 h-4" /> App de Correo Client (mailto) 💻
-                </a>
-
-                <button
-                  onClick={async () => {
-                    try {
-                      if (navigator?.clipboard?.writeText) {
-                        await navigator.clipboard.writeText(currentBody);
-                        onNotification?.('📋 Correo redactado copiado al portapapeles');
-                      } else {
-                        onNotification?.('📋 Texto listo en pantalla (Copia manual)');
-                      }
-                    } catch (e) {
+              <button
+                onClick={async () => {
+                  try {
+                    if (navigator?.clipboard?.writeText) {
+                      await navigator.clipboard.writeText(customEmailBody);
+                      onNotification?.('📋 Correo de Abraham Lozano copiado al portapapeles');
+                    } else {
                       onNotification?.('📋 Texto listo en pantalla (Copia manual)');
                     }
-                  }}
-                  className="px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs border border-cyan-500/40 flex items-center gap-2 transition-all"
-                >
-                  <CheckSquare className="w-4 h-4 text-cyan-400" /> Copiar Texto
-                </button>
-              </div>
+                  } catch (e) {
+                    onNotification?.('📋 Texto listo en pantalla (Copia manual)');
+                  }
+                }}
+                className="px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs border border-cyan-500/40 flex items-center gap-2 transition-all cursor-pointer"
+              >
+                <CheckSquare className="w-4 h-4 text-cyan-400" /> Copiar Texto
+              </button>
             </div>
           </div>
+        </div>
+
+        {/* SECCIÓN 1 (SECUNDARIA): SOLUCIÓN TÉCNICA RECOMENDADA & FICHA DE MATRICERÍA */}
+        <div className="relative z-10 space-y-4 text-slate-200 leading-relaxed">
+          <details className="group rounded-2xl bg-slate-950 border border-slate-800 p-4 transition-all">
+            <summary className="cursor-pointer text-cyan-400 font-extrabold text-xs flex items-center justify-between list-none">
+              <span className="flex items-center gap-2">
+                <Wrench className="w-4 h-4" /> Ver Ficha Técnica de Matricería CSYS (Opcional para Impresión/PDF)
+              </span>
+              <span className="text-[10px] text-slate-500 group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+
+            <div className="mt-4 space-y-4 pt-3 border-t border-slate-900">
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-400 uppercase font-bold block">Requerimiento / Necesidad del Cliente:</label>
+                <textarea
+                  rows={2}
+                  value={technicalNeed}
+                  onChange={(e) => setTechnicalNeed(e.target.value)}
+                  className="w-full p-3 rounded-xl bg-black border border-slate-800 text-white font-mono text-xs focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+                <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                  <label className="text-slate-400 font-bold text-[10px] uppercase block">• Especificación de Acero:</label>
+                  <input
+                    type="text"
+                    value={steelType}
+                    onChange={(e) => setSteelType(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white font-bold text-xs"
+                  />
+                </div>
+
+                <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                  <label className="text-slate-400 font-bold text-[10px] uppercase block">• Tolerancia & Precisión Centesimal:</label>
+                  <input
+                    type="text"
+                    value={tolerance}
+                    onChange={(e) => setTolerance(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-emerald-400 font-bold text-xs"
+                  />
+                </div>
+
+                <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                  <label className="text-slate-400 font-bold text-[10px] uppercase block">• Presupuesto Estimado Matriz:</label>
+                  <input
+                    type="text"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-cyan-400 font-extrabold text-xs"
+                  />
+                </div>
+
+                <div className="p-3 rounded-xl bg-black border border-slate-900 space-y-1">
+                  <label className="text-slate-400 font-bold text-[10px] uppercase block">• Plazo Muestras T1:</label>
+                  <input
+                    type="text"
+                    value={deliveryTime}
+                    onChange={(e) => setDeliveryTime(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-amber-300 font-bold text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
 
         {/* MODAL FOOTER */}
@@ -2944,9 +3047,9 @@ function ProposalModal({ lead, onClose, onNotification }) {
           <span className="text-[11px] text-slate-400">CSYS MOULD • Planta Llinars del Vallès (Barcelona - 500m²)</span>
           <button
             onClick={onClose}
-            className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs"
+            className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer"
           >
-            Cerrar Vista Previa
+            Cerrar Ventana
           </button>
         </div>
       </div>
