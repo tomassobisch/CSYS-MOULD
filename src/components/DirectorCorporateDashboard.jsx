@@ -1023,7 +1023,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Panel Corporativo • Claudio Arriaga Silva y Abraham Lozano
+              Panel Corporativo • Claudio Arriaga y Abraham Lozano
             </h1>
             <p className="text-sm text-slate-300 font-mono">
               {isBot2

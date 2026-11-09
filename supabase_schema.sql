@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS public.lead_actions (
     company_name TEXT NOT NULL,
     action_type TEXT NOT NULL,
     action_detail TEXT,
-    performed_by TEXT DEFAULT 'Claudio Arriaga Silva / Abraham Lozano',
+    performed_by TEXT DEFAULT 'Claudio Arriaga / Abraham Lozano',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

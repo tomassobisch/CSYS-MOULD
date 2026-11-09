@@ -13,7 +13,7 @@ const DIRECTOR_PROFILE = {
 const CORPORATE_ACCOUNTS = [
   {
     usernames: ['claudio@csysmould.com', 'claudio'],
-    profile: { name: 'Claudio Arriaga Silva', email: 'claudio@csysmould.com' },
+    profile: { name: 'Claudio Arriaga', email: 'claudio@csysmould.com' },
     salt: 'a17a3a48ae7d37d424801e959c7e6772',
     hash: '14a1ffef7f74cfb1f5a7feaf0107b8a1d78bad854842392a5fd5e78b0c034416',
   },
@@ -73,7 +73,7 @@ export async function verifyCorporateLogin(email, password) {
     const secrets = [SHARED_CORPORATE_SECRET, ...CORPORATE_ACCOUNTS];
     for (const secret of secrets) {
       if (await matches(cleanPass, secret)) {
-        return { ok: true, user: { name: 'Claudio Arriaga Silva', email: cleanEmail, ...DIRECTOR_PROFILE } };
+        return { ok: true, user: { name: 'Claudio Arriaga', email: cleanEmail, ...DIRECTOR_PROFILE } };
       }
     }
     return invalid;
