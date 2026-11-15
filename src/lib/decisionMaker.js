@@ -53,8 +53,26 @@ export function getDecisionMaker(lead) {
   return { name: best.name, firstName: best.name.split(/\s+/)[0], role: best.role };
 }
 
-/** Nombre a usar en el saludo "Hola, X:" (nombre de pila de la persona o, si no hay, la empresa). */
+/** Nombre comercial sin forma jurídica ni paréntesis: "Plásticos Llorens (Plastics Llorens S.L.)" -> "Plásticos Llorens". */
+export function cleanCompanyName(company = '') {
+  return company
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/,?\s+\b(S\.?\s?L\.?\s?U\.?|S\.?\s?A\.?\s?U\.?|S\.?\s?L\.?|S\.?\s?A\.?|SLU|SAU|SL|SA|AG|GmbH|Ltd\.?|Inc\.?)\s*$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Saludo genérico cuando no hay persona identificada: "equipo de Sensocar". */
+export function genericGreeting(company) {
+  const name = cleanCompanyName(company || '');
+  return name ? `equipo de ${name}` : 'equipo';
+}
+
+/**
+ * Lo que va en el saludo "Hola, X:": nombre de pila del CEO / responsable
+ * o, si no hay ninguno identificado, un saludo genérico al equipo de la empresa.
+ */
 export function getGreetingName(lead, fallbackCompany) {
   const dm = getDecisionMaker(lead);
-  return dm ? dm.firstName : fallbackCompany || lead?.company || '';
+  return dm ? dm.firstName : genericGreeting(fallbackCompany || lead?.company);
 }

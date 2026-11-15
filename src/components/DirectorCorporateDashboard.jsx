@@ -7,7 +7,7 @@ import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
 import { B2B_EMAIL_TEMPLATES, FOLLOW_UP_TEMPLATE } from '../data/emailTemplates';
 import { loadLocalCrm, syncCrmFromSupabase, saveContact, registerEmailSent, removeContact, addDays, CLOSED_STATUSES, DEFAULT_FOLLOW_UP_DAYS } from '../lib/crmStore';
 import { IcpBadge, ContactedFolder, CrmFollowUpPanel } from './CrmPanel';
-import { getDecisionMaker, getGreetingName } from '../lib/decisionMaker';
+import { getDecisionMaker, getGreetingName, genericGreeting } from '../lib/decisionMaker';
 import { SIGNATURE_HTML, copyEmailWithSignature, openComposeWithSignature, signatureCopyMessage } from '../data/emailSignature';
 import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
 
@@ -2765,9 +2765,9 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
   const [customEmailBody, setCustomEmailBody] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.getBody(getGreetingName(lead, lead?.company || 'Empresa Objetivo')));
   const [isManuallyEdited, setIsManuallyEdited] = useState(false);
 
-  // Si no hay persona identificada, el saludo sigue al nombre de la empresa
+  // Si no hay persona identificada, saludo genérico al equipo de la empresa
   useEffect(() => {
-    if (!isGreetingEdited && !decisionMaker) setGreetingName(company);
+    if (!isGreetingEdited && !decisionMaker) setGreetingName(genericGreeting(company));
   }, [company, isGreetingEdited, decisionMaker]);
 
   // Sincronizar el cuerpo del correo con el nombre de la empresa si no ha habido edición manual
