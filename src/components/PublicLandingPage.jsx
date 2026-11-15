@@ -2,6 +2,7 @@ import React from 'react';
 import { Shield, Lock, MapPin, Mail, ArrowRight, CheckCircle2, Award, Globe, ShieldCheck, Factory } from 'lucide-react';
 import VideoBackground from './VideoBackground';
 import RealPhotoGallery from './RealPhotoGallery';
+import DrivePhotoCarousel from './DrivePhotoCarousel';
 import LeadSurvey from './LeadSurvey';
 import ContactSection from './ContactSection';
 
@@ -274,6 +275,9 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
 
         </div>
       </section>
+
+      {/* CARRUSEL DE FOTOS (GOOGLE DRIVE) */}
+      <DrivePhotoCarousel />
 
       {/* 3. REAL PHOTO GALLERY SECTION */}
       <RealPhotoGallery />
