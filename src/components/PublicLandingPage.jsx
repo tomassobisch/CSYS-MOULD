@@ -3,7 +3,6 @@ import { Shield, Lock, MapPin, Mail, ArrowRight, CheckCircle2, Award, Globe, Shi
 import VideoBackground from './VideoBackground';
 import RealPhotoGallery from './RealPhotoGallery';
 import DrivePhotoCarousel from './DrivePhotoCarousel';
-import TeamSection from './TeamSection';
 import LeadSurvey from './LeadSurvey';
 import ContactSection from './ContactSection';
 
@@ -290,9 +289,6 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
 
       {/* 5. CONTACT SECTION */}
       <ContactSection onOpenEmailModal={onOpenEmailModal} />
-
-      {/* 6. EQUIPO: ABRAHAM Y CLAUDIO */}
-      <TeamSection />
 
     </div>
   );
