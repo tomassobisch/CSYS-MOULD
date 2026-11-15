@@ -25,14 +25,14 @@ export const COMPANY_INFO = {
       role: "Director / Socio Fundador",
       email: "claudio@csysmould.com",
       phone: "+34 696 76 41 27",
-      photo: "/multimedia/director_claudio.jpg"
+      photo: "/multimedia/contact_claudio.png"
     },
     abraham: {
       name: "Abraham Lozano",
       role: "Director / Socio Fundador",
       email: "abraham@csysmould.com",
       phone: "+34 651 96 18 66",
-      photo: "/multimedia/director_abraham.jpg"
+      photo: "/multimedia/contact_abraham.png"
     },
     techPartner: {
       company: "TJ Developer",
