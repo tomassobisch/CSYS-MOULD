@@ -1,25 +1,30 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Shield, Lock, MapPin, Mail, ArrowRight, CheckCircle2, Award, Globe, ShieldCheck, Factory } from 'lucide-react';
 import VideoBackground from './VideoBackground';
 import RealPhotoGallery from './RealPhotoGallery';
 import DrivePhotoCarousel from './DrivePhotoCarousel';
 import LeadSurvey from './LeadSurvey';
 import ContactSection from './ContactSection';
+import { useTechAnimations, CountUp } from '../lib/useTechAnimations';
 
 export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEmailModal }) {
+  const rootRef = useRef(null);
+  useTechAnimations(rootRef);
+
   return (
-    <div className="space-y-16 sm:space-y-20 bg-black text-slate-100">
+    <div ref={rootRef} className="tech-landing space-y-16 sm:space-y-20 bg-black text-slate-100">
       
       {/* 1. PUBLIC HERO SECTION - PURELY INFORMATIVE WITH IMMEDIATE ACTION BUTTON */}
       <section id="hero" className="relative pt-36 pb-20 overflow-hidden min-h-[92vh] flex items-center bg-black">
         <VideoBackground />
+        <div className="tech-grid-bg" aria-hidden="true" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* LEFT COLUMN: HERO TEXT & CONTENT */}
-            <div className="lg:col-span-7 space-y-6 text-left">
+            <div data-reveal="left" className="lg:col-span-7 space-y-6 text-left">
               
               {/* Specialty Pill */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/90 border border-amber-500/60 text-xs sm:text-sm font-semibold text-amber-300 shadow-2xl backdrop-blur-xl">
@@ -54,7 +59,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
                     subject: 'Solicitud de Información y Presupuesto CSYS MOULD',
                     body: 'Estimado equipo técnico de CSYS MOULD,\n\nMe gustaría solicitar información y presupuesto para un proyecto de moldes / inyección plástica.\n\nEmpresa:\nTeléfono:\nDetalles preliminares:'
                   })}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm sm:text-base shadow-2xl shadow-amber-500/50 hover:shadow-amber-400/70 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+                  className="cta-pulse w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-slate-950 font-extrabold text-sm sm:text-base shadow-2xl shadow-amber-500/50 hover:shadow-amber-400/70 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
                 >
                   <Mail className="w-5 h-5 text-slate-950" />
                   <span>Contáctanos, comienza a trabajar con nosotros o entérate de más</span>
@@ -94,7 +99,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
             </div>
 
             {/* RIGHT COLUMN: HERO RECUADRO CON ABRAHAM EN SU POSICIÓN Y CLAUDIO AJUSTADO DE FORMA ARMÓNICA */}
-            <div className="lg:col-span-5 relative">
+            <div data-reveal="right" className="lg:col-span-5 relative">
               <div className="bg-black p-2.5 sm:p-3.5 rounded-3xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                 
                 {/* HUD Corner Brackets */}
@@ -148,17 +153,17 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
           </div>
 
           {/* Plant Stats Bar - TOLERANCIA MICRO INYECCIÓN 0,02 mm */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+          <div className="reveal-stagger grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
             <div className="bg-black p-5 rounded-2xl border border-amber-500/40 text-center shadow-xl">
               <p className="text-3xl sm:text-4xl font-extrabold text-amber-400 font-tech mb-1">±0,02 <span className="text-xs text-amber-300 font-mono">mm</span></p>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Tolerancia Micro-Inyección</p>
             </div>
             <div className="bg-black p-5 rounded-2xl border border-amber-500/40 text-center shadow-xl">
-              <p className="text-3xl sm:text-4xl font-extrabold text-white font-tech mb-1">500 <span className="text-xs text-amber-400 font-mono">m²</span></p>
+              <p className="text-3xl sm:text-4xl font-extrabold text-white font-tech mb-1"><CountUp to={500} /> <span className="text-xs text-amber-400 font-mono">m²</span></p>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Planta Propia Barcelona</p>
             </div>
             <div className="bg-black p-5 rounded-2xl border border-amber-500/40 text-center shadow-xl">
-              <p className="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-tech mb-1">10 <span className="text-xs text-emerald-300 font-mono">Ton</span></p>
+              <p className="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-tech mb-1"><CountUp to={10} /> <span className="text-xs text-emerald-300 font-mono">Ton</span></p>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Puente Grúa Gran Tonelaje</p>
             </div>
             <div className="bg-black p-5 rounded-2xl border border-amber-500/40 text-center shadow-xl">
@@ -210,7 +215,7 @@ export default function PublicLandingPage({ onOpenLogin, onOpenContact, onOpenEm
           </div>
 
           {/* 3 FEATURE CARDS WITH EQUALIZED HEIGHT & BALANCED VISUAL LAYOUT */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs pt-6 border-t border-slate-900 items-stretch">
+          <div className="reveal-stagger grid grid-cols-1 md:grid-cols-3 gap-6 text-xs pt-6 border-t border-slate-900 items-stretch">
             
             {/* CARD 1 */}
             <div className="p-6 rounded-2xl bg-black border border-slate-800 flex flex-col justify-between h-full space-y-4 hover:border-amber-500/40 transition-all shadow-xl">

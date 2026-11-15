@@ -23,7 +23,7 @@ export default function RealPhotoGallery() {
         </div>
 
         {/* Real Photos Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="reveal-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {REAL_FACTORY_PHOTOS.map((photo) => (
             <div
               key={photo.id}

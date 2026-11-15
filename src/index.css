@@ -161,3 +161,130 @@ html {
 .cookie-banner-enter {
   animation: cookieBannerIn 0.35s ease-out both;
 }
+
+/* ==========================================================================
+   ANIMACIONES TECH DARK DE LA LANDING
+   Solo transform + opacity (se animan en la GPU, sin redibujar la página)
+   ========================================================================== */
+
+/* Entradas desde los laterales al hacer scroll */
+@keyframes revealLeft {
+  from { opacity: 0; transform: translate3d(-80px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes revealRight {
+  from { opacity: 0; transform: translate3d(80px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes revealUp {
+  from { opacity: 0; transform: translate3d(0, 40px, 0); }
+  to { opacity: 1; transform: none; }
+}
+.reveal { opacity: 0; }
+.reveal.is-visible {
+  will-change: transform, opacity;
+  animation: revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms) both;
+}
+.reveal.is-visible[data-reveal="left"] { animation-name: revealLeft; }
+.reveal.is-visible[data-reveal="right"] { animation-name: revealRight; }
+@keyframes revealFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.reveal.is-visible[data-reveal="fade"] { animation-name: revealFade; animation-duration: 0.7s; }
+
+/* Evita la barra de scroll horizontal mientras algo entra desde un lateral */
+.tech-landing { overflow-x: clip; }
+
+/* Brillo que sigue al cursor en las tarjetas */
+.tech-card { position: relative; isolation: isolate; }
+.tech-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(245, 158, 11, 0.16), transparent 60%);
+  z-index: 1;
+}
+.tech-card:hover::after { opacity: 1; }
+
+/* Rejilla tecnológica sobre el vídeo del hero (se desplaza con transform) */
+.tech-grid-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 45%, #000 25%, transparent 80%);
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 45%, #000 25%, transparent 80%);
+}
+.tech-grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: -56px 0 0 -56px;
+  background-image:
+    linear-gradient(rgba(245, 158, 11, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.09) 1px, transparent 1px);
+  background-size: 56px 56px;
+  will-change: transform;
+  animation: gridDrift 6s linear infinite;
+}
+@keyframes gridDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(56px, 56px, 0); }
+}
+/* Línea de escaneo que recorre la rejilla */
+.tech-grid-bg::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background:
+    linear-gradient(180deg, transparent 0, rgba(245, 158, 11, 0.75) 1px, transparent 3px) no-repeat,
+    linear-gradient(180deg, rgba(245, 158, 11, 0.12), transparent 60px) no-repeat;
+  will-change: transform, opacity;
+  animation: gridSweep 7s ease-in-out infinite;
+}
+@keyframes gridSweep {
+  0% { transform: translate3d(0, 2%, 0); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translate3d(0, 92%, 0); opacity: 0; }
+}
+
+/* Destello que recorre el texto dorado del titular */
+.text-gradient-amber {
+  background-size: 220% auto;
+  animation: goldShine 4.5s ease-in-out infinite alternate;
+}
+@keyframes goldShine {
+  from { background-position: 0% center; }
+  to { background-position: 100% center; }
+}
+
+/* Anillo pulsante en el botón principal */
+.cta-pulse { position: relative; }
+.cta-pulse::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid rgba(245, 158, 11, 0.7);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: ctaRing 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes ctaRing {
+  0% { transform: scale(1); opacity: 0.8; }
+  70%, 100% { transform: scale(1.08, 1.3); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; }
+  .tech-grid-bg::before, .tech-grid-bg::after, .text-gradient-amber, .cta-pulse::before { animation: none; }
+}
