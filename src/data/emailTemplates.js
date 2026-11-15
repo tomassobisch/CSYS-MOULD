@@ -5,6 +5,7 @@
 // - Email A: Perfil A (Startups tecnológicas - Robótica & MedTech en viveros)
 // - Email B: Perfil B (Empresas con producto propio - Pymes 20 a 50 trabajadores)
 // - Email C: Perfil C (Empresas de inyección con máquinas propias - Moldes China 3 años garantía + BABYPLAST)
+// La firma (HTML con enlace a la web) se añade aparte desde ./emailSignature.js
 // ==============================================================================
 
 export const B2B_EMAIL_TEMPLATES = {
@@ -31,11 +32,7 @@ Hemos fabricado piezas para Indra, Airbus y otras muchas empresas conocidas. Tam
 
 Si en algún momento necesitáis apoyo en vuestro proyecto, estaré encantado de que lo comentemos por email o en una breve llamada.
 
-Un saludo,
-
-Abraham Lozano
-Gerente · Grupo CSYS
-www.csysmould.com`
+Un saludo,`
   },
 
   profile_b: {
@@ -61,11 +58,7 @@ Fabricamos aquí en Barcelona y también con empresas de Shenzhen, en China, don
 
 Si tenéis algún nuevo proyecto en marcha, estaremos encantados de estudiarlo con vosotros y prepararos un presupuesto sin compromiso. Podéis responder a este email o, si lo preferís, concertamos una breve llamada.
 
-Un saludo,
-
-Abraham Lozano
-Gerente · Grupo CSYS
-www.csysmould.com`
+Un saludo,`
   },
 
   profile_c: {
@@ -91,10 +84,6 @@ Desde nuestro taller de Barcelona atendemos las necesidades de ajuste, reparaci�
 
 Si tenéis algún nuevo proyecto en marcha, estaremos encantados de estudiarlo con vosotros y prepararos un presupuesto sin compromiso. Podéis responder a este email o, si lo preferís, concertamos una breve llamada.
 
-Un saludo,
-
-Abraham Lozano
-Gerente · Grupo CSYS
-www.csysmould.com`
+Un saludo,`
   }
 };

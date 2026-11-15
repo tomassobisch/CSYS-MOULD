@@ -4,6 +4,7 @@ import { Bot, Zap, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, R
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
 import { B2B_EMAIL_TEMPLATES } from '../data/emailTemplates';
+import { SIGNATURE_HTML, copyEmailWithSignature, openComposeWithSignature, signatureCopyMessage } from '../data/emailSignature';
 import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
 
 export default function DirectorCorporateDashboard({ userProfile }) {
@@ -2185,8 +2186,10 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                 const cardSubject = activeTemplate.subject;
                 const cardBody = activeTemplate.getBody(leadCompany);
 
-                const cardMailtoUrl = `mailto:${encodeURIComponent(leadEmail)}?subject=${encodeURIComponent(cardSubject)}&body=${encodeURIComponent(cardBody)}`;
-                const cardGmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(leadEmail)}&su=${encodeURIComponent(cardSubject)}&body=${encodeURIComponent(cardBody)}`;
+                const sendCardEmail = async (client) => {
+                  const result = await openComposeWithSignature({ to: leadEmail, subject: cardSubject, body: cardBody, client });
+                  showNotification(signatureCopyMessage(result));
+                };
 
                 return (
                   <div key={lead.id} className="bg-black p-6 rounded-2xl border-2 border-cyan-500/50 space-y-4 hover:border-cyan-400 transition-all flex flex-col justify-between shadow-xl">
@@ -2253,23 +2256,23 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                         <span>📄 Abrir Redactor B2B (Elegir entre 3 Modelos)</span>
                       </button>
 
-                      <a
-                        href={cardGmailUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
+                      <button
+                        type="button"
+                        onClick={() => sendCardEmail('gmail')}
+                        className="cursor-pointer px-3 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
                         title="Enviar por Gmail Web con plantilla de Abraham Lozano"
                       >
                         <Mail className="w-3.5 h-3.5" /> Gmail
-                      </a>
+                      </button>
 
-                      <a
-                        href={cardMailtoUrl}
-                        className="px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/50 font-bold text-xs flex items-center gap-1.5 transition-all"
+                      <button
+                        type="button"
+                        onClick={() => sendCardEmail('mailto')}
+                        className="cursor-pointer px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/50 font-bold text-xs flex items-center gap-1.5 transition-all"
                         title="Enviar vía App de Correo con plantilla de Abraham Lozano"
                       >
                         <Send className="w-3.5 h-3.5 text-cyan-400" /> App Mail
-                      </a>
+                      </button>
                     </div>
                   </div>
                 );
@@ -2685,11 +2688,11 @@ function ProposalModal({ lead, onClose, onNotification }) {
     onNotification?.(`🔄 Plantilla restablecida a ${activeTpl.code} (${activeTpl.title})`);
   };
 
-  const currentBody = customEmailBody;
-
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
-  const outlookUrl = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(email)}&subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
-  const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(currentBody)}`;
+  // Copia cuerpo + firma HTML (con enlaces a la web) y abre el correo vacío para pegar
+  const sendWithSignature = async (client) => {
+    const result = await openComposeWithSignature({ to: email, subject: emailSubject, body: customEmailBody, client });
+    onNotification?.(signatureCopyMessage(result));
+  };
 
   return createPortal(
     <div 
@@ -2919,6 +2922,16 @@ function ProposalModal({ lead, onClose, onNotification }) {
                 className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-[11px] leading-relaxed focus:border-cyan-400 focus:outline-none selection:bg-cyan-500 selection:text-slate-950"
               />
             </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] text-cyan-400 font-bold uppercase block">
+                Firma oficial (se añade al final · enlaces a www.csysmould.com):
+              </span>
+              <div
+                className="p-4 rounded-xl bg-white border border-slate-800 overflow-x-auto font-sans"
+                dangerouslySetInnerHTML={{ __html: SIGNATURE_HTML }}
+              />
+            </div>
           </div>
 
           {/* BOTONES DE ENVÍO DIRECTO CONTEXTUAL (GMAIL, OUTLOOK, MAIL APP, COPIAR) */}
@@ -2926,49 +2939,49 @@ function ProposalModal({ lead, onClose, onNotification }) {
             <span className="text-[10px] text-slate-400 font-bold uppercase block">
               Selecciona la plataforma para enviar este correo redactado:
             </span>
+            <p className="text-[11px] text-amber-300 font-bold">
+              ✨ Al hacer clic se copia el correo con la firma y se abre el mail vacío: haz clic en el cuerpo y pega con Cmd+V (Ctrl+V).
+            </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <a
-                href={gmailUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => sendWithSignature('gmail')}
                 className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all cursor-pointer"
               >
                 <Mail className="w-4 h-4" /> Enviar por Gmail Web 🔴
-              </a>
+              </button>
 
-              <a
-                href={outlookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => sendWithSignature('outlook')}
                 className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all cursor-pointer"
               >
                 <Mail className="w-4 h-4" /> Enviar por Outlook / 365 🟦
-              </a>
+              </button>
 
-              <a
-                href={mailtoUrl}
+              <button
+                type="button"
+                onClick={() => sendWithSignature('mailto')}
                 className="px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg flex items-center gap-2 transition-all cursor-pointer"
               >
                 <Send className="w-4 h-4" /> App de Correo Client (mailto) 💻
-              </a>
+              </button>
 
               <button
                 onClick={async () => {
-                  try {
-                    if (navigator?.clipboard?.writeText) {
-                      await navigator.clipboard.writeText(customEmailBody);
-                      onNotification?.('📋 Correo de Abraham Lozano copiado al portapapeles');
-                    } else {
-                      onNotification?.('📋 Texto listo en pantalla (Copia manual)');
-                    }
-                  } catch  {
+                  const result = await copyEmailWithSignature(customEmailBody);
+                  if (result === 'html') {
+                    onNotification?.('📋 Correo con firma copiado: pégalo en Gmail, Outlook o Apple Mail');
+                  } else if (result === 'text') {
+                    onNotification?.('📋 Copiado como texto plano (el navegador no permite formato)');
+                  } else {
                     onNotification?.('📋 Texto listo en pantalla (Copia manual)');
                   }
                 }}
                 className="px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs border border-cyan-500/40 flex items-center gap-2 transition-all cursor-pointer"
               >
-                <CheckSquare className="w-4 h-4 text-cyan-400" /> Copiar Texto
+                <CheckSquare className="w-4 h-4 text-cyan-400" /> Copiar con Firma
               </button>
             </div>
           </div>
