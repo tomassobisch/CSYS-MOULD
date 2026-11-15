@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { CalendarClock } from 'lucide-react';
 import { Bot, Zap, Shield, Layers, FileText, Send, CheckCircle2, Globe, Clock, RefreshCw, BarChart2, Search, UserCheck, ExternalLink, Mail, Phone, Building2, Target, Sparkles, Loader2, Star, Trash2, Database, CheckSquare, Printer, X, Rocket, MapPin, SlidersHorizontal, CheckCircle, HeartHandshake, Users, TrendingUp, Newspaper, Handshake, Key, PlusCircle, Ban, Edit3, Wrench } from 'lucide-react';
 import { supabase, saveSupabaseAnonKey } from '../lib/supabase';
 import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
-import { B2B_EMAIL_TEMPLATES } from '../data/emailTemplates';
+import { B2B_EMAIL_TEMPLATES, FOLLOW_UP_TEMPLATE } from '../data/emailTemplates';
+import { loadLocalCrm, syncCrmFromSupabase, saveContact, registerEmailSent, removeContact, addDays, CLOSED_STATUSES, DEFAULT_FOLLOW_UP_DAYS } from '../lib/crmStore';
+import { IcpBadge, ContactedFolder, CrmFollowUpPanel } from './CrmPanel';
 import { SIGNATURE_HTML, copyEmailWithSignature, openComposeWithSignature, signatureCopyMessage } from '../data/emailSignature';
 import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
 
+// Tipo de empresa (Perfil ICP) por id, para recuperar la etiqueta en favoritos guardados
+const ICP_BY_ID = Object.fromEntries(
+  EXPANDED_REAL_STARTUPS.map((l) => [l.id, { icpProfile: l.icpProfile, icpProfileName: l.icpProfileName }])
+);
+
 export default function DirectorCorporateDashboard({ userProfile }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
-  const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'icp_profiles' | 'location_map' | 'portfolio' | 'blacklist'
+  const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'icp_profiles' | 'location_map' | 'portfolio' | 'contacted' | 'blacklist'
+  const [crmContacts, setCrmContacts] = useState(() => loadLocalCrm()); // CRM Bot 4: empresas contactadas
   const [favoriteLeads, setFavoriteLeads] = useState(() => {
     try {
       const saved = localStorage.getItem('csys_favorite_leads');
@@ -152,6 +161,8 @@ export default function DirectorCorporateDashboard({ userProfile }) {
               googleMapsSearch: item.google_maps_search,
               addressFull: item.address_full,
               isFavorite: item.is_favorite || false,
+              icpProfile: item.icp_profile || item.study360_json?.icpProfile || ICP_BY_ID[item.id]?.icpProfile || '',
+              icpProfileName: item.icp_profile_name || item.study360_json?.icpProfileName || ICP_BY_ID[item.id]?.icpProfileName || '',
               study360: item.study360_json || {},
               detailedDiagnosis: item.detailed_diagnosis_json || {}
             }));
@@ -282,6 +293,49 @@ export default function DirectorCorporateDashboard({ userProfile }) {
     setTimeout(() => setActionNotification(null), 3500);
   };
 
+  // ===== CRM (BOT 4): EMPRESAS CONTACTADAS Y SEGUIMIENTOS =====
+  useEffect(() => {
+    let cancelled = false;
+    syncCrmFromSupabase(loadLocalCrm())
+      .then((merged) => { if (!cancelled) setCrmContacts(merged); })
+      .catch((err) => console.warn('[CRM] Sincronización Supabase fallida:', err));
+    return () => { cancelled = true; };
+  }, []);
+
+  // Se llama cada vez que se envía un correo a una empresa desde el Bot 3
+  const handleEmailSent = (lead, meta) => {
+    setCrmContacts((prev) => registerEmailSent(prev, lead, meta));
+  };
+
+  const updateCrmContact = (contact) => {
+    const fixed = { ...contact };
+    // Si vuelve a un estado abierto sin fecha, se programa un seguimiento
+    if (!CLOSED_STATUSES.includes(fixed.status) && !fixed.nextFollowUpAt) {
+      fixed.nextFollowUpAt = addDays(new Date(), DEFAULT_FOLLOW_UP_DAYS);
+    }
+    setCrmContacts((prev) => saveContact(prev, fixed));
+  };
+
+  const removeCrmContact = (contact) => {
+    setCrmContacts((prev) => removeContact(prev, contact.leadId));
+    showNotification(`🗑️ "${contact.company}" quitada del CRM`);
+  };
+
+  const sendCrmFollowUp = async (contact, client) => {
+    const lastSubject = [...(contact.touches || [])].reverse().find((t) => t.subject)?.subject || '';
+    const subject = FOLLOW_UP_TEMPLATE.getSubject(lastSubject);
+    const result = await openComposeWithSignature({
+      to: contact.email,
+      subject,
+      body: FOLLOW_UP_TEMPLATE.getBody(contact.company),
+      client
+    });
+    showNotification(signatureCopyMessage(result));
+    setCrmContacts((prev) =>
+      registerEmailSent(prev, { ...contact, id: contact.leadId }, { subject, template: 'follow_up', client, kind: 'followup' })
+    );
+  };
+
   // TOGGLE FAVORITE WITH FULL SUPABASE & LOCALSTORAGE SYNC
   const toggleFavoriteLead = async (lead) => {
     const isFavNow = !favoriteLeads.some(f => f.id === lead.id);
@@ -335,7 +389,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
         technical_need: lead.technicalNeed || '',
         verified_status: lead.verifiedStatus || '🟢 Web & LinkedIn Verificados (HTTP 200 OK)',
         address_full: lead.addressFull || '',
-        study360_json: lead.study360 || {},
+        study360_json: { ...(lead.study360 || {}), icpProfile: lead.icpProfile || '', icpProfileName: lead.icpProfileName || '' },
         detailed_diagnosis_json: lead.detailedDiagnosis || {},
         is_favorite: isFavNow,
         updated_at: new Date().toISOString()
@@ -525,7 +579,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
       } else if (activeBot === 'commercial') {
         botReply = `[BOT 3 - PROPUESTAS FORMALES B2B]: Generador de Propuestas activado el ${todayStr}. Se han preparado ${shuffled.length} propuestas formales con soluciones de inyección, desglose de presupuestos y redacción de email comercial para contacto directo.`;
       } else if (activeBot === 'china') {
-        botReply = `[BOT 4 - LOGÍSTICA & HUBS CHINA]: Monitoreo de producción en matricería Dongguan & Shenzhen actualizado el ${todayStr}.`;
+        botReply = `[BOT 4 - CRM DE SEGUIMIENTO]: ${Object.values(crmContacts).filter(c => c && !c.deleted).length} empresas contactadas en seguimiento a fecha ${todayStr}.`;
       }
 
       setChatMessages((prev) => [...prev, { sender: 'bot', text: botReply }]);
@@ -770,9 +824,9 @@ export default function DirectorCorporateDashboard({ userProfile }) {
     },
     {
       id: 'china',
-      name: 'Bot 4: Bot de Logística & Hubs China (Seguimiento CNC Dongguan & Shenzhen)',
-      description: 'Control de avance en talleres de matricería asociados, embarques y verificación CMM previa.',
-      icon: Globe,
+      name: 'Bot 4: CRM de Seguimiento de Empresas Contactadas',
+      description: 'Lleva la cuenta de las empresas contactadas, programa los correos de seguimiento y controla quién respondió.',
+      icon: CalendarClock,
       color: 'purple'
     }
   ];
@@ -1383,7 +1437,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
           {botsList.map((bot) => {
             const Icon = bot.icon;
             const isSelected = activeBot === bot.id;
-            const botBgColor = bot.id === 'dfm' ? 'bg-emerald-500' : bot.id === 'commercial' ? 'bg-cyan-500' : 'bg-amber-500';
+            const botBgColor = bot.id === 'dfm' ? 'bg-emerald-500' : bot.id === 'commercial' ? 'bg-cyan-500' : bot.id === 'china' ? 'bg-violet-500' : 'bg-amber-500';
             return (
               <button
                 key={bot.id}
@@ -1394,6 +1448,8 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                       ? 'bg-emerald-950/70 border-2 border-emerald-500 shadow-xl shadow-emerald-500/20'
                       : bot.id === 'commercial'
                       ? 'bg-cyan-950/70 border-2 border-cyan-500 shadow-xl shadow-cyan-500/20'
+                      : bot.id === 'china'
+                      ? 'bg-violet-950/70 border-2 border-violet-500 shadow-xl shadow-violet-500/20'
                       : 'bg-amber-950/60 border-2 border-amber-500 shadow-xl shadow-amber-500/20'
                     : 'bg-slate-950 border-slate-800 hover:border-slate-700'
                 }`}
@@ -1408,7 +1464,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                   <p className="text-slate-400 leading-relaxed text-[11px]">{bot.description}</p>
                 </div>
 
-                <div className={`pt-2 flex items-center justify-between text-[10px] font-mono border-t border-slate-800 ${isSelected ? (bot.id === 'dfm' ? 'text-emerald-400' : bot.id === 'commercial' ? 'text-cyan-400' : 'text-amber-400') : 'text-slate-400'}`}>
+                <div className={`pt-2 flex items-center justify-between text-[10px] font-mono border-t border-slate-800 ${isSelected ? (bot.id === 'dfm' ? 'text-emerald-400' : bot.id === 'commercial' ? 'text-cyan-400' : bot.id === 'china' ? 'text-violet-400' : 'text-amber-400') : 'text-slate-400'}`}>
                   <span>{isSelected ? '✓ Seleccionado' : 'Hacer clic para activar'}</span>
                   <span>En línea</span>
                 </div>
@@ -1475,6 +1531,17 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                   }`}
                 >
                   <Star className="w-4 h-4 text-amber-400" /> Mi Cartera ({favoriteLeads.length})
+                </button>
+
+                <button
+                  onClick={() => setScoutingSubTab('contacted')}
+                  className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${
+                    scoutingSubTab === 'contacted'
+                      ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
+                      : 'bg-black text-cyan-300 border border-cyan-500/40 hover:text-white'
+                  }`}
+                >
+                  <Mail className="w-4 h-4 text-cyan-400" /> 📨 Contactadas ({Object.values(crmContacts).filter(c => c && !c.deleted).length})
                 </button>
               </div>
             </div>
@@ -1864,6 +1931,10 @@ export default function DirectorCorporateDashboard({ userProfile }) {
             )}
 
             {/* BOT 1 MI CARTERA (FAVORITES) VIEW */}
+            {scoutingSubTab === 'contacted' && (
+              <ContactedFolder contacts={crmContacts} onOpenCrm={() => setActiveBot('china')} />
+            )}
+
             {scoutingSubTab === 'portfolio' && (
               <div className="space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 shadow-lg">
@@ -1901,16 +1972,25 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {favoriteLeads.map((lead) => {
+                      const icpSource = lead.icpProfile
+                        ? lead
+                        : dbStartups.find((d) => d.id === lead.id && d.icpProfile) || ICP_BY_ID[lead.id] || {};
                       return (
                         <div key={lead.id} className="bg-black p-6 rounded-2xl border-2 border-amber-500/60 space-y-4 hover:border-amber-400 transition-all flex flex-col justify-between shadow-xl">
                           <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                              <span
-                                className="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white uppercase border border-slate-700"
-                                style={{ backgroundColor: lead.priorityColor || '#ef4444' }}
-                              >
-                                {lead.priorityName || 'Startup Prioritaria'}
-                              </span>
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span
+                                  className="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white uppercase border border-slate-700"
+                                  style={{ backgroundColor: lead.priorityColor || '#ef4444' }}
+                                >
+                                  {lead.priorityName || 'Startup Prioritaria'}
+                                </span>
+                                <IcpBadge profile={icpSource.icpProfile} name={icpSource.icpProfileName} />
+                                {crmContacts[String(lead.id)] && !crmContacts[String(lead.id)].deleted && (
+                                  <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold border bg-cyan-950 text-cyan-300 border-cyan-500/50">📨 Contactada</span>
+                                )}
+                              </div>
 
                               <div className="flex items-center gap-1.5">
                                 <button
@@ -2189,6 +2269,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                 const sendCardEmail = async (client) => {
                   const result = await openComposeWithSignature({ to: leadEmail, subject: cardSubject, body: cardBody, client });
                   showNotification(signatureCopyMessage(result));
+                  handleEmailSent(lead, { subject: cardSubject, template: templateKey, client });
                 };
 
                 return (
@@ -2279,6 +2360,16 @@ export default function DirectorCorporateDashboard({ userProfile }) {
               })}
             </div>
           </div>
+        )}
+
+        {/* BOT 4 MODE: CRM DE SEGUIMIENTO */}
+        {activeBot === 'china' && (
+          <CrmFollowUpPanel
+            contacts={crmContacts}
+            onUpdateContact={updateCrmContact}
+            onRemoveContact={removeCrmContact}
+            onSendFollowUp={sendCrmFollowUp}
+          />
         )}
 
         {/* INTERACTIVE BOT CHAT CONSOLE */}
@@ -2630,6 +2721,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
           lead={selectedProposalLead}
           onClose={() => setSelectedProposalLead(null)}
           onNotification={showNotification}
+          onEmailSent={handleEmailSent}
         />
       )}
 
@@ -2640,7 +2732,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
 /* ==============================================================================
  * COMPONENTE STANDALONE: PROPOSAL MODAL CON VISTA PREVIA Y EDICIÓN EN TIEMPO REAL
  * ============================================================================== */
-function ProposalModal({ lead, onClose, onNotification }) {
+function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
   const [company, setCompany] = useState(lead?.company || 'Empresa Objetivo');
   const [contactPerson, setContactPerson] = useState(lead?.contactPerson || 'Contacto Corporativo');
   const [email, setEmail] = useState(lead?.email || 'info@empresa.com');
@@ -2692,6 +2784,7 @@ function ProposalModal({ lead, onClose, onNotification }) {
   const sendWithSignature = async (client) => {
     const result = await openComposeWithSignature({ to: email, subject: emailSubject, body: customEmailBody, client });
     onNotification?.(signatureCopyMessage(result));
+    onEmailSent?.({ ...lead, company, contactPerson, email }, { subject: emailSubject, template: selectedTemplateKey, client });
   };
 
   return createPortal(

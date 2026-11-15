@@ -87,3 +87,21 @@ Si tenéis algún nuevo proyecto en marcha, estaremos encantados de estudiarlo c
 Un saludo,`
   }
 };
+
+// ==============================================================================
+// CORREO DE SEGUIMIENTO (BOT 4 · CRM) - se envía a empresas ya contactadas
+// ==============================================================================
+export const FOLLOW_UP_TEMPLATE = {
+  id: 'follow_up',
+  code: 'Seguimiento',
+  getSubject: (originalSubject) => (originalSubject ? `Re: ${originalSubject.replace(/^Re:\s*/i, '')}` : 'Seguimiento: CSYS MOULD'),
+  getBody: (companyName) => `Hola, ${companyName || 'vuestro equipo'}:
+
+Hace unos días os escribí para presentaros brevemente el Grupo CSYS y quería saber si habéis tenido ocasión de leer mi correo.
+
+Si tenéis algún proyecto en marcha o previsto en los próximos meses (piezas de plástico, moldes, prototipos o pequeñas series), estaré encantado de estudiarlo con vosotros y prepararos un presupuesto sin compromiso.
+
+Si os resulta más cómodo, podemos concertar una breve llamada de 15 minutos.
+
+Un saludo,`
+};

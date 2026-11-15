@@ -137,21 +137,6 @@ export default function DrivePhotoCarousel() {
           </>
         )}
 
-        {count > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-1.5 max-w-[90%]">
-            {photos.map((photo, i) => (
-              <button
-                key={photo.id}
-                type="button"
-                onClick={() => setIndex(i)}
-                aria-label={`Ir a la foto ${i + 1}`}
-                className={`h-2 rounded-full transition-all cursor-pointer ${
-                  i === index ? 'w-6 bg-amber-400' : 'w-2 bg-slate-500/70 hover:bg-slate-300'
-                }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
       </div>
     </section>
