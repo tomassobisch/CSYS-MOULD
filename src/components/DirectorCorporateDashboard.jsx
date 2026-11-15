@@ -7,6 +7,7 @@ import { EXPANDED_REAL_STARTUPS } from '../data/expandedLeads';
 import { B2B_EMAIL_TEMPLATES, FOLLOW_UP_TEMPLATE } from '../data/emailTemplates';
 import { loadLocalCrm, syncCrmFromSupabase, saveContact, registerEmailSent, removeContact, addDays, CLOSED_STATUSES, DEFAULT_FOLLOW_UP_DAYS } from '../lib/crmStore';
 import { IcpBadge, ContactedFolder, CrmFollowUpPanel } from './CrmPanel';
+import { getDecisionMaker, getGreetingName } from '../lib/decisionMaker';
 import { SIGNATURE_HTML, copyEmailWithSignature, openComposeWithSignature, signatureCopyMessage } from '../data/emailSignature';
 import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
 
@@ -327,7 +328,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
     const result = await openComposeWithSignature({
       to: contact.email,
       subject,
-      body: FOLLOW_UP_TEMPLATE.getBody(contact.company),
+      body: FOLLOW_UP_TEMPLATE.getBody(contact.greetingName || contact.company),
       client
     });
     showNotification(signatureCopyMessage(result));
@@ -2264,12 +2265,15 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                 const templateKey = (lead?.icpProfile && B2B_EMAIL_TEMPLATES[lead.icpProfile]) ? lead.icpProfile : 'profile_a';
                 const activeTemplate = B2B_EMAIL_TEMPLATES[templateKey];
                 const cardSubject = activeTemplate.subject;
-                const cardBody = activeTemplate.getBody(leadCompany);
+                // Si el Bot 2 detectó al CEO / responsable, el saludo va dirigido a esa persona
+                const decisionMaker = getDecisionMaker(lead);
+                const greetingName = getGreetingName(lead, leadCompany);
+                const cardBody = activeTemplate.getBody(greetingName);
 
                 const sendCardEmail = async (client) => {
                   const result = await openComposeWithSignature({ to: leadEmail, subject: cardSubject, body: cardBody, client });
                   showNotification(signatureCopyMessage(result));
-                  handleEmailSent(lead, { subject: cardSubject, template: templateKey, client });
+                  handleEmailSent({ ...lead, greetingName }, { subject: cardSubject, template: templateKey, client });
                 };
 
                 return (
@@ -2316,10 +2320,18 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                         </p>
                         <div className="pt-1 border-t border-slate-900 space-y-1">
                           <p className="text-slate-300 text-[11px]">
+                            <strong className="text-cyan-400">Dirigido a:</strong>{' '}
+                            {decisionMaker ? (
+                              <span className="text-amber-300 font-bold">{decisionMaker.name}{decisionMaker.role ? ` (${decisionMaker.role})` : ''}</span>
+                            ) : (
+                              <span className="text-slate-400">{leadCompany} (sin persona identificada)</span>
+                            )}
+                          </p>
+                          <p className="text-slate-300 text-[11px]">
                             <strong className="text-cyan-400">Asunto:</strong> <span className="text-white font-bold">{cardSubject}</span>
                           </p>
                           <p className="text-slate-400 text-[10px] italic">
-                            "Hola, {leadCompany}: Me gustaría presentarme brevemente. Soy Abraham Lozano, gerente del Grupo CSYS..."
+                            "Hola, {greetingName}: Me gustaría presentarme brevemente. Soy Abraham Lozano, gerente del Grupo CSYS..."
                           </p>
                         </div>
                       </div>
@@ -2746,16 +2758,25 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
   const initialKey = (lead?.icpProfile && B2B_EMAIL_TEMPLATES[lead.icpProfile]) ? lead.icpProfile : 'profile_a';
   const [selectedTemplateKey, setSelectedTemplateKey] = useState(initialKey);
   const [emailSubject, setEmailSubject] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.subject || 'Experiencia de fabricación para nuevos proyectos tecnológicos');
-  const [customEmailBody, setCustomEmailBody] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.getBody(lead?.company || 'Empresa Objetivo'));
+  // Saludo dirigido al CEO / responsable detectado por el Bot 2 (o a la empresa si no hay)
+  const decisionMaker = getDecisionMaker(lead);
+  const [greetingName, setGreetingName] = useState(() => getGreetingName(lead, lead?.company || 'Empresa Objetivo'));
+  const [isGreetingEdited, setIsGreetingEdited] = useState(false);
+  const [customEmailBody, setCustomEmailBody] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.getBody(getGreetingName(lead, lead?.company || 'Empresa Objetivo')));
   const [isManuallyEdited, setIsManuallyEdited] = useState(false);
+
+  // Si no hay persona identificada, el saludo sigue al nombre de la empresa
+  useEffect(() => {
+    if (!isGreetingEdited && !decisionMaker) setGreetingName(company);
+  }, [company, isGreetingEdited, decisionMaker]);
 
   // Sincronizar el cuerpo del correo con el nombre de la empresa si no ha habido edición manual
   useEffect(() => {
     if (!isManuallyEdited) {
       const activeTpl = B2B_EMAIL_TEMPLATES[selectedTemplateKey] || B2B_EMAIL_TEMPLATES.profile_a;
-      setCustomEmailBody(activeTpl.getBody(company));
+      setCustomEmailBody(activeTpl.getBody(greetingName));
     }
-  }, [company, selectedTemplateKey, isManuallyEdited]);
+  }, [greetingName, selectedTemplateKey, isManuallyEdited]);
 
   if (!lead) return null;
 
@@ -2767,7 +2788,7 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
     if (!tpl) return;
     setSelectedTemplateKey(key);
     setEmailSubject(tpl.subject);
-    setCustomEmailBody(tpl.getBody(company));
+    setCustomEmailBody(tpl.getBody(greetingName));
     setIsManuallyEdited(false);
     onNotification?.(`📧 Activado: ${tpl.code} (${tpl.title})`);
   };
@@ -2776,7 +2797,7 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
     const activeTpl = B2B_EMAIL_TEMPLATES[selectedTemplateKey] || B2B_EMAIL_TEMPLATES.profile_a;
     setIsManuallyEdited(false);
     setEmailSubject(activeTpl.subject);
-    setCustomEmailBody(activeTpl.getBody(company));
+    setCustomEmailBody(activeTpl.getBody(greetingName));
     onNotification?.(`🔄 Plantilla restablecida a ${activeTpl.code} (${activeTpl.title})`);
   };
 
@@ -2784,7 +2805,7 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
   const sendWithSignature = async (client) => {
     const result = await openComposeWithSignature({ to: email, subject: emailSubject, body: customEmailBody, client });
     onNotification?.(signatureCopyMessage(result));
-    onEmailSent?.({ ...lead, company, contactPerson, email }, { subject: emailSubject, template: selectedTemplateKey, client });
+    onEmailSent?.({ ...lead, company, contactPerson, email, greetingName }, { subject: emailSubject, template: selectedTemplateKey, client });
   };
 
   return createPortal(
@@ -2861,6 +2882,26 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
                 value={contactPerson}
                 onChange={(e) => setContactPerson(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl bg-black border border-cyan-500/50 text-amber-300 font-bold text-xs focus:border-cyan-400 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between gap-2">
+                <label className="text-[10px] text-slate-400 uppercase font-bold block">Saludo dirigido a ("Hola, …:"):</label>
+                {decisionMaker && (
+                  <span className="text-[9px] text-amber-300 font-bold bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/40" title="Detectado en el Estudio 360° del Bot 2">
+                    👤 {decisionMaker.name}{decisionMaker.role ? ` · ${decisionMaker.role}` : ''}
+                  </span>
+                )}
+              </div>
+              <input
+                type="text"
+                value={greetingName}
+                onChange={(e) => {
+                  setGreetingName(e.target.value);
+                  setIsGreetingEdited(true);
+                }}
+                className="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/50 text-amber-300 font-bold text-xs focus:border-amber-400 focus:outline-none"
               />
             </div>
 

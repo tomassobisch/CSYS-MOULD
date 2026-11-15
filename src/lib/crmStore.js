@@ -112,7 +112,8 @@ const leadSnapshot = (lead) => ({
   website: lead.website || '',
   country: lead.addressFull || lead.country || '',
   icpProfile: lead.icpProfile || '',
-  icpProfileName: lead.icpProfileName || ''
+  icpProfileName: lead.icpProfileName || '',
+  greetingName: lead.greetingName || ''
 });
 
 /**
