@@ -34,9 +34,9 @@ export default function Navbar({ activeSection, setActiveSection, onOpenEmailMod
 
   const navLinks = [
     { id: 'hero', label: lang === 'ES' ? 'Inicio' : 'Home' },
-    { id: 'catalog', label: lang === 'ES' ? 'Casos de Éxito' : 'Success Cases' },
+    { id: 'catalog', label: lang === 'ES' ? 'Formulario de Contacto' : 'Contact Form' },
     { id: 'gallery', label: lang === 'ES' ? 'Galería Real' : 'Real Gallery' },
-    { id: 'contact', label: lang === 'ES' ? 'Contacto Directo' : 'Direct Contact' },
+    { id: 'contact', label: lang === 'ES' ? 'Escríbenos' : 'Contact Us' },
   ];
 
   const scrollTo = (id) => {

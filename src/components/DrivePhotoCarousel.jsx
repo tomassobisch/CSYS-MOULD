@@ -66,16 +66,27 @@ export default function DrivePhotoCarousel() {
   }, [index, count, photos]);
 
   return (
-    <section id="carousel" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-      <div className="text-center max-w-3xl mx-auto space-y-3">
+    <section id="carousel" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div className="space-y-4 text-left">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950/70 border border-amber-500/40 text-amber-400 text-xs font-mono font-semibold">
-          <Images className="w-3.5 h-3.5" /> NUESTROS TRABAJOS
+          <Images className="w-3.5 h-3.5" /> UN POCO DE NOSOTROS
         </div>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Proyectos, moldes y piezas</h2>
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+          Un equipo que vive <span className="text-amber-400">el oficio del molde</span>
+        </h2>
+        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          Somos un taller de Llinars del Vallès (Barcelona) con más de 40 años fabricando moldes.
+          Diseñamos, mecanizamos y ajustamos cada molde con nuestro propio equipo, y acompañamos
+          a cada cliente desde la idea hasta la primera pieza inyectada.
+        </p>
+        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          Estas son fotos reales de nuestro día a día: el taller, las personas y los trabajos que salen de aquí.
+        </p>
       </div>
 
       <div
-        className="relative rounded-3xl border-2 border-amber-500/60 bg-black overflow-hidden shadow-2xl shadow-amber-500/10 aspect-[4/3] sm:aspect-[16/9]"
+        className="relative rounded-3xl border-2 border-amber-500/60 bg-black overflow-hidden shadow-2xl shadow-amber-500/10 aspect-[4/3] w-full max-w-xl mx-auto lg:mx-0"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -141,6 +152,7 @@ export default function DrivePhotoCarousel() {
             ))}
           </div>
         )}
+      </div>
       </div>
     </section>
   );
