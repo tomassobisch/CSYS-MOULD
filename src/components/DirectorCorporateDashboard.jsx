@@ -20,6 +20,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
   const [activeBot, setActiveBot] = useState('scouting'); // 'scouting' (Bot 1) | 'dfm' (Bot 2) | 'commercial' (Bot 3) | 'china' (Bot 4)
   const [scoutingSubTab, setScoutingSubTab] = useState('startups'); // 'startups' | 'icp_profiles' | 'location_map' | 'portfolio' | 'contacted' | 'blacklist'
   const [crmContacts, setCrmContacts] = useState(() => loadLocalCrm()); // CRM Bot 4: empresas contactadas
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false); // Bots 1-3: ver todas o solo Mi Cartera
   const [favoriteLeads, setFavoriteLeads] = useState(() => {
     try {
       const saved = localStorage.getItem('csys_favorite_leads');
@@ -779,7 +780,16 @@ export default function DirectorCorporateDashboard({ userProfile }) {
   };
 
   // Filtered Leads by Active Filters & Blacklist
-  const filteredStartups = dbStartups.filter(lead => {
+  // Bots 1-3: "Todas" o solo las empresas guardadas en Mi Cartera
+  const favoriteIds = new Set(favoriteLeads.map((f) => f.id));
+  const leadsBase = showOnlyFavorites
+    ? [
+        ...dbStartups.filter((l) => favoriteIds.has(l.id)),
+        ...favoriteLeads.filter((f) => !dbStartups.some((d) => d.id === f.id))
+      ]
+    : dbStartups;
+
+  const filteredStartups = leadsBase.filter(lead => {
     if (isCompanyBlacklisted(lead.company)) return false;
     if (filterIcpProfile !== 'all' && lead.icpProfile !== filterIcpProfile) return false;
     if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
@@ -1474,6 +1484,38 @@ export default function DirectorCorporateDashboard({ userProfile }) {
           })}
         </div>
 
+        {/* FILTRO TODAS / MI CARTERA (BOTS 1, 2 Y 3) */}
+        {activeBot !== 'china' && (
+          <div className="flex flex-wrap items-center gap-3 p-3 rounded-2xl bg-slate-950 border border-slate-800 font-mono text-xs">
+            <span className="text-slate-400 font-bold uppercase text-[10px]">Mostrar empresas:</span>
+            <div className="inline-flex p-1 rounded-xl bg-black border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setShowOnlyFavorites(false)}
+                className={`px-4 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                  !showOnlyFavorites ? 'bg-slate-200 text-slate-950' : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                Todas ({dbStartups.filter((l) => !isCompanyBlacklisted(l.company)).length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowOnlyFavorites(true)}
+                className={`px-4 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  showOnlyFavorites ? 'bg-amber-500 text-slate-950' : 'text-amber-300 hover:text-white'
+                }`}
+              >
+                <Star className={`w-3.5 h-3.5 ${showOnlyFavorites ? 'fill-slate-950' : ''}`} /> Mi Cartera ({favoriteLeads.length})
+              </button>
+            </div>
+            {showOnlyFavorites && favoriteLeads.length === 0 && (
+              <span className="text-[11px] text-slate-400">
+                Aún no tienes empresas en tu cartera: márcalas con la estrella ⭐ para verlas aquí.
+              </span>
+            )}
+          </div>
+        )}
+
         {/* BOT 1 MODE */}
         {activeBot === 'scouting' && (
           <div className="bg-slate-950 rounded-3xl border-2 border-amber-500/70 p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in duration-300 font-mono text-xs">
@@ -1924,9 +1966,13 @@ export default function DirectorCorporateDashboard({ userProfile }) {
             {scoutingSubTab === 'startups' && filteredStartups.length === 0 && (
               <div className="text-center py-16 px-4 bg-black/60 rounded-3xl border border-dashed border-slate-800 space-y-3">
                 <Rocket className="w-10 h-10 text-slate-600 mx-auto" />
-                <h4 className="text-base font-bold text-white">No se encontraron startups con estos filtros</h4>
+                <h4 className="text-base font-bold text-white">
+                  {showOnlyFavorites ? 'No hay empresas de tu cartera con estos filtros' : 'No se encontraron startups con estos filtros'}
+                </h4>
                 <p className="text-slate-400 text-xs max-w-md mx-auto">
-                  Prueba cambiando la ubicación, sector o tamaño de empresa en el panel superior para ver más resultados.
+                  {showOnlyFavorites
+                    ? 'Cambia a "Todas" o guarda empresas con la estrella ⭐ para verlas aquí.'
+                    : 'Prueba cambiando la ubicación, sector o tamaño de empresa en el panel superior para ver más resultados.'}
                 </p>
               </div>
             )}
