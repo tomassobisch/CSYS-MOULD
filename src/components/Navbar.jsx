@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, Mail, Lock, Menu, X } from 'lucide-react';
+import { useLang } from '../lib/i18n';
 
 export default function Navbar({ activeSection, setActiveSection, onOpenEmailModal, lang, setLang, isAuthenticated, onOpenLogin }) {
+  const { t } = useLang();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -99,12 +101,12 @@ export default function Navbar({ activeSection, setActiveSection, onOpenEmailMod
             {!isAuthenticated && (
               <button
                 type="button"
-                onClick={() => onOpenEmailModal?.({ subject: 'Contacto Desde Web CSYS MOULD' })}
+                onClick={() => onOpenEmailModal?.({ subject: t('Contacto Desde Web CSYS MOULD', 'Contact from CSYS MOULD Website') })}
                 className="px-4 py-2.5 rounded-xl bg-black border border-amber-500/60 hover:border-amber-400 text-xs font-bold text-amber-300 hover:text-white transition-all flex items-center gap-1.5 shadow-md shadow-amber-950/40 cursor-pointer"
-                title="Contactar (Gmail / Outlook)"
+                title={t('Contactar (Gmail / Outlook)', 'Contact (Gmail / Outlook)')}
               >
                 <Mail className="w-3.5 h-3.5 text-amber-400" />
-                <span>Contactar</span>
+                <span>{t('Contactar', 'Contact')}</span>
               </button>
             )}
 
@@ -164,11 +166,11 @@ export default function Navbar({ activeSection, setActiveSection, onOpenEmailMod
               type="button"
               onClick={() => {
                 setMobileMenuOpen(false);
-                onOpenEmailModal?.({ subject: 'Contacto Desde Web CSYS MOULD' });
+                onOpenEmailModal?.({ subject: t('Contacto Desde Web CSYS MOULD', 'Contact from CSYS MOULD Website') });
               }}
               className="px-3 py-2 rounded-xl bg-black border border-amber-500/50 text-xs font-semibold text-amber-300 flex items-center gap-1.5 cursor-pointer"
             >
-              <Mail className="w-3.5 h-3.5 text-amber-400" /> Contactar
+              <Mail className="w-3.5 h-3.5 text-amber-400" /> {t('Contactar', 'Contact')}
             </button>
 
             <button
@@ -185,7 +187,7 @@ export default function Navbar({ activeSection, setActiveSection, onOpenEmailMod
               }}
               className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-500/30"
             >
-              <Lock className="w-3.5 h-3.5" /> Clientes
+              <Lock className="w-3.5 h-3.5" /> {t('Clientes', 'Clients')}
             </button>
           </div>
         </div>

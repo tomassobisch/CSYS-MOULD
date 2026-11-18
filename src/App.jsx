@@ -8,10 +8,11 @@ import Footer from './components/Footer';
 import CookieBanner from './components/CookieBanner';
 import EmailClientModal from './components/EmailClientModal';
 import { LogOut, Eye } from 'lucide-react';
+import { useLang } from './lib/i18n';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
-  const [lang, setLang] = useState('ES');
+  const { lang, setLang } = useLang();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [emailModal, setEmailModal] = useState({
     isOpen: false,

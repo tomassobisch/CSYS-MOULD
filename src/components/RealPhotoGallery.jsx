@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { REAL_FACTORY_PHOTOS } from '../data/mouldData';
 import { Camera, X, ZoomIn } from 'lucide-react';
+import { useLang } from '../lib/i18n';
 
 export default function RealPhotoGallery() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const { t, lang } = useLang();
+  const photos = REAL_FACTORY_PHOTOS.map((p) =>
+    lang === 'EN' ? { ...p, title: p.titleEn || p.title, category: p.categoryEn || p.category, desc: p.descEn || p.desc } : p
+  );
 
   return (
     <section id="gallery" className="py-16 bg-slate-950 relative border-t border-slate-900">
@@ -12,19 +17,22 @@ export default function RealPhotoGallery() {
         {/* Section Header - EXACT TITLE AND SUBTITLE FROM SCREENSHOT */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950/70 border border-amber-500/40 text-amber-400 text-xs font-mono font-semibold">
-            <Camera className="w-3.5 h-3.5" /> FOTOGRAFÍAS REALES DE NUESTRAS INSTALACIONES Y MOLDES
+            <Camera className="w-3.5 h-3.5" /> {t('FOTOGRAFÍAS REALES DE NUESTRAS INSTALACIONES Y MOLDES', 'REAL PHOTOS OF OUR FACILITIES AND MOULDS')}
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-            Planta de Barcelona & Moldistas en Vivo
+            {t('Planta de Barcelona & Moldistas en Vivo', 'Barcelona Plant & Mould-Makers at Work')}
           </h2>
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-            Conoce nuestras instalaciones de <strong className="text-white font-extrabold">500 m²</strong> (puente grúa de 10 Toneladas) Oficina de Diseño e Ingeniería propia, maquinaria de última generación
+            {t(
+              <>Conoce nuestras instalaciones de <strong className="text-white font-extrabold">500 m²</strong> (puente grúa de 10 Toneladas) Oficina de Diseño e Ingeniería propia, maquinaria de última generación</>,
+              <>Discover our <strong className="text-white font-extrabold">500 m²</strong> facilities (10-tonne overhead crane), in-house Design & Engineering Office and state-of-the-art machinery</>
+            )}
           </p>
         </div>
 
         {/* Real Photos Grid */}
         <div className="reveal-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {REAL_FACTORY_PHOTOS.map((photo) => (
+          {photos.map((photo) => (
             <div
               key={photo.id}
               onClick={() => setSelectedPhoto(photo)}
@@ -46,7 +54,7 @@ export default function RealPhotoGallery() {
                 {/* Hover Zoom Icon */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950/40 backdrop-blur-xs">
                   <div className="p-3 rounded-2xl bg-amber-500 text-slate-950 font-bold shadow-xl flex items-center gap-2 text-xs">
-                    <ZoomIn className="w-4 h-4" /> Ampliar Fotografía Real
+                    <ZoomIn className="w-4 h-4" /> {t('Ampliar Fotografía Real', 'Enlarge Photo')}
                   </div>
                 </div>
               </div>
@@ -97,7 +105,7 @@ export default function RealPhotoGallery() {
                 onClick={() => setSelectedPhoto(null)}
                 className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
               >
-                Cerrar Imagen
+                {t('Cerrar Imagen', 'Close Image')}
               </button>
             </div>
 

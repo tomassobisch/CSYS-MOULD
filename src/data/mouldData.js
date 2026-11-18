@@ -126,42 +126,60 @@ export const REAL_FACTORY_PHOTOS = [
     title: "Ajuste en prensa 100TN",
     category: "Ajuste & Prensas",
     image: "/multimedia/DSC02858.png",
-    desc: "Ajuste y puesta a punto de molde en prensa de 100 Toneladas en nave de Llinars del Vallès."
+    desc: "Ajuste y puesta a punto de molde en prensa de 100 Toneladas en nave de Llinars del Vallès.",
+    titleEn: "Tuning on a 100 t press",
+    categoryEn: "Tuning & Presses",
+    descEn: "Mould tuning and set-up on a 100-tonne press at our Llinars del Vallès plant."
   },
   {
     id: "gallery-2",
     title: "EDM CNC, Grafito & Cobre",
     category: "Electroerosión & EDM",
     image: "/multimedia/edm_cnc_grafito_cobre.jpg",
-    desc: "Electroerosión por penetración EDM CNC con electrodos de grafito y cobre para cavidades complejas en nave de 500 m² (Llinars del Vallès)."
+    desc: "Electroerosión por penetración EDM CNC con electrodos de grafito y cobre para cavidades complejas en nave de 500 m² (Llinars del Vallès).",
+    titleEn: "CNC EDM, Graphite & Copper",
+    categoryEn: "Spark Erosion & EDM",
+    descEn: "CNC sinker EDM with graphite and copper electrodes for complex cavities at our 500 m² plant (Llinars del Vallès)."
   },
   {
     id: "gallery-3",
     title: "Nuestro Equipo",
     category: "Equipo CSYS",
     image: "/multimedia/DSC03133.JPG",
-    desc: "Equipo técnico y especialistas de moldes en las instalaciones de CSYS MOULD en Barcelona."
+    desc: "Equipo técnico y especialistas de moldes en las instalaciones de CSYS MOULD en Barcelona.",
+    titleEn: "Our Team",
+    categoryEn: "CSYS Team",
+    descEn: "Technical team and mould specialists at the CSYS MOULD facilities in Barcelona."
   },
   {
     id: "gallery-4",
     title: "Planta Industrial Llinars del Vallès",
     category: "Instalaciones 500 m²",
     image: "/multimedia/factory_plant_llinars.jpg",
-    desc: "Nave propia equipada con puente grúa de 10 Toneladas para moldes de gran tonelaje."
+    desc: "Nave propia equipada con puente grúa de 10 Toneladas para moldes de gran tonelaje.",
+    titleEn: "Llinars del Vallès Industrial Plant",
+    categoryEn: "500 m² Facilities",
+    descEn: "Our own plant, equipped with a 10-tonne overhead crane for heavy moulds."
   },
   {
     id: "gallery-5",
     title: "Cavidades de Molde Inoxidable",
     category: "Moldes Alta Cadencia",
     image: "/multimedia/DSC00125.JPG",
-    desc: "Detalle de postizos e insertos templados pulidos a espejo SPI-A1."
+    desc: "Detalle de postizos e insertos templados pulidos a espejo SPI-A1.",
+    titleEn: "Stainless Mould Cavities",
+    categoryEn: "High-Cadence Moulds",
+    descEn: "Close-up of hardened inserts polished to an SPI-A1 mirror finish."
   },
   {
     id: "gallery-6",
     title: "Trabajo en Equipo & Desarrollo CAD",
     category: "Oficina Técnica",
     image: "/multimedia/DSC00133.JPG",
-    desc: "Revisión conjunta de planos de inyección con Claudio y Abraham Lozano."
+    desc: "Revisión conjunta de planos de inyección con Claudio y Abraham Lozano.",
+    titleEn: "Teamwork & CAD Development",
+    categoryEn: "Engineering Office",
+    descEn: "Joint review of injection drawings with Claudio and Abraham Lozano."
   }
 ];
 

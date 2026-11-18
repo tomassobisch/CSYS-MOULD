@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Cookie, CheckCircle, XCircle } from 'lucide-react';
+import { useLang } from '../lib/i18n';
 
 const STORAGE_KEY = 'csys_cookie_consent';
 
@@ -22,6 +23,7 @@ const saveConsent = (value) => {
 };
 
 export default function CookieBanner() {
+  const { t } = useLang();
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -45,7 +47,7 @@ export default function CookieBanner() {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Aviso de cookies"
+      aria-label={t('Aviso de cookies', 'Cookie notice')}
       className={`fixed bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-md md:left-8 z-[45] transition-all duration-300 ease-out ${
         isClosing ? 'opacity-0 translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0 cookie-banner-enter'
       }`}
@@ -56,9 +58,9 @@ export default function CookieBanner() {
             <Cookie className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="space-y-1">
-            <h4 className="text-[13px] sm:text-sm font-bold text-white">Política de Cookies &amp; Privacidad</h4>
+            <h4 className="text-[13px] sm:text-sm font-bold text-white">{t('Política de Cookies & Privacidad', 'Cookie & Privacy Policy')}</h4>
             <p className="text-slate-300 leading-relaxed text-[11px]">
-              Utilizamos cookies propias y de terceros para optimizar el rendimiento técnico de la plataforma, medir la navegación y garantizar la seguridad del área de clientes.
+              {t('Utilizamos cookies propias y de terceros para optimizar el rendimiento técnico de la plataforma, medir la navegación y garantizar la seguridad del área de clientes.', 'We use our own and third-party cookies to optimise the platform\'s technical performance, measure browsing and keep the client area secure.')}
             </p>
           </div>
         </div>
@@ -70,7 +72,7 @@ export default function CookieBanner() {
             className="h-9 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <XCircle className="w-3.5 h-3.5 text-slate-400" />
-            <span>Denegar</span>
+            <span>{t('Denegar', 'Decline')}</span>
           </button>
 
           <button
@@ -79,7 +81,7 @@ export default function CookieBanner() {
             className="h-9 px-4 sm:px-5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold shadow-lg shadow-amber-500/20 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <CheckCircle className="w-3.5 h-3.5" />
-            <span>Aceptar</span>
+            <span>{t('Aceptar', 'Accept')}</span>
           </button>
         </div>
       </div>
