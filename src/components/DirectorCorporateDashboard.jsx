@@ -306,7 +306,12 @@ export default function DirectorCorporateDashboard({ userProfile }) {
 
   // Se llama cada vez que se envía un correo a una empresa desde el Bot 3
   const handleEmailSent = (lead, meta) => {
+    const alreadyContacted = crmContacts[String(lead.id)] && !crmContacts[String(lead.id)].deleted;
     setCrmContacts((prev) => registerEmailSent(prev, lead, meta));
+    if (!alreadyContacted) {
+      // Avisar después del mensaje de "correo abierto"
+      setTimeout(() => showNotification(`📨 "${lead.company}" movida a Contactadas (seguimiento en el Bot 4)`), 2200);
+    }
   };
 
   const updateCrmContact = (contact) => {
@@ -782,6 +787,13 @@ export default function DirectorCorporateDashboard({ userProfile }) {
   // Filtered Leads by Active Filters & Blacklist
   // Bots 1-3: "Todas" o solo las empresas guardadas en Mi Cartera
   const favoriteIds = new Set(favoriteLeads.map((f) => f.id));
+  // Empresas ya contactadas: salen de las listas de leads y quedan en "Contactadas" / CRM (Bot 4)
+  const contactedIds = new Set(
+    Object.values(crmContacts)
+      .filter((c) => c && !c.deleted)
+      .map((c) => String(c.leadId))
+  );
+  const isContacted = (lead) => contactedIds.has(String(lead.id));
   const leadsBase = showOnlyFavorites
     ? [
         ...dbStartups.filter((l) => favoriteIds.has(l.id)),
@@ -791,6 +803,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
 
   const filteredStartups = leadsBase.filter(lead => {
     if (isCompanyBlacklisted(lead.company)) return false;
+    if (isContacted(lead)) return false;
     if (filterIcpProfile !== 'all' && lead.icpProfile !== filterIcpProfile) return false;
     if (filterLocation !== 'all' && lead.priorityLevel !== filterLocation) return false;
     if (filterSector !== 'all' && lead.sectorKey !== filterSector) return false;
@@ -1496,7 +1509,7 @@ export default function DirectorCorporateDashboard({ userProfile }) {
                   !showOnlyFavorites ? 'bg-slate-200 text-slate-950' : 'text-slate-300 hover:text-white'
                 }`}
               >
-                Todas ({dbStartups.filter((l) => !isCompanyBlacklisted(l.company)).length})
+                Todas ({dbStartups.filter((l) => !isCompanyBlacklisted(l.company) && !isContacted(l)).length})
               </button>
               <button
                 type="button"
