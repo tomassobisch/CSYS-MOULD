@@ -130,3 +130,5 @@ DROP POLICY IF EXISTS "Permitir lectura publica lead_actions" ON public.lead_act
 CREATE POLICY "Permitir lectura publica lead_actions" ON public.lead_actions FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Permitir insercion publica lead_actions" ON public.lead_actions;
 CREATE POLICY "Permitir insercion publica lead_actions" ON public.lead_actions FOR INSERT WITH CHECK (true);
+
+-- 7. CRM DE EMPRESAS CONTACTADAS (BOT 4): ver supabase_crm_contacts.sql

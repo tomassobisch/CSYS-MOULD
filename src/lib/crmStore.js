@@ -1,12 +1,13 @@
 // ==============================================================================
 // CRM DE SEGUIMIENTO DE EMPRESAS CONTACTADAS (BOT 4)
-// Persistencia: localStorage (inmediato) + Supabase tabla lead_actions
-// (action_type = 'CRM_CONTACT', action_detail = JSON con el estado completo).
-// Se usa la última fila por empresa, así queda compartido entre dispositivos
-// sin necesidad de crear tablas nuevas.
+// Persistencia: localStorage (inmediato) + Supabase tabla crm_contacts
+// (una fila por empresa, ver supabase_crm_contacts.sql).
+// Si la tabla crm_contacts todavía no existe, se usa la tabla lead_actions
+// (action_type = 'CRM_CONTACT', con el estado completo en JSON) como respaldo.
 // ==============================================================================
 import { supabase } from './supabase';
 
+const CRM_TABLE = 'crm_contacts';
 const STORAGE_KEY = 'csys_crm_contacts';
 const ACTION_TYPE = 'CRM_CONTACT';
 export const DEFAULT_FOLLOW_UP_DAYS = 7;
@@ -52,37 +53,120 @@ const saveLocalCrm = (contacts) => {
   }
 };
 
-/** Descarga el último estado de cada contacto desde Supabase y lo combina con el local. */
-export async function syncCrmFromSupabase(localContacts) {
+// --- Conversión entre el objeto del panel y la fila de crm_contacts ---
+const toRow = (c) => ({
+  lead_id: String(c.leadId),
+  company_name: c.company || 'Empresa',
+  email: c.email || '',
+  contact_person: c.contactPerson || '',
+  greeting_name: c.greetingName || '',
+  phone: c.phone || '',
+  website: c.website || '',
+  country: c.country || '',
+  icp_profile: c.icpProfile || '',
+  icp_profile_name: c.icpProfileName || '',
+  status: CRM_STATUSES[c.status] ? c.status : 'contacted',
+  first_contact_at: c.firstContactAt || null,
+  last_contact_at: c.lastContactAt || null,
+  next_follow_up_at: c.nextFollowUpAt || null,
+  emails_sent: (c.touches || []).length,
+  touches: c.touches || [],
+  notes: c.notes || '',
+  deleted: Boolean(c.deleted),
+  updated_at: c.updatedAt || new Date().toISOString()
+});
+
+const fromRow = (r) => ({
+  leadId: r.lead_id,
+  company: r.company_name,
+  email: r.email || '',
+  contactPerson: r.contact_person || '',
+  greetingName: r.greeting_name || '',
+  phone: r.phone || '',
+  website: r.website || '',
+  country: r.country || '',
+  icpProfile: r.icp_profile || '',
+  icpProfileName: r.icp_profile_name || '',
+  status: r.status || 'contacted',
+  firstContactAt: r.first_contact_at || '',
+  lastContactAt: r.last_contact_at || '',
+  nextFollowUpAt: r.next_follow_up_at || '',
+  touches: Array.isArray(r.touches) ? r.touches : [],
+  notes: r.notes || '',
+  deleted: Boolean(r.deleted),
+  updatedAt: r.updated_at
+});
+
+// null = aún no comprobado; true/false = la tabla crm_contacts existe o no
+let crmTableAvailable = null;
+
+// Gana la versión más reciente de cada contacto
+const mergeNewest = (base, incoming) => {
+  const merged = { ...base };
+  incoming.forEach((remote) => {
+    if (!remote?.leadId) return;
+    const local = merged[remote.leadId];
+    if (!local || new Date(remote.updatedAt || 0) >= new Date(local.updatedAt || 0)) {
+      merged[remote.leadId] = remote;
+    }
+  });
+  return merged;
+};
+
+async function loadFromLeadActions() {
   const { data, error } = await supabase
     .from('lead_actions')
     .select('lead_id, action_detail, created_at')
     .eq('action_type', ACTION_TYPE)
     .order('created_at', { ascending: true })
     .limit(5000);
-  if (error || !Array.isArray(data)) return localContacts;
-
-  const merged = { ...localContacts };
-  for (const row of data) {
-    try {
-      const remote = JSON.parse(row.action_detail || '{}');
-      if (!remote?.leadId) continue;
-      const local = merged[remote.leadId];
-      // Gana la versión más reciente
-      if (!local || new Date(remote.updatedAt || row.created_at) >= new Date(local.updatedAt || 0)) {
-        merged[remote.leadId] = remote;
+  if (error || !Array.isArray(data)) return null;
+  return data
+    .map((row) => {
+      try {
+        const c = JSON.parse(row.action_detail || '{}');
+        return c?.leadId ? { ...c, updatedAt: c.updatedAt || row.created_at } : null;
+      } catch {
+        return null;
       }
-    } catch {
-      // fila ilegible: se ignora
-    }
+    })
+    .filter(Boolean);
+}
+
+/** Descarga los contactos desde Supabase y los combina con los guardados en este navegador. */
+export async function syncCrmFromSupabase(localContacts) {
+  const { data, error } = await supabase.from(CRM_TABLE).select('*').limit(5000);
+  let remote;
+  if (!error && Array.isArray(data)) {
+    crmTableAvailable = true;
+    remote = data.map(fromRow);
+  } else {
+    crmTableAvailable = false;
+    remote = await loadFromLeadActions();
+    if (!remote) return localContacts;
   }
-  // Los contactos eliminados se guardan con deleted: true
+  const merged = mergeNewest(localContacts, remote);
   saveLocalCrm(merged);
+  // Sube a la tabla nueva lo que solo estaba en este navegador
+  if (crmTableAvailable) {
+    const remoteIds = new Set(remote.map((c) => c.leadId));
+    const missing = Object.values(merged).filter((c) => c?.leadId && !remoteIds.has(c.leadId));
+    if (missing.length) supabase.from(CRM_TABLE).upsert(missing.map(toRow)).then(() => {});
+  }
   return merged;
 }
 
 async function pushContact(contact) {
   try {
+    if (crmTableAvailable !== false) {
+      const { error } = await supabase.from(CRM_TABLE).upsert(toRow(contact));
+      if (!error) {
+        crmTableAvailable = true;
+        return;
+      }
+      crmTableAvailable = false;
+    }
+    // Respaldo: tabla lead_actions (mientras no exista crm_contacts)
     await supabase.from('lead_actions').insert({
       lead_id: String(contact.leadId),
       company_name: contact.company || 'Empresa',
