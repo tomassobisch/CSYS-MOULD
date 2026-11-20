@@ -71,35 +71,36 @@ export const copyEmailWithSignature = async (body = '') => {
   return false;
 };
 
-const composeUrl = ({ to, subject, client }) => {
+const composeUrl = ({ to, subject, client, body = '' }) => {
   const encTo = encodeURIComponent(to || '');
   const encSubject = encodeURIComponent(subject || '');
+  const encBody = body ? encodeURIComponent(body) : '';
   switch (client) {
     case 'outlook':
-      return `https://outlook.office.com/mail/deeplink/compose?to=${encTo}&subject=${encSubject}`;
+      return `https://outlook.office.com/mail/deeplink/compose?to=${encTo}&subject=${encSubject}${encBody ? `&body=${encBody}` : ''}`;
     case 'mailto':
-      return `mailto:${encTo}?subject=${encSubject}`;
+      return `mailto:${encTo}?subject=${encSubject}${encBody ? `&body=${encBody}` : ''}`;
     case 'gmail':
     default:
-      return `https://mail.google.com/mail/?view=cm&fs=1&to=${encTo}&su=${encSubject}`;
+      return `https://mail.google.com/mail/?view=cm&fs=1&to=${encTo}&su=${encSubject}${encBody ? `&body=${encBody}` : ''}`;
   }
 };
 
 /**
- * Copia el correo con la firma HTML al portapapeles y abre la redacción
- * (destinatario + asunto) con el cuerpo vacío, listo para pegar con Cmd+V / Ctrl+V.
+ * Copia el correo con la firma HTML al portapapeles y abre la redacción.
+ * - Si se pudo copiar con formato: el correo se abre vacío para pegar (Cmd+V / Ctrl+V)
+ *   y que la firma conserve logo y enlaces.
+ * - Si el navegador no permite copiar: el correo se abre con el texto ya escrito
+ *   (firma en texto plano), así nunca queda vacío.
+ * Importante: se copia ANTES de abrir la pestaña nueva; si la pestaña se abre antes,
+ * la página pierde el foco y el navegador bloquea el portapapeles.
  * Devuelve el resultado de la copia ('html' | 'text' | false).
  */
 export const openComposeWithSignature = async ({ to, subject, body, client = 'gmail' }) => {
-  // Abrimos la pestaña antes del await para que el navegador no la bloquee como popup
-  const url = composeUrl({ to, subject, client });
-  const win = client === 'mailto' ? null : window.open('about:blank', '_blank');
   const result = await copyEmailWithSignature(body);
+  const url = composeUrl({ to, subject, client, body: result === 'html' ? '' : buildEmailText(body) });
   if (client === 'mailto') {
     window.location.href = url;
-  } else if (win) {
-    win.opener = null;
-    win.location.href = url;
   } else {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
@@ -110,5 +111,5 @@ export const signatureCopyMessage = (result) =>
   result === 'html'
     ? '✉️ Correo con firma copiado: haz clic en el cuerpo del mail y pega con Cmd+V (Ctrl+V)'
     : result === 'text'
-      ? '⚠️ El navegador solo permitió copiar texto plano (sin firma con formato)'
-      : '⚠️ No se pudo copiar al portapapeles';
+      ? '✉️ Correo abierto con el texto ya escrito (el navegador no permitió copiar la firma con formato)'
+      : '✉️ Correo abierto con el texto ya escrito (sin firma con formato)';
