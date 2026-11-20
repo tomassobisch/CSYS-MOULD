@@ -86,30 +86,44 @@ const composeUrl = ({ to, subject, client, body = '' }) => {
   }
 };
 
+// Si Gmail/Outlook ya tiene la firma configurada, no se repite la firma en texto
+const SIGNATURE_IN_CLIENT_KEY = 'csys_signature_in_mail_client';
+
+export const isSignatureInMailClient = () => {
+  try {
+    return localStorage.getItem(SIGNATURE_IN_CLIENT_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+export const setSignatureInMailClient = (value) => {
+  try {
+    if (value) localStorage.setItem(SIGNATURE_IN_CLIENT_KEY, '1');
+    else localStorage.removeItem(SIGNATURE_IN_CLIENT_KEY);
+  } catch {
+    // sin almacenamiento
+  }
+};
+
 /**
- * Copia el correo con la firma HTML al portapapeles y abre la redacción.
- * - Si se pudo copiar con formato: el correo se abre vacío para pegar (Cmd+V / Ctrl+V)
- *   y que la firma conserve logo y enlaces.
- * - Si el navegador no permite copiar: el correo se abre con el texto ya escrito
- *   (firma en texto plano), así nunca queda vacío.
- * Importante: se copia ANTES de abrir la pestaña nueva; si la pestaña se abre antes,
- * la página pierde el foco y el navegador bloquea el portapapeles.
- * Devuelve el resultado de la copia ('html' | 'text' | false).
+ * Abre Gmail / Outlook / app de correo con destinatario, asunto y el TEXTO YA ESCRITO.
+ * - Si la firma está configurada en Gmail/Outlook, el propio cliente la añade (con logo y enlaces).
+ * - Si no, se añade al final la firma en texto (la web aparece como enlace).
+ * No depende del portapapeles, así funciona en cualquier navegador.
  */
 export const openComposeWithSignature = async ({ to, subject, body, client = 'gmail' }) => {
-  const result = await copyEmailWithSignature(body);
-  const url = composeUrl({ to, subject, client, body: result === 'html' ? '' : buildEmailText(body) });
+  const text = isSignatureInMailClient() ? `${(body || '').trimEnd()}\n` : buildEmailText(body);
+  const url = composeUrl({ to, subject, client, body: text });
   if (client === 'mailto') {
     window.location.href = url;
   } else {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
-  return result;
+  return 'prefilled';
 };
 
 export const signatureCopyMessage = (result) =>
   result === 'html'
-    ? '✉️ Correo con firma copiado: haz clic en el cuerpo del mail y pega con Cmd+V (Ctrl+V)'
-    : result === 'text'
-      ? '✉️ Correo abierto con el texto ya escrito (el navegador no permitió copiar la firma con formato)'
-      : '✉️ Correo abierto con el texto ya escrito (sin firma con formato)';
+    ? '📋 Correo con firma copiado: pégalo con Cmd+V (Ctrl+V)'
+    : '✉️ Correo abierto con el texto listo para enviar';

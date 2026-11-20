@@ -8,7 +8,7 @@ import { B2B_EMAIL_TEMPLATES, FOLLOW_UP_TEMPLATE } from '../data/emailTemplates'
 import { loadLocalCrm, syncCrmFromSupabase, saveContact, registerEmailSent, removeContact, addDays, CLOSED_STATUSES, DEFAULT_FOLLOW_UP_DAYS } from '../lib/crmStore';
 import { IcpBadge, ContactedFolder, CrmFollowUpPanel } from './CrmPanel';
 import { getDecisionMaker, getGreetingName, genericGreeting } from '../lib/decisionMaker';
-import { SIGNATURE_HTML, copyEmailWithSignature, openComposeWithSignature, signatureCopyMessage } from '../data/emailSignature';
+import { SIGNATURE_HTML, copyEmailWithSignature, openComposeWithSignature, signatureCopyMessage, isSignatureInMailClient, setSignatureInMailClient } from '../data/emailSignature';
 import { getGeminiApiKey, saveGeminiApiKey, searchCompaniesOnWeb } from '../lib/geminiSearchService';
 
 // Tipo de empresa (Perfil ICP) por id, para recuperar la etiqueta en favoritos guardados
@@ -2810,6 +2810,7 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
   const [isGreetingEdited, setIsGreetingEdited] = useState(false);
   const [customEmailBody, setCustomEmailBody] = useState(() => B2B_EMAIL_TEMPLATES[initialKey]?.getBody(getGreetingName(lead, lead?.company || 'Empresa Objetivo')));
   const [isManuallyEdited, setIsManuallyEdited] = useState(false);
+  const [signatureInClient, setSignatureInClient] = useState(() => isSignatureInMailClient());
 
   // Si no hay persona identificada, saludo genérico al equipo de la empresa
   useEffect(() => {
@@ -2847,7 +2848,7 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
     onNotification?.(`🔄 Plantilla restablecida a ${activeTpl.code} (${activeTpl.title})`);
   };
 
-  // Copia cuerpo + firma HTML (con enlaces a la web) y abre el correo vacío para pegar
+  // Abre el correo con el texto ya escrito (y la firma, si Gmail/Outlook no la añade)
   const sendWithSignature = async (client) => {
     const result = await openComposeWithSignature({ to: email, subject: emailSubject, body: customEmailBody, client });
     onNotification?.(signatureCopyMessage(result));
@@ -3119,9 +3120,24 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
             <span className="text-[10px] text-slate-400 font-bold uppercase block">
               Selecciona la plataforma para enviar este correo redactado:
             </span>
-            <p className="text-[11px] text-amber-300 font-bold">
-              ✨ Al hacer clic se copia el correo con la firma y se abre el mail vacío: haz clic en el cuerpo y pega con Cmd+V (Ctrl+V).
+            <p className="text-[11px] text-emerald-300 font-bold">
+              ✉️ Al hacer clic se abre el correo con el destinatario, el asunto y el texto ya escritos.
             </p>
+            <label className="flex items-start gap-2 text-[11px] text-slate-300 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={signatureInClient}
+                onChange={(e) => {
+                  setSignatureInClient(e.target.checked);
+                  setSignatureInMailClient(e.target.checked);
+                }}
+                className="mt-0.5 w-4 h-4 rounded cursor-pointer"
+              />
+              <span>
+                Mi Gmail / Outlook ya añade la firma con logo automáticamente (no repetirla en el texto).
+                <span className="block text-slate-500">Si no está marcado, se añade al final la firma en texto con el enlace a la web.</span>
+              </span>
+            </label>
 
             <div className="flex flex-wrap items-center gap-3">
               <button
