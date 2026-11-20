@@ -3151,6 +3151,14 @@ function ProposalModal({ lead, onClose, onNotification, onEmailSent }) {
                 <span className="block text-slate-500">Si no está marcado, se añade al final la firma en texto con el enlace a la web.</span>
               </span>
             </label>
+            <a
+              href="/firma.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-300 hover:text-amber-200 underline"
+            >
+              ✨ Configurar la firma con logo en Gmail (una sola vez) →
+            </a>
 
             <div className="flex flex-wrap items-center gap-3">
               <button
